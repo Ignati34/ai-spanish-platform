@@ -9,6 +9,7 @@ const items = [
   { to: '/app/diagnostic', key: 'diagnostic' },
   { to: '/app/course', key: 'course' },
   { to: '/app/upload', key: 'upload' },
+  { to: '/app/podcasts', key: 'podcast' },
   { to: '/app/analyzer', key: 'analyzer' },
   { to: '/app/voice', key: 'voice' },
   { to: '/app/flashcards', key: 'flashcards' },

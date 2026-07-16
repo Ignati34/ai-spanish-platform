@@ -7,6 +7,7 @@ import DashboardPage from './pages/DashboardPage';
 import CoursePage from './pages/CoursePage';
 import TextAnalyzerPage from './pages/TextAnalyzerPage';
 import UploadStudioPage from './pages/UploadStudioPage';
+import PodcastStudioPage from './pages/PodcastStudioPage';
 import VoiceTutorPage from './pages/VoiceTutorPage';
 import DiagnosticPage from './pages/DiagnosticPage';
 import ProgressPage from './pages/ProgressPage';
@@ -32,6 +33,7 @@ export const router = createBrowserRouter([
       { path: 'diagnostic', element: <DiagnosticPage /> },
       { path: 'course', element: <CoursePage /> },
       { path: 'upload', element: <UploadStudioPage /> },
+      { path: 'podcasts', element: <PodcastStudioPage /> },
       { path: 'analyzer', element: <TextAnalyzerPage /> },
       { path: 'voice', element: <VoiceTutorPage /> },
       { path: 'flashcards', element: <FlashcardsPage /> },

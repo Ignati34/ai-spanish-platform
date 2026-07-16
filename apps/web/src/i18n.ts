@@ -142,6 +142,18 @@ Object.entries(motStrings).forEach(([lng, bundle]) => {
   i18n.addResourceBundle(lng, 'translation', bundle, true, true);
 });
 
+const podStrings: Record<string, any> = {
+  ru: { nav: { podcast: 'Подкасты' }, podcast: { title: 'Podcast Studio', subtitle: 'Аудио → сегменты по времени → урок. Проходите по кусочкам.', level: 'Уровень', build: 'Собрать', building: 'Обрабатываем…', segments: 'Сегменты', cards: 'Карточки', exercises: 'Упражнения' } },
+  uk: { nav: { podcast: 'Подкасти' }, podcast: { title: 'Podcast Studio', subtitle: 'Аудіо → сегменти за часом → урок. Проходьте частинами.', level: 'Рівень', build: 'Зібрати', building: 'Обробляємо…', segments: 'Сегменти', cards: 'Картки', exercises: 'Вправи' } },
+  ar: { nav: { podcast: 'البودكاست' }, podcast: { title: 'استوديو البودكاست', subtitle: 'صوت ← مقاطع زمنية ← درس. تعلّم مقطعًا مقطعًا.', level: 'المستوى', build: 'إنشاء', building: 'جارٍ المعالجة…', segments: 'المقاطع', cards: 'البطاقات', exercises: 'التمارين' } },
+  fr: { nav: { podcast: 'Podcasts' }, podcast: { title: 'Podcast Studio', subtitle: 'Audio → segments horodatés → leçon. Étudiez par morceaux.', level: 'Niveau', build: 'Créer', building: 'Traitement…', segments: 'Segments', cards: 'Cartes', exercises: 'Exercices' } },
+  es: { nav: { podcast: 'Podcasts' }, podcast: { title: 'Podcast Studio', subtitle: 'Audio → segmentos con tiempo → lección. Estudia por partes.', level: 'Nivel', build: 'Crear', building: 'Procesando…', segments: 'Segmentos', cards: 'Tarjetas', exercises: 'Ejercicios' } },
+  en: { nav: { podcast: 'Podcasts' }, podcast: { title: 'Podcast Studio', subtitle: 'Audio → timed segments → lesson. Study piece by piece.', level: 'Level', build: 'Build', building: 'Processing…', segments: 'Segments', cards: 'Flashcards', exercises: 'Exercises' } }
+};
+Object.entries(podStrings).forEach(([lng, bundle]) => {
+  i18n.addResourceBundle(lng, 'translation', bundle, true, true);
+});
+
 export function applyDir(locale: string) {
   const dir = RTL_LOCALES.includes(locale) ? 'rtl' : 'ltr';
   document.documentElement.setAttribute('dir', dir);

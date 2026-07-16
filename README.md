@@ -55,6 +55,8 @@ make selfhosted                          # http://localhost:8080
   explanations in lesson content. See `docs/I18N.md`.
 - **Frontend**: SPA shell, routing, auth, Dashboard, Text Analyzer, Flashcards, Course,
   Billing (provider/country-aware), Admin.
+- **Podcast Studio**: long audio → STT → timed segments (navigable) → a lesson. Reuses STT +
+  lesson builder. See `docs/PODCAST_STUDIO.md`.
 - **Upload Studio**: paste text or upload TXT/PDF/DOCX **or audio (MP3/WAV)** → extract or
   **transcribe (STT)** → live AI → a full lesson (analysis + flashcards + exercises), persisted.
   See `docs/UPLOAD_STUDIO.md`.

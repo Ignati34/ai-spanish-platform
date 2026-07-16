@@ -101,6 +101,16 @@ class ApiClient {
     return this.postForm<any>('/api/voice/transcribe', form);
   }
 
+  // --- Podcast Studio ---
+  podcastCreate(file: File, native_language = 'ru', cefr_level = 'A1', title?: string) {
+    const form = new FormData();
+    form.append('file', file);
+    form.append('native_language', native_language);
+    form.append('cefr_level', cefr_level);
+    if (title) form.append('title', title);
+    return this.postForm<any>('/api/podcasts', form);
+  }
+
   // --- Diagnostic ---
   diagnosticQuestions(native_language = 'ru') {
     return this.request<any>(`/api/diagnostic/questions?native_language=${encodeURIComponent(native_language)}`);
