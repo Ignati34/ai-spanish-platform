@@ -40,6 +40,8 @@ make selfhosted                          # http://localhost:8080
   See `docs/PAYMENTS.md`.
 - **Telegram Mini App**: signed-`initData` auth, bot webhook, in-app Telegram Payments.
   See `docs/TELEGRAM_MINI_APP.md`.
+- **Role-play simulations**: mini-missions (clinic, bank, interview, rental, town hall) on top
+  of the Voice Tutor — a role + a goal + hints + goal-achievement judgement. See `docs/SIMULATIONS.md`.
 - **Voice Tutor**: spoken (mic→STT) or typed Spanish dialogue → tutor reply + native-language
   correction + score, voiced with TTS. See `docs/VOICE_TUTOR.md`.
 - **Onboarding diagnostic**: MC + writing/speaking sample → CEFR placement, strengths, gaps and

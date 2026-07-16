@@ -141,3 +141,13 @@ class OpenAIProvider(BaseAIProvider):
         data = await self._chat_json(system, user)
         data.setdefault('exercises', [])
         return data
+
+    async def simulation_turn(self, history, user_message, role='', goal_es='', cefr_level='A1', native_language='ru') -> dict:
+        system, user = prompts.simulation_turn(history, user_message, role, goal_es, cefr_level, native_language)
+        data = await self._chat_json(system, user)
+        data.setdefault('reply_es', '')
+        data.setdefault('correction', '')
+        data.setdefault('score', 0.0)
+        data.setdefault('goal_met', False)
+        data.setdefault('hint', '')
+        return data

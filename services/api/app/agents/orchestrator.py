@@ -31,3 +31,6 @@ class AgentOrchestrator:
 
     async def targeted_exercises(self, topics, cefr_level='A1', native_language='ru') -> dict:
         return await self.ai.targeted_exercises(topics, cefr_level, native_language)
+
+    async def simulation_turn(self, history, user_message, role, goal_es, cefr_level='A1', native_language='ru') -> dict:
+        return await self.ai.simulation_turn(history, user_message, role, goal_es, cefr_level, native_language)

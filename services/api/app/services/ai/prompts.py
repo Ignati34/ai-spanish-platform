@@ -130,3 +130,26 @@ def targeted_exercises(topics: list[str], cefr_level: str, native_language: str)
         f'explanation in {lang}.'
     )
     return system, user
+
+
+def simulation_turn(history: list[dict], user_message: str, role: str, goal_es: str,
+                    cefr_level: str, native_language: str) -> tuple[str, str]:
+    lang = lang_name(native_language)
+    system = (
+        f'You are role-playing as "{role}" in a Spanish practice simulation. '
+        f'Stay in character and speak natural Spanish for a {cefr_level} learner (short turns). '
+        f'The learner\'s native language is {lang}. Goal of the simulation: {goal_es} '
+        f'Judge whether that goal has now been achieved in the conversation. '
+        f'Correct only real errors, in {lang}. Respond with ONE valid minified JSON object and nothing else.'
+    )
+    convo = '\n'.join(f'{m.get("role")}: {m.get("text")}' for m in (history or [])[-10:])
+    user = (
+        'Conversation so far:\n' + (convo or '(empty)') + '\n\n'
+        f'Student just said: "{user_message}"\n\n'
+        'Return JSON {"reply_es": "<in-character Spanish reply>", '
+        f'"correction": "<short correction in {lang}, empty if none>", '
+        '"score": <0..1 for the student\'s last message>, '
+        '"goal_met": <true|false>, '
+        '"hint": "<a short Spanish phrase the student could try next, empty if none>"}.'
+    )
+    return system, user

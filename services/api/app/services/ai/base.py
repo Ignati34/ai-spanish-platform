@@ -40,3 +40,6 @@ class BaseAIProvider:
 
     async def targeted_exercises(self, topics: list, cefr_level: str = 'A1', native_language: str = 'ru') -> dict:
         raise NotImplementedError
+
+    async def simulation_turn(self, history: list, user_message: str, role: str, goal_es: str, cefr_level: str = 'A1', native_language: str = 'ru') -> dict:
+        raise NotImplementedError

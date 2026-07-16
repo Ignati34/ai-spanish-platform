@@ -12,6 +12,7 @@ const items = [
   { to: '/app/podcasts', key: 'podcast' },
   { to: '/app/analyzer', key: 'analyzer' },
   { to: '/app/voice', key: 'voice' },
+  { to: '/app/simulations', key: 'sim' },
   { to: '/app/flashcards', key: 'flashcards' },
   { to: '/app/review', key: 'review' },
   { to: '/app/progress', key: 'progress' },

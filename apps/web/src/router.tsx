@@ -9,6 +9,7 @@ import TextAnalyzerPage from './pages/TextAnalyzerPage';
 import UploadStudioPage from './pages/UploadStudioPage';
 import PodcastStudioPage from './pages/PodcastStudioPage';
 import VoiceTutorPage from './pages/VoiceTutorPage';
+import SimulationsPage from './pages/SimulationsPage';
 import DiagnosticPage from './pages/DiagnosticPage';
 import ProgressPage from './pages/ProgressPage';
 import ReviewPage from './pages/ReviewPage';
@@ -36,6 +37,7 @@ export const router = createBrowserRouter([
       { path: 'podcasts', element: <PodcastStudioPage /> },
       { path: 'analyzer', element: <TextAnalyzerPage /> },
       { path: 'voice', element: <VoiceTutorPage /> },
+      { path: 'simulations', element: <SimulationsPage /> },
       { path: 'flashcards', element: <FlashcardsPage /> },
       { path: 'review', element: <ReviewPage /> },
       { path: 'progress', element: <ProgressPage /> },

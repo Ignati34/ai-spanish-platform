@@ -106,3 +106,15 @@ class StubProvider(BaseAIProvider):
             {'exercise_type': 'multiple_choice', 'prompt': f'[{topic}] Elige la forma correcta.', 'options': ['fui', 'era', 'voy'],
              'correct_answer': 'fui', 'explanation': f'Targeted at {topic}.'},
         ]}
+
+    async def simulation_turn(self, history, user_message, role='', goal_es='', cefr_level='A1', native_language='ru') -> dict:
+        assistant_turns = sum(1 for m in (history or []) if m.get('role') == 'assistant')
+        goal_met = assistant_turns >= 3   # demoable completion without a key
+        return {
+            'reply_es': 'Entendido. ¿Algo más en lo que pueda ayudarle?' if not goal_met else 'Perfecto, todo listo. ¡Que tenga un buen día!',
+            'correction': '',
+            'score': 0.7,
+            'goal_met': goal_met,
+            'hint': 'Puede decir: "¿Podría confirmarme la cita, por favor?"',
+            'stub': True,
+        }

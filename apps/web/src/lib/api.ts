@@ -111,6 +111,24 @@ class ApiClient {
     return this.postForm<any>('/api/podcasts', form);
   }
 
+  // --- Role-play simulations ---
+  simScenarios(native_language = 'ru') {
+    return this.request<any>(`/api/simulations/scenarios?native_language=${encodeURIComponent(native_language)}`);
+  }
+  simStart(scenario_id: string, cefr_level = 'A1', native_language = 'ru') {
+    return this.request<any>('/api/simulations/start', { method: 'POST', body: JSON.stringify({ scenario_id, cefr_level, native_language }) });
+  }
+  simSendText(sessionId: string, text: string) {
+    const form = new FormData();
+    form.append('text', text);
+    return this.postForm<any>(`/api/simulations/${sessionId}/message`, form);
+  }
+  simSendAudio(sessionId: string, blob: Blob) {
+    const form = new FormData();
+    form.append('audio', blob, 'clip.webm');
+    return this.postForm<any>(`/api/simulations/${sessionId}/message`, form);
+  }
+
   // --- Diagnostic ---
   diagnosticQuestions(native_language = 'ru') {
     return this.request<any>(`/api/diagnostic/questions?native_language=${encodeURIComponent(native_language)}`);

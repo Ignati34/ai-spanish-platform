@@ -154,6 +154,18 @@ Object.entries(podStrings).forEach(([lng, bundle]) => {
   i18n.addResourceBundle(lng, 'translation', bundle, true, true);
 });
 
+const simStrings: Record<string, any> = {
+  ru: { nav: { sim: 'Симуляции' }, sim: { title: 'Ролевые симуляции', subtitle: 'Мини-миссии: у собеседника роль, у вас — цель, которую нужно достичь.', level: 'Уровень', start: 'Начать', goal: 'Цель', completed: 'Цель достигнута!', you: 'Вы', again: 'Другая симуляция', record: 'Запись', stop: 'Стоп', send: 'Отправить', type: 'Напишите сообщение…' } },
+  uk: { nav: { sim: 'Симуляції' }, sim: { title: 'Рольові симуляції', subtitle: 'Міні-місії: у співрозмовника роль, у вас — ціль, яку треба досягти.', level: 'Рівень', start: 'Почати', goal: 'Ціль', completed: 'Ціль досягнута!', you: 'Ви', again: 'Інша симуляція', record: 'Запис', stop: 'Стоп', send: 'Надіслати', type: 'Напишіть повідомлення…' } },
+  ar: { nav: { sim: 'محاكاة' }, sim: { title: 'محاكاة أدوار', subtitle: 'مهام صغيرة: للمحاور دور، ولك هدف يجب تحقيقه.', level: 'المستوى', start: 'ابدأ', goal: 'الهدف', completed: 'تحقق الهدف!', you: 'أنت', again: 'محاكاة أخرى', record: 'تسجيل', stop: 'إيقاف', send: 'إرسال', type: 'اكتب رسالة…' } },
+  fr: { nav: { sim: 'Simulations' }, sim: { title: 'Simulations de rôle', subtitle: 'Mini-missions : l’interlocuteur a un rôle, vous avez un objectif à atteindre.', level: 'Niveau', start: 'Commencer', goal: 'Objectif', completed: 'Objectif atteint !', you: 'Vous', again: 'Autre simulation', record: 'Enregistrer', stop: 'Stop', send: 'Envoyer', type: 'Écrivez un message…' } },
+  es: { nav: { sim: 'Simulaciones' }, sim: { title: 'Simulaciones de rol', subtitle: 'Mini-misiones: el interlocutor tiene un rol y tú, un objetivo que cumplir.', level: 'Nivel', start: 'Empezar', goal: 'Objetivo', completed: '¡Objetivo cumplido!', you: 'Tú', again: 'Otra simulación', record: 'Grabar', stop: 'Parar', send: 'Enviar', type: 'Escribe un mensaje…' } },
+  en: { nav: { sim: 'Simulations' }, sim: { title: 'Role-play simulations', subtitle: 'Mini-missions: the other side has a role, you have a goal to reach.', level: 'Level', start: 'Start', goal: 'Goal', completed: 'Goal reached!', you: 'You', again: 'Another simulation', record: 'Record', stop: 'Stop', send: 'Send', type: 'Type a message…' } }
+};
+Object.entries(simStrings).forEach(([lng, bundle]) => {
+  i18n.addResourceBundle(lng, 'translation', bundle, true, true);
+});
+
 export function applyDir(locale: string) {
   const dir = RTL_LOCALES.includes(locale) ? 'rtl' : 'ltr';
   document.documentElement.setAttribute('dir', dir);

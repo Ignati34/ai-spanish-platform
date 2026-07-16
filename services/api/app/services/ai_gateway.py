@@ -172,3 +172,14 @@ class AIGateway:
         except Exception as exc:
             logger.warning('AI provider failed on targeted_exercises: %s; using stub', exc)
             return await self._stub.targeted_exercises(topics, cefr_level, native_language)
+
+    async def simulation_turn(self, history: list, user_message: str, role: str, goal_es: str, cefr_level: str = 'A1', native_language: str = 'ru') -> dict:
+        """One turn of a role-play mission: reply + correction + score + goal_met. Not cached."""
+        self.last_usage = {'input_tokens': 0, 'output_tokens': 0}
+        try:
+            result = await self.provider.simulation_turn(history, user_message, role, goal_es, cefr_level, native_language)
+            self.last_usage = getattr(self.provider, 'last_usage', self.last_usage)
+            return result
+        except Exception as exc:
+            logger.warning('AI provider failed on simulation_turn: %s; using stub', exc)
+            return await self._stub.simulation_turn(history, user_message, role, goal_es, cefr_level, native_language)
