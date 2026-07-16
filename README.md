@@ -1,5 +1,7 @@
 # AI Spanish Learning Platform
 
+> New here? Start with **[docs/OVERVIEW.md](docs/OVERVIEW.md)** for the big picture.
+
 Web app **+ Telegram Mini App** for learning Spanish **A1 → C2**, with the interface and
 grammar explanations in the learner's **native language (RU / UK / AR-RTL / FR**, plus ES/EN).
 Core loop: the learner brings any text/audio/video → the system turns it into a lesson with
