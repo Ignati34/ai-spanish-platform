@@ -1,6 +1,7 @@
 # AI Spanish Learning Platform
 
-> New here? Start with **[docs/OVERVIEW.md](docs/OVERVIEW.md)** for the big picture.
+> New here? Start with **[docs/OVERVIEW.md](docs/OVERVIEW.md)** for the big picture, and
+> **[docs/RUNBOOK.md](docs/RUNBOOK.md)** to run it. Backend tests: `make test`.
 
 Web app **+ Telegram Mini App** for learning Spanish **A1 → C2**, with the interface and
 grammar explanations in the learner's **native language (RU / UK / AR-RTL / FR**, plus ES/EN).
@@ -73,6 +74,10 @@ The Vinogradov textbook is copyrighted and is **not** bundled. Ship original + u
 enable once you hold the rights. See `docs/CONTENT_LICENSING.md`.
 
 ## Status
+The app boots (all mappers configure; 41 tables, 61 routes), an end-to-end test suite passes
+on SQLite+stub AI (`make test`), and the initial Alembic migration applies cleanly. Real
+Postgres runs and live AI/payment keys are set up per `docs/RUNBOOK.md`.
+
 Runnable skeleton with the requested capabilities wired end-to-end. The AI gateway now
 supports a **real OpenAI-compatible LLM** for text analysis, flashcards, exercises and
 answer-checking — with per-native-language prompts, response caching, token metering

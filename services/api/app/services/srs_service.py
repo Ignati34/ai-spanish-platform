@@ -22,6 +22,13 @@ def _now() -> datetime:
     return datetime.now(timezone.utc)
 
 
+def _aware(dt):
+    """Coerce a possibly-naive datetime (e.g. from SQLite) to UTC-aware."""
+    if dt is None:
+        return None
+    return dt if dt.tzinfo is not None else dt.replace(tzinfo=timezone.utc)
+
+
 def _state(db: Session, user: User, card_id) -> FlashcardReview | None:
     return (db.query(FlashcardReview)
             .filter(FlashcardReview.user_id == user.id, FlashcardReview.flashcard_id == card_id)
@@ -76,7 +83,7 @@ def due_cards(db: Session, user: User, limit: int = 20) -> list[dict]:
 
     out: list[dict] = []
     # 1) due (previously reviewed, next_review_at <= now)
-    due_ids = [cid for cid, r in reviewed_ids.items() if r.next_review_at is None or r.next_review_at <= now]
+    due_ids = [cid for cid, r in reviewed_ids.items() if r.next_review_at is None or _aware(r.next_review_at) <= now]
     if due_ids:
         for c in db.query(Flashcard).filter(Flashcard.user_id == user.id, Flashcard.id.in_(due_ids)).limit(limit).all():
             out.append(_card_payload(c, 'review'))
@@ -94,7 +101,7 @@ def stats(db: Session, user: User) -> dict:
     total_cards = db.query(Flashcard).filter(Flashcard.user_id == user.id).count()
     reviews = db.query(FlashcardReview).filter(FlashcardReview.user_id == user.id).all()
     reviewed = len(reviews)
-    due = sum(1 for r in reviews if r.next_review_at is None or r.next_review_at <= now)
+    due = sum(1 for r in reviews if r.next_review_at is None or _aware(r.next_review_at) <= now)
     mastered = sum(1 for r in reviews if (r.interval_days or 0) >= _MASTERED_DAYS)
     learning = reviewed - mastered
     new = max(0, total_cards - reviewed)

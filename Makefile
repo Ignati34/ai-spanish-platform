@@ -17,8 +17,8 @@ down:
 logs:
 	$(COMPOSE) logs -f
 
-migrate:        ## create tables inside the api container
-	$(COMPOSE) exec api python scripts/create_tables.py
+migrate:        ## apply DB migrations (alembic) inside the api container
+	$(COMPOSE) exec api python -m alembic upgrade head
 
 seed:           ## seed levels A1-C2, plans, demo lessons, admin
 	$(COMPOSE) exec api python scripts/seed_demo_data.py
@@ -34,3 +34,9 @@ web-dev:        ## run the web app locally (Vite) on :3000
 
 api-dev:        ## run the API locally (needs local postgres/redis)
 	cd services/api && uvicorn app.main:app --reload
+
+test:           ## run the backend test suite (SQLite, stub AI)
+	cd services/api && python -m pytest -q
+
+makemigration:  ## autogenerate a new migration (needs a running DB): make makemigration m="add x"
+	cd services/api && python -m alembic revision --autogenerate -m "$(m)"

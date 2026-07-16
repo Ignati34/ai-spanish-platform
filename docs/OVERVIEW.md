@@ -63,9 +63,14 @@ feature under `docs/`. Content is original / license-clean (no copyrighted textb
 tasks on the stub + fallback, text extraction, podcast segmentation, SM-2 math, streak logic,
 diagnostic scoring, simulation goal progression); the frontend builds with zero type errors.
 
-**Not yet verified live:** end-to-end runs against a real Postgres and real AI keys were not
-executed here (models use pg-UUID, so a quick SQLite run doesn't apply); Docker images were not
-built; there is no automated test suite yet.
+**Now also verified:** the full app imports and all mappers configure (41 tables, 61 routes); an
+end-to-end **test suite** runs the real app on SQLite + stub AI and passes (auth, diagnostic,
+upload→lesson, SRS, motivation, simulation, billing); the initial **Alembic migration** applies
+and rolls back cleanly. Two real bugs were fixed in the process (a bcrypt/passlib version clash,
+and a naive/aware datetime comparison in SRS).
+
+**Still not verified live:** a run against a real **Postgres** and with real **AI/payment keys**;
+Docker images were not built here. Steps are in `docs/RUNBOOK.md`.
 
 ## Honest limitations
 - Without a key, everything runs on **deterministic stubs** — great for demos, but real
@@ -73,16 +78,16 @@ built; there is no automated test suite yet.
 - **Pronunciation scoring is text-based** (from the transcript, not phoneme-level).
 - **"Goal achieved"** in simulations is the model's judgement, not a hard check (the stub
   completes after a few turns so the flow is demoable).
-- Schema is created via `create_all` (no Alembic); columns added over time need a fresh DB or a
-  manual migration.
+- Schema is now managed by **Alembic** (initial migration in `services/api/migrations/`); use
+  `alembic upgrade head`. `create_all` remains only for throwaway dev DBs.
 - Some routes remain stubs (image generation, licensing, per-segment podcast study); **video**
   isn't supported yet (needs ffmpeg); the **Vinogradov textbook is intentionally not included**
   — only original content plus a place for a licensed import.
 
 ## What's left from the plan
 - One big vertical: **teacher / school mode** (B2B — groups, assignments, reports).
-- A hardening pass: real keys + a payment test, an automated test suite, Alembic migrations,
-  and filling the remaining stubs.
+- Remaining hardening: a live Postgres + real-key run, a Stripe test-mode payment, broader test
+  coverage, and filling the remaining stubs (images, licensing, per-segment podcast study, video).
 
 ## Where to read more
 Feature docs live in `docs/` — payments, Telegram Mini App, i18n, deployment, content
