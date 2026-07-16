@@ -1,0 +1,111 @@
+"""Seed reference data: CEFR levels A1-C2, plans (EUR), multilingual demo lessons,
+and a bootstrap admin. Safe to run repeatedly (idempotent by natural keys)."""
+from app.core.config import get_settings
+from app.core.security import hash_password
+from app.db.session import SessionLocal, engine
+from app.db.base import Base
+from app.content.seed_content import CEFR_LEVELS, SAMPLE_LESSONS
+from app.models.course import CEFRLevel, CourseModule, Lesson
+from app.models.subscription import Plan
+from app.models.user import User, UserProfile
+
+settings = get_settings()
+
+
+def _seed_levels(db):
+    existing = {l.code for l in db.query(CEFRLevel).all()}
+    code_to_id = {}
+    for lvl in CEFR_LEVELS:
+        if lvl['code'] in existing:
+            code_to_id[lvl['code']] = db.query(CEFRLevel).filter(CEFRLevel.code == lvl['code']).first().id
+            continue
+        row = CEFRLevel(code=lvl['code'], title=lvl['title']['es'], description=lvl['title'].get('en'), sort_order=lvl['sort'])
+        db.add(row)
+        db.flush()
+        code_to_id[lvl['code']] = row.id
+    return code_to_id
+
+
+def _seed_lessons(db, code_to_id):
+    if db.query(Lesson).first():
+        return
+    modules_by_title = {}
+    for spec in SAMPLE_LESSONS:
+        level_id = code_to_id[spec['level']]
+        mkey = spec['module']['es']
+        module = modules_by_title.get(mkey)
+        if not module:
+            module = CourseModule(cefr_level_id=level_id, title=mkey, description=spec['module'].get('en'), sort_order=1)
+            db.add(module)
+            db.flush()
+            modules_by_title[mkey] = module
+        lesson = Lesson(
+            module_id=module.id,
+            title=spec['title'],
+            description=spec['topic']['es'],
+            cefr_level=spec['level'],
+            native_language='ru',
+            lesson_type='course',
+            content_json={
+                'topic_i18n': spec['topic'],
+                'vocabulary': spec['vocabulary'],
+                'grammar_topic': spec['grammar_topic'],
+                'explanations_i18n': spec['explanations'],
+                'dialogue': spec['dialogue'],
+            },
+        )
+        db.add(lesson)
+
+
+def _seed_plans(db):
+    if db.query(Plan).first():
+        return
+    # Prices in EUR. features_json carries provider-specific plan ids and the
+    # marketing feature list rendered in the UI.
+    db.add_all([
+        Plan(code='free', name='Free', description='Empieza gratis', price_monthly=0, price_yearly=0, currency='eur',
+             max_ai_requests_per_month=100, max_transcription_minutes=0, max_storage_mb=100, max_generated_images=3,
+             features_json={'features': ['1 nivel', 'Tarjetas limitadas', '5 solicitudes IA/día']}),
+        Plan(code='basic', name='Basic', description='Curso + tarjetas + tests', price_monthly=6.99, price_yearly=69.00, currency='eur',
+             max_ai_requests_per_month=1500, max_transcription_minutes=30, max_storage_mb=1000, max_generated_images=30,
+             features_json={'features': ['Todos los niveles A1–C2', 'Tarjetas y ejercicios', 'Analizador de texto']}),
+        Plan(code='pro', name='Pro', description='Voz IA + subida de archivos', price_monthly=14.99, price_yearly=149.00, currency='eur',
+             max_ai_requests_per_month=6000, max_transcription_minutes=300, max_storage_mb=5000, max_generated_images=200,
+             voice_tutor_enabled=True, podcast_enabled=True, image_generation_enabled=True,
+             features_json={'features': ['Tutor de voz IA', 'Subida de audio/PDF', 'Podcast e imágenes'], 'paypal_plan_id': None}),
+        Plan(code='premium', name='Premium', description='Vídeo, DELE/SIELE, plan personal', price_monthly=24.99, price_yearly=249.00, currency='eur',
+             max_ai_requests_per_month=20000, max_transcription_minutes=1200, max_storage_mb=20000, max_generated_images=1000,
+             voice_tutor_enabled=True, podcast_enabled=True, image_generation_enabled=True, video_enabled=True,
+             features_json={'features': ['Vídeo y transcripción', 'Preparación DELE/SIELE', 'Plan de estudio personal'], 'paypal_plan_id': None}),
+    ])
+
+
+def _seed_admin(db):
+    email = settings.admin_bootstrap_email
+    password = settings.admin_bootstrap_password
+    if not email or not password:
+        return
+    if db.query(User).filter(User.email == email).first():
+        return
+    admin = User(email=email, password_hash=hash_password(password), role='super_admin', native_language='ru', interface_language='ru')
+    db.add(admin)
+    db.flush()
+    db.add(UserProfile(user_id=admin.id, first_name='Admin', current_cefr_level='C2'))
+
+
+def seed() -> None:
+    Base.metadata.create_all(bind=engine)
+    db = SessionLocal()
+    try:
+        code_to_id = _seed_levels(db)
+        _seed_lessons(db, code_to_id)
+        _seed_plans(db)
+        _seed_admin(db)
+        db.commit()
+        print('Demo data seeded (levels A1-C2, plans, lessons, admin).')
+    finally:
+        db.close()
+
+
+if __name__ == '__main__':
+    seed()

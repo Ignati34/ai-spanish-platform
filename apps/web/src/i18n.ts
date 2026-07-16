@@ -1,0 +1,157 @@
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+
+// Native-language interface: RU / UK / AR (RTL) / FR, plus ES/EN.
+const resources = {
+  ru: { translation: {
+    app: 'AI-репетитор испанского',
+    nav: { dashboard: 'Главная', course: 'Курс', analyzer: 'Анализ текста', flashcards: 'Карточки', billing: 'Подписка', admin: 'Админка', logout: 'Выйти' },
+    login: { title: 'Вход', email: 'Email', password: 'Пароль', submit: 'Войти', register: 'Регистрация', native: 'Родной язык' },
+    dashboard: { welcome: 'С возвращением!', level: 'Ваш уровень', continue: 'Продолжить обучение', streak: 'Дней подряд' },
+    analyzer: { title: 'Анализ текста', placeholder: 'Вставьте испанский текст…', run: 'Разобрать', verbs: 'Глаголы', nouns: 'Существительные', tenses: 'Времена', topics: 'Темы грамматики' },
+    flashcards: { title: 'Карточки', generate: 'Сгенерировать из текста', front: 'Лицо', back: 'Оборот' },
+    billing: { title: 'Подписка и оплата', choose: 'Выбрать', method: 'Способ оплаты', country: 'Страна' }
+  }},
+  uk: { translation: {
+    app: 'AI-репетитор іспанської',
+    nav: { dashboard: 'Головна', course: 'Курс', analyzer: 'Аналіз тексту', flashcards: 'Картки', billing: 'Підписка', admin: 'Адмінка', logout: 'Вийти' },
+    login: { title: 'Вхід', email: 'Email', password: 'Пароль', submit: 'Увійти', register: 'Реєстрація', native: 'Рідна мова' },
+    dashboard: { welcome: 'З поверненням!', level: 'Ваш рівень', continue: 'Продовжити навчання', streak: 'Днів поспіль' },
+    analyzer: { title: 'Аналіз тексту', placeholder: 'Вставте іспанський текст…', run: 'Розібрати', verbs: 'Дієслова', nouns: 'Іменники', tenses: 'Часи', topics: 'Теми граматики' },
+    flashcards: { title: 'Картки', generate: 'Згенерувати з тексту', front: 'Лице', back: 'Зворот' },
+    billing: { title: 'Підписка та оплата', choose: 'Обрати', method: 'Спосіб оплати', country: 'Країна' }
+  }},
+  ar: { translation: {
+    app: 'مدرّس الإسبانية بالذكاء الاصطناعي',
+    nav: { dashboard: 'الرئيسية', course: 'الدورة', analyzer: 'تحليل النص', flashcards: 'البطاقات', billing: 'الاشتراك', admin: 'الإدارة', logout: 'خروج' },
+    login: { title: 'تسجيل الدخول', email: 'البريد', password: 'كلمة المرور', submit: 'دخول', register: 'إنشاء حساب', native: 'اللغة الأم' },
+    dashboard: { welcome: 'مرحبًا بعودتك!', level: 'مستواك', continue: 'متابعة التعلّم', streak: 'أيام متتالية' },
+    analyzer: { title: 'تحليل النص', placeholder: 'ألصق نصًا إسبانيًا…', run: 'حلّل', verbs: 'الأفعال', nouns: 'الأسماء', tenses: 'الأزمنة', topics: 'قواعد' },
+    flashcards: { title: 'البطاقات', generate: 'إنشاء من النص', front: 'الوجه', back: 'الخلف' },
+    billing: { title: 'الاشتراك والدفع', choose: 'اختر', method: 'طريقة الدفع', country: 'الدولة' }
+  }},
+  fr: { translation: {
+    app: "Tuteur d'espagnol IA",
+    nav: { dashboard: 'Accueil', course: 'Cours', analyzer: 'Analyse de texte', flashcards: 'Cartes', billing: 'Abonnement', admin: 'Admin', logout: 'Déconnexion' },
+    login: { title: 'Connexion', email: 'Email', password: 'Mot de passe', submit: 'Se connecter', register: "S'inscrire", native: 'Langue maternelle' },
+    dashboard: { welcome: 'Bon retour !', level: 'Votre niveau', continue: "Continuer l'apprentissage", streak: 'Jours de suite' },
+    analyzer: { title: 'Analyse de texte', placeholder: 'Collez un texte espagnol…', run: 'Analyser', verbs: 'Verbes', nouns: 'Noms', tenses: 'Temps', topics: 'Points de grammaire' },
+    flashcards: { title: 'Cartes', generate: 'Générer depuis un texte', front: 'Recto', back: 'Verso' },
+    billing: { title: 'Abonnement et paiement', choose: 'Choisir', method: 'Moyen de paiement', country: 'Pays' }
+  }},
+  es: { translation: {
+    app: 'Tutor de español IA',
+    nav: { dashboard: 'Inicio', course: 'Curso', analyzer: 'Análisis de texto', flashcards: 'Tarjetas', billing: 'Suscripción', admin: 'Admin', logout: 'Salir' },
+    login: { title: 'Entrar', email: 'Email', password: 'Contraseña', submit: 'Entrar', register: 'Registrarse', native: 'Lengua materna' },
+    dashboard: { welcome: '¡Bienvenido de nuevo!', level: 'Tu nivel', continue: 'Continuar aprendiendo', streak: 'Días seguidos' },
+    analyzer: { title: 'Análisis de texto', placeholder: 'Pega un texto en español…', run: 'Analizar', verbs: 'Verbos', nouns: 'Sustantivos', tenses: 'Tiempos', topics: 'Gramática' },
+    flashcards: { title: 'Tarjetas', generate: 'Generar desde texto', front: 'Anverso', back: 'Reverso' },
+    billing: { title: 'Suscripción y pago', choose: 'Elegir', method: 'Método de pago', country: 'País' }
+  }},
+  en: { translation: {
+    app: 'AI Spanish Tutor',
+    nav: { dashboard: 'Home', course: 'Course', analyzer: 'Text analysis', flashcards: 'Flashcards', billing: 'Billing', admin: 'Admin', logout: 'Log out' },
+    login: { title: 'Sign in', email: 'Email', password: 'Password', submit: 'Sign in', register: 'Register', native: 'Native language' },
+    dashboard: { welcome: 'Welcome back!', level: 'Your level', continue: 'Continue learning', streak: 'Day streak' },
+    analyzer: { title: 'Text analysis', placeholder: 'Paste Spanish text…', run: 'Analyze', verbs: 'Verbs', nouns: 'Nouns', tenses: 'Tenses', topics: 'Grammar topics' },
+    flashcards: { title: 'Flashcards', generate: 'Generate from text', front: 'Front', back: 'Back' },
+    billing: { title: 'Billing', choose: 'Choose', method: 'Payment method', country: 'Country' }
+  }}
+};
+
+export const RTL_LOCALES = ['ar'];
+const saved = localStorage.getItem('locale') || 'ru';
+
+i18n.use(initReactI18next).init({
+  resources,
+  lng: saved,
+  fallbackLng: 'en',
+  interpolation: { escapeValue: false }
+});
+
+// Upload Studio strings, merged per locale (keeps the main block tidy).
+const uploadStrings: Record<string, any> = {
+  ru: { nav: { upload: 'Загрузки' }, upload: { title: 'Загрузки', paste: 'Вставить текст', file: 'Загрузить файл', build: 'Собрать урок', building: 'Собираем урок…', placeholder: 'Вставьте испанский текст…', drop: 'PDF, DOCX, TXT, MP3, WAV', level: 'Уровень', native: 'Родной язык', summary: 'Кратко', vocabulary: 'Слова', cards: 'Карточки', exercises: 'Упражнения', transcript: 'Транскрипт' } },
+  uk: { nav: { upload: 'Завантаження' }, upload: { title: 'Завантаження', paste: 'Вставити текст', file: 'Завантажити файл', build: 'Зібрати урок', building: 'Збираємо урок…', placeholder: 'Вставте іспанський текст…', drop: 'PDF, DOCX, TXT, MP3, WAV', level: 'Рівень', native: 'Рідна мова', summary: 'Стисло', vocabulary: 'Слова', cards: 'Картки', exercises: 'Вправи', transcript: 'Транскрипт' } },
+  ar: { nav: { upload: 'الملفات' }, upload: { title: 'استوديو الرفع', paste: 'لصق نص', file: 'رفع ملف', build: 'أنشئ الدرس', building: 'جارٍ إنشاء الدرس…', placeholder: 'ألصق نصًا إسبانيًا…', drop: 'PDF, DOCX, TXT, MP3, WAV', level: 'المستوى', native: 'اللغة الأم', summary: 'ملخّص', vocabulary: 'المفردات', cards: 'البطاقات', exercises: 'التمارين', transcript: 'النص المفرّغ' } },
+  fr: { nav: { upload: 'Imports' }, upload: { title: 'Studio d\'import', paste: 'Coller un texte', file: 'Téléverser un fichier', build: 'Créer la leçon', building: 'Création de la leçon…', placeholder: 'Collez un texte espagnol…', drop: 'PDF, DOCX, TXT, MP3, WAV', level: 'Niveau', native: 'Langue maternelle', summary: 'Résumé', vocabulary: 'Vocabulaire', cards: 'Cartes', exercises: 'Exercices', transcript: 'Transcription' } },
+  es: { nav: { upload: 'Subidas' }, upload: { title: 'Estudio de subida', paste: 'Pegar texto', file: 'Subir archivo', build: 'Crear lección', building: 'Creando la lección…', placeholder: 'Pega un texto en español…', drop: 'PDF, DOCX, TXT, MP3, WAV', level: 'Nivel', native: 'Lengua materna', summary: 'Resumen', vocabulary: 'Vocabulario', cards: 'Tarjetas', exercises: 'Ejercicios', transcript: 'Transcripción' } },
+  en: { nav: { upload: 'Uploads' }, upload: { title: 'Upload Studio', paste: 'Paste text', file: 'Upload file', build: 'Build lesson', building: 'Building lesson…', placeholder: 'Paste Spanish text…', drop: 'PDF, DOCX, TXT, MP3, WAV', level: 'Level', native: 'Native language', summary: 'Summary', vocabulary: 'Vocabulary', cards: 'Flashcards', exercises: 'Exercises', transcript: 'Transcript' } }
+};
+Object.entries(uploadStrings).forEach(([lng, bundle]) => {
+  i18n.addResourceBundle(lng, 'translation', bundle, true, true);
+});
+
+const voiceStrings: Record<string, any> = {
+  ru: { nav: { voice: 'Голос' }, voice: { title: 'Голосовой репетитор', start: 'Начать', scenario: 'Сценарий', level: 'Уровень', send: 'Отправить', record: 'Запись', stop: 'Стоп', you: 'Вы', tutor: 'Репетитор', correction: 'Исправление', score: 'Оценка', type: 'Напишите сообщение…' } },
+  uk: { nav: { voice: 'Голос' }, voice: { title: 'Голосовий репетитор', start: 'Почати', scenario: 'Сценарій', level: 'Рівень', send: 'Надіслати', record: 'Запис', stop: 'Стоп', you: 'Ви', tutor: 'Репетитор', correction: 'Виправлення', score: 'Оцінка', type: 'Напишіть повідомлення…' } },
+  ar: { nav: { voice: 'الصوت' }, voice: { title: 'مدرّس المحادثة', start: 'ابدأ', scenario: 'السيناريو', level: 'المستوى', send: 'إرسال', record: 'تسجيل', stop: 'إيقاف', you: 'أنت', tutor: 'المدرّس', correction: 'تصحيح', score: 'التقييم', type: 'اكتب رسالة…' } },
+  fr: { nav: { voice: 'Voix' }, voice: { title: 'Tuteur vocal', start: 'Commencer', scenario: 'Scénario', level: 'Niveau', send: 'Envoyer', record: 'Enregistrer', stop: 'Stop', you: 'Vous', tutor: 'Tuteur', correction: 'Correction', score: 'Note', type: 'Écrivez un message…' } },
+  es: { nav: { voice: 'Voz' }, voice: { title: 'Tutor de voz', start: 'Empezar', scenario: 'Escenario', level: 'Nivel', send: 'Enviar', record: 'Grabar', stop: 'Parar', you: 'Tú', tutor: 'Tutor', correction: 'Corrección', score: 'Puntuación', type: 'Escribe un mensaje…' } },
+  en: { nav: { voice: 'Voice' }, voice: { title: 'Voice Tutor', start: 'Start', scenario: 'Scenario', level: 'Level', send: 'Send', record: 'Record', stop: 'Stop', you: 'You', tutor: 'Tutor', correction: 'Correction', score: 'Score', type: 'Type a message…' } }
+};
+Object.entries(voiceStrings).forEach(([lng, bundle]) => {
+  i18n.addResourceBundle(lng, 'translation', bundle, true, true);
+});
+
+const diagStrings: Record<string, any> = {
+  ru: { nav: { diagnostic: 'Диагностика' }, diag: { title: 'Диагностика уровня', subtitle: 'Ответьте на вопросы и напишите пару фраз — определим ваш уровень.', level: 'Ваш уровень', mc: 'Тест', strengths: 'Сильные стороны', gaps: 'Пробелы', plan: 'План', start: 'Начать обучение', submit: 'Определить уровень', evaluating: 'Оцениваем…', record: 'Записать', stop: 'Стоп' } },
+  uk: { nav: { diagnostic: 'Діагностика' }, diag: { title: 'Діагностика рівня', subtitle: 'Дайте відповіді та напишіть кілька фраз — визначимо ваш рівень.', level: 'Ваш рівень', mc: 'Тест', strengths: 'Сильні сторони', gaps: 'Прогалини', plan: 'План', start: 'Почати навчання', submit: 'Визначити рівень', evaluating: 'Оцінюємо…', record: 'Записати', stop: 'Стоп' } },
+  ar: { nav: { diagnostic: 'التقييم' }, diag: { title: 'تقييم المستوى', subtitle: 'أجب عن الأسئلة واكتب بضع جمل — سنحدّد مستواك.', level: 'مستواك', mc: 'الاختبار', strengths: 'نقاط القوة', gaps: 'الثغرات', plan: 'الخطة', start: 'ابدأ التعلّم', submit: 'حدّد المستوى', evaluating: 'جارٍ التقييم…', record: 'تسجيل', stop: 'إيقاف' } },
+  fr: { nav: { diagnostic: 'Diagnostic' }, diag: { title: 'Diagnostic de niveau', subtitle: 'Répondez et écrivez quelques phrases — nous évaluons votre niveau.', level: 'Votre niveau', mc: 'Test', strengths: 'Points forts', gaps: 'Lacunes', plan: 'Plan', start: "Commencer l'apprentissage", submit: 'Évaluer', evaluating: 'Évaluation…', record: 'Enregistrer', stop: 'Stop' } },
+  es: { nav: { diagnostic: 'Diagnóstico' }, diag: { title: 'Diagnóstico de nivel', subtitle: 'Responde y escribe unas frases — estimamos tu nivel.', level: 'Tu nivel', mc: 'Test', strengths: 'Fortalezas', gaps: 'Carencias', plan: 'Plan', start: 'Empezar a aprender', submit: 'Evaluar', evaluating: 'Evaluando…', record: 'Grabar', stop: 'Parar' } },
+  en: { nav: { diagnostic: 'Diagnostic' }, diag: { title: 'Level diagnostic', subtitle: 'Answer a few questions and write a couple of sentences — we estimate your level.', level: 'Your level', mc: 'Test', strengths: 'Strengths', gaps: 'Gaps', plan: 'Plan', start: 'Start learning', submit: 'Assess level', evaluating: 'Assessing…', record: 'Record', stop: 'Stop' } }
+};
+Object.entries(diagStrings).forEach(([lng, bundle]) => {
+  i18n.addResourceBundle(lng, 'translation', bundle, true, true);
+});
+
+const progressStrings: Record<string, any> = {
+  ru: { nav: { progress: 'Мои ошибки' }, progress: { title: 'Мои ошибки и прогресс', subtitle: 'Слабые места копятся из диагностики, диалогов и упражнений.', level: 'Уровень', mistakes: 'Всего ошибок', weakSpots: 'Слабые места', plan: 'План', practice: 'Тренировка', practiceBtn: 'Проработать слабые места', targeted: 'Упражнения по вашим темам', recent: 'Недавние ошибки', empty: 'Пока пусто — пройдите диагностику или урок.' } },
+  uk: { nav: { progress: 'Мої помилки' }, progress: { title: 'Мої помилки та прогрес', subtitle: 'Слабкі місця збираються з діагностики, діалогів і вправ.', level: 'Рівень', mistakes: 'Усього помилок', weakSpots: 'Слабкі місця', plan: 'План', practice: 'Тренування', practiceBtn: 'Опрацювати слабкі місця', targeted: 'Вправи за вашими темами', recent: 'Нещодавні помилки', empty: 'Поки порожньо — пройдіть діагностику або урок.' } },
+  ar: { nav: { progress: 'أخطائي' }, progress: { title: 'أخطائي وتقدّمي', subtitle: 'تتجمّع نقاط الضعف من التقييم والحوارات والتمارين.', level: 'المستوى', mistakes: 'إجمالي الأخطاء', weakSpots: 'نقاط الضعف', plan: 'الخطة', practice: 'تدريب', practiceBtn: 'تدرّب على نقاط ضعفك', targeted: 'تمارين حسب مواضيعك', recent: 'أخطاء حديثة', empty: 'لا شيء بعد — ابدأ بالتقييم أو درس.' } },
+  fr: { nav: { progress: 'Mes erreurs' }, progress: { title: 'Mes erreurs et progrès', subtitle: 'Les points faibles se cumulent depuis le diagnostic, les dialogues et les exercices.', level: 'Niveau', mistakes: 'Total des erreurs', weakSpots: 'Points faibles', plan: 'Plan', practice: 'Entraînement', practiceBtn: 'Travailler mes points faibles', targeted: 'Exercices sur vos thèmes', recent: 'Erreurs récentes', empty: 'Rien pour l’instant — fais le diagnostic ou une leçon.' } },
+  es: { nav: { progress: 'Mis errores' }, progress: { title: 'Mis errores y progreso', subtitle: 'Los puntos débiles se acumulan del diagnóstico, los diálogos y los ejercicios.', level: 'Nivel', mistakes: 'Errores totales', weakSpots: 'Puntos débiles', plan: 'Plan', practice: 'Práctica', practiceBtn: 'Practicar puntos débiles', targeted: 'Ejercicios sobre tus temas', recent: 'Errores recientes', empty: 'Nada aún — haz el diagnóstico o una lección.' } },
+  en: { nav: { progress: 'My mistakes' }, progress: { title: 'My mistakes & progress', subtitle: 'Weak spots accumulate from the diagnostic, dialogues and exercises.', level: 'Level', mistakes: 'Total mistakes', weakSpots: 'Weak spots', plan: 'Plan', practice: 'Practice', practiceBtn: 'Practice weak spots', targeted: 'Exercises on your topics', recent: 'Recent mistakes', empty: 'Nothing yet — take the diagnostic or a lesson.' } }
+};
+Object.entries(progressStrings).forEach(([lng, bundle]) => {
+  i18n.addResourceBundle(lng, 'translation', bundle, true, true);
+});
+
+const reviewStrings: Record<string, any> = {
+  ru: { nav: { review: 'Повторение' }, review: { title: 'Повторение', subtitle: 'Интервальные повторения: система сама выбирает, что показать сегодня.', due: 'К повторению', new: 'Новые', learning: 'Изучается', mastered: 'Освоено', done: 'На сегодня всё!', doneHint: 'Возвращайтесь завтра — карточки появятся по расписанию.', reload: 'Обновить', show: 'Показать ответ', again: 'Снова', hard: 'Трудно', good: 'Хорошо', easy: 'Легко' } },
+  uk: { nav: { review: 'Повторення' }, review: { title: 'Повторення', subtitle: 'Інтервальні повторення: система сама обирає, що показати сьогодні.', due: 'До повторення', new: 'Нові', learning: 'Вивчається', mastered: 'Засвоєно', done: 'На сьогодні все!', doneHint: 'Повертайтесь завтра — картки зʼявляться за розкладом.', reload: 'Оновити', show: 'Показати відповідь', again: 'Знову', hard: 'Важко', good: 'Добре', easy: 'Легко' } },
+  ar: { nav: { review: 'المراجعة' }, review: { title: 'المراجعة', subtitle: 'تكرار متباعد: النظام يختار ما تراجعه اليوم.', due: 'للمراجعة', new: 'جديدة', learning: 'قيد التعلّم', mastered: 'مُتقنة', done: 'انتهيت لليوم!', doneHint: 'عُد غدًا — ستظهر البطاقات حسب الجدول.', reload: 'تحديث', show: 'أظهر الإجابة', again: 'مجددًا', hard: 'صعب', good: 'جيد', easy: 'سهل' } },
+  fr: { nav: { review: 'Révision' }, review: { title: 'Révision', subtitle: 'Répétition espacée : le système choisit quoi réviser aujourd’hui.', due: 'À réviser', new: 'Nouvelles', learning: 'En cours', mastered: 'Maîtrisées', done: 'Fini pour aujourd’hui !', doneHint: 'Revenez demain — les cartes reviendront selon le planning.', reload: 'Actualiser', show: 'Voir la réponse', again: 'Encore', hard: 'Difficile', good: 'Bien', easy: 'Facile' } },
+  es: { nav: { review: 'Repaso' }, review: { title: 'Repaso', subtitle: 'Repetición espaciada: el sistema elige qué repasar hoy.', due: 'Para repasar', new: 'Nuevas', learning: 'Aprendiendo', mastered: 'Dominadas', done: '¡Listo por hoy!', doneHint: 'Vuelve mañana — las tarjetas volverán según el calendario.', reload: 'Actualizar', show: 'Ver respuesta', again: 'Otra vez', hard: 'Difícil', good: 'Bien', easy: 'Fácil' } },
+  en: { nav: { review: 'Review' }, review: { title: 'Review', subtitle: 'Spaced repetition: the system picks what to show you today.', due: 'Due', new: 'New', learning: 'Learning', mastered: 'Mastered', done: 'Done for today!', doneHint: 'Come back tomorrow — cards return on schedule.', reload: 'Refresh', show: 'Show answer', again: 'Again', hard: 'Hard', good: 'Good', easy: 'Easy' } }
+};
+Object.entries(reviewStrings).forEach(([lng, bundle]) => {
+  i18n.addResourceBundle(lng, 'translation', bundle, true, true);
+});
+
+const motStrings: Record<string, any> = {
+  ru: { mot: { streak: 'Серия дней', longest: 'Рекорд', due: 'К повторению', dailyGoal: 'Дневная цель', goalSize: 'Цель', reminders: 'Напоминания в Telegram', remindersHint: 'Напомним, когда есть карточки к повторению.', on: 'Включены', off: 'Выключены' } },
+  uk: { mot: { streak: 'Серія днів', longest: 'Рекорд', due: 'До повторення', dailyGoal: 'Денна ціль', goalSize: 'Ціль', reminders: 'Нагадування в Telegram', remindersHint: 'Нагадаємо, коли є картки до повторення.', on: 'Увімкнені', off: 'Вимкнені' } },
+  ar: { mot: { streak: 'سلسلة الأيام', longest: 'الأطول', due: 'للمراجعة', dailyGoal: 'الهدف اليومي', goalSize: 'الهدف', reminders: 'تذكيرات في تيليجرام', remindersHint: 'سنذكّرك عندما توجد بطاقات للمراجعة.', on: 'مُفعّلة', off: 'مُعطّلة' } },
+  fr: { mot: { streak: 'Série de jours', longest: 'Record', due: 'À réviser', dailyGoal: 'Objectif quotidien', goalSize: 'Objectif', reminders: 'Rappels sur Telegram', remindersHint: 'On vous rappelle quand des cartes sont à réviser.', on: 'Activés', off: 'Désactivés' } },
+  es: { mot: { streak: 'Racha de días', longest: 'Récord', due: 'Para repasar', dailyGoal: 'Objetivo diario', goalSize: 'Objetivo', reminders: 'Recordatorios en Telegram', remindersHint: 'Te avisamos cuando haya tarjetas para repasar.', on: 'Activados', off: 'Desactivados' } },
+  en: { mot: { streak: 'Day streak', longest: 'Best', due: 'Due', dailyGoal: 'Daily goal', goalSize: 'Goal', reminders: 'Telegram reminders', remindersHint: 'We ping you when cards are due.', on: 'On', off: 'Off' } }
+};
+Object.entries(motStrings).forEach(([lng, bundle]) => {
+  i18n.addResourceBundle(lng, 'translation', bundle, true, true);
+});
+
+export function applyDir(locale: string) {
+  const dir = RTL_LOCALES.includes(locale) ? 'rtl' : 'ltr';
+  document.documentElement.setAttribute('dir', dir);
+  document.documentElement.setAttribute('lang', locale);
+}
+applyDir(saved);
+
+i18n.on('languageChanged', (lng) => {
+  localStorage.setItem('locale', lng);
+  applyDir(lng);
+});
+
+export default i18n;

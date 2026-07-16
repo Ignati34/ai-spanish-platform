@@ -1,0 +1,78 @@
+# Desktop / self-hosted edition: run the whole platform locally in Docker.
+# One command:  make selfhosted     (or the docker compose line below)
+#   docker compose -f infra/compose/docker-compose.selfhosted.yml --env-file .env.selfhosted up --build
+# Open http://localhost:8080  (web + API behind nginx, same origin).
+services:
+  web:
+    build:
+      context: ../..
+      dockerfile: infra/docker/Dockerfile.web
+      args:
+        VITE_API_URL: ""
+    depends_on: [api]
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+
+  api:
+    build:
+      context: ../..
+      dockerfile: infra/docker/Dockerfile.api
+    command: >
+      sh -c "python scripts/create_tables.py &&
+             python scripts/seed_demo_data.py &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    env_file:
+      - ../../.env.selfhosted
+    environment:
+      SELF_HOSTED_MODE: "true"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      minio:
+        condition: service_started
+    restart: unless-stopped
+
+  worker:
+    build:
+      context: ../..
+      dockerfile: infra/docker/Dockerfile.worker
+    env_file:
+      - ../../.env.selfhosted
+    depends_on: [api, postgres, redis, minio]
+    restart: unless-stopped
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_DB: spanish_ai
+      POSTGRES_USER: spanish_ai
+      POSTGRES_PASSWORD: spanish_ai_password
+    volumes:
+      - sh_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U spanish_ai -d spanish_ai"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio_password
+    volumes:
+      - sh_minio_data:/data
+    restart: unless-stopped
+
+volumes:
+  sh_postgres_data:
+  sh_minio_data:

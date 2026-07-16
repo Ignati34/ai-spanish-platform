@@ -1,0 +1,132 @@
+"""Localized prompt builders. Explanations are produced in the learner's own
+native language (RU/UK/AR/FR/ES/EN), which is the platform's differentiator."""
+from __future__ import annotations
+
+LANG_NAMES = {
+    'ru': 'Russian', 'uk': 'Ukrainian', 'ar': 'Arabic',
+    'fr': 'French', 'es': 'Spanish', 'en': 'English',
+}
+
+
+def lang_name(code: str) -> str:
+    return LANG_NAMES.get((code or 'ru')[:2], 'Russian')
+
+
+def _system(native_language: str) -> str:
+    lang = lang_name(native_language)
+    return (
+        f'You are an expert teacher of Spanish (español) and a careful linguist. '
+        f'Your student\'s native language is {lang}; write all translations and explanations in {lang}. '
+        f'Be accurate about Spanish grammar. '
+        f'Respond with ONE valid minified JSON object and nothing else — no prose, no markdown fences.'
+    )
+
+
+def analyze(text: str, native_language: str) -> tuple[str, str]:
+    lang = lang_name(native_language)
+    user = (
+        'Analyze the Spanish text below. Return JSON with exactly these keys: '
+        'cefr_estimate (one of "A1","A2","B1","B2","C1","C2"), '
+        'verbs (array of objects {"word","tense"}), '
+        'tenses (array of strings), nouns (array of strings), adjectives (array of strings), '
+        'adverbs (array of strings), conjunctions (array of strings), '
+        f'vocabulary (array of objects {{"word","translation","cefr"}} where translation is in {lang}), '
+        'grammar_topics (array of strings), '
+        f'summary (one short paragraph in {lang}). '
+        f'Text:\n"""{text}"""'
+    )
+    return _system(native_language), user
+
+
+def flashcards(text: str, native_language: str, cefr_level: str, max_cards: int = 12) -> tuple[str, str]:
+    lang = lang_name(native_language)
+    user = (
+        f'Create up to {max_cards} study flashcards from the Spanish text for a {cefr_level} learner. '
+        'Return JSON {"deck_title", "cards": [{"front","back","card_type","example_sentence"}]}. '
+        f'front = Spanish; back = translation/explanation in {lang}; '
+        'card_type one of "word_translation","phrase","verb_conjugation"; '
+        'example_sentence = a short Spanish sentence. '
+        f'Text:\n"""{text}"""'
+    )
+    return _system(native_language), user
+
+
+def exercises(text: str, native_language: str, cefr_level: str) -> tuple[str, str]:
+    lang = lang_name(native_language)
+    user = (
+        f'Create 4-6 exercises for a {cefr_level} learner based on the Spanish text. '
+        'Return JSON {"exercises": [{"exercise_type","prompt","options","correct_answer","explanation"}]}. '
+        'exercise_type one of "multiple_choice","fill_blank","translation"; '
+        'options = array of strings (or null for translation); '
+        f'explanation in {lang}. '
+        f'Text:\n"""{text}"""'
+    )
+    return _system(native_language), user
+
+
+def check(answer: str, correct_answer: str | None, native_language: str) -> tuple[str, str]:
+    lang = lang_name(native_language)
+    user = (
+        'A learner answered a Spanish exercise. '
+        f'Correct answer: "{correct_answer}". Learner answer: "{answer}". '
+        'Return JSON {"is_correct": bool, "score": number between 0 and 1, "feedback"}. '
+        f'feedback in {lang}, concise, explaining the mistake if any.'
+    )
+    return _system(native_language), user
+
+
+def voice_reply(history: list[dict], user_message: str, scenario: str, cefr_level: str, native_language: str) -> tuple[str, str]:
+    lang = lang_name(native_language)
+    system = (
+        f'You are a friendly Spanish conversation tutor roleplaying the scenario "{scenario}". '
+        f'The student\'s level is {cefr_level} and their native language is {lang}. '
+        f'Speak natural Spanish appropriate to {cefr_level}; keep your reply short (1-3 sentences). '
+        f'Gently correct the student\'s last message only if it has real errors, and write that '
+        f'correction in {lang}. Respond with ONE valid minified JSON object and nothing else.'
+    )
+    convo = '\n'.join(f'{m.get("role")}: {m.get("text")}' for m in (history or [])[-8:])
+    user = (
+        'Conversation so far:\n' + (convo or '(empty)') + '\n\n'
+        f'Student just said: "{user_message}"\n\n'
+        'Return JSON {"reply_es": "<your Spanish reply>", '
+        f'"correction": "<short correction in {lang}, empty string if none>", '
+        '"score": <number 0..1 rating the student\'s last message>}.'
+    )
+    return system, user
+
+
+def assess_level(writing_sample: str, speaking_sample: str, mc_summary: dict, native_language: str) -> tuple[str, str]:
+    lang = lang_name(native_language)
+    system = (
+        'You are a CEFR examiner for Spanish. Estimate the learner\'s level from their '
+        'multiple-choice performance and their free production (writing / speaking sample). '
+        f'Write strengths, gaps, summary and the study plan in {lang}. '
+        'Respond with ONE valid minified JSON object and nothing else.'
+    )
+    user = (
+        f'Multiple-choice result: {mc_summary}\n\n'
+        f'Writing sample (Spanish): """{writing_sample or "(none)"}"""\n\n'
+        f'Speaking sample transcript (Spanish): """{speaking_sample or "(none)"}"""\n\n'
+        'Return JSON {"cefr_estimate": one of "A1".."C2", "recommended_level": one of "A1".."C2", '
+        f'"strengths": [up to 4 strings in {lang}], "gaps": [up to 4 strings in {lang}], '
+        f'"summary": "2-3 sentences in {lang}", '
+        f'"study_plan": [3-5 short next-step strings in {lang}]}}.'
+    )
+    return system, user
+
+
+def targeted_exercises(topics: list[str], cefr_level: str, native_language: str) -> tuple[str, str]:
+    lang = lang_name(native_language)
+    topic_str = ', '.join(topics) if topics else 'general Spanish grammar'
+    system = (
+        'You are a Spanish teacher creating focused remedial practice. '
+        f'Target the student\'s weak areas. Explanations in {lang}. '
+        'Respond with ONE valid minified JSON object and nothing else.'
+    )
+    user = (
+        f'Create 5 exercises for a {cefr_level} learner focused specifically on: {topic_str}. '
+        'Return JSON {"exercises": [{"exercise_type","prompt","options","correct_answer","explanation"}]}. '
+        'exercise_type one of "multiple_choice","fill_blank","translation"; options = array or null; '
+        f'explanation in {lang}.'
+    )
+    return system, user

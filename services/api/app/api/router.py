@@ -1,0 +1,23 @@
+from fastapi import APIRouter
+from app.api import routes_health, routes_auth, routes_users, routes_course, routes_uploads, routes_analyzer, routes_flashcards, routes_exercises, routes_voice, routes_podcasts, routes_images, routes_billing, routes_license, routes_admin, routes_telegram, routes_diagnostic, routes_progress, routes_srs, routes_motivation
+
+api_router = APIRouter(prefix='/api')
+api_router.include_router(routes_health.router)
+api_router.include_router(routes_auth.router)
+api_router.include_router(routes_users.router)
+api_router.include_router(routes_course.router)
+api_router.include_router(routes_uploads.router)
+api_router.include_router(routes_analyzer.router)
+api_router.include_router(routes_flashcards.router)
+api_router.include_router(routes_exercises.router)
+api_router.include_router(routes_voice.router)
+api_router.include_router(routes_podcasts.router)
+api_router.include_router(routes_images.router)
+api_router.include_router(routes_billing.router)
+api_router.include_router(routes_license.router)
+api_router.include_router(routes_admin.router)
+api_router.include_router(routes_telegram.router)
+api_router.include_router(routes_diagnostic.router)
+api_router.include_router(routes_progress.router)
+api_router.include_router(routes_srs.router)
+api_router.include_router(routes_motivation.router)

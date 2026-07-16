@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+
+# Node / frontend
+node_modules/
+dist/
+*.local
+.vite/
+
+# Env & secrets (keep the .example files)
+.env
+.env.*
+!.env.example
+!.env.selfhosted.example
+apps/web/.env
+!apps/web/.env.example
+
+# Uploads / generated data (local storage backend)
+var/
+uploads/
+*.sqlite3
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
