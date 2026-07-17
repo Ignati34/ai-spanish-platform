@@ -31,7 +31,13 @@ export default function CoursePage() {
       <div>
         <PageHeader title={openLesson.title} />
         <button className="mb-4 text-sm text-brand-600" onClick={() => setOpenLesson(null)}>← {t('course.back')}</button>
-        {openLesson.summary && <Card className="mb-4"><p className="text-sm text-slate-600">{openLesson.summary}</p></Card>}
+        {openLesson.theory && (
+          <Card className="mb-4">
+            <div className="mb-2 text-sm font-medium">{t('course.theory')}</div>
+            <p className="whitespace-pre-line text-sm leading-6 text-slate-600">{openLesson.theory}</p>
+          </Card>
+        )}
+        {!openLesson.theory && openLesson.summary && <Card className="mb-4"><p className="text-sm text-slate-600">{openLesson.summary}</p></Card>}
         {!!(openLesson.cards?.length) && (
           <div className="mb-4">
             <div className="mb-2 text-sm font-medium">{t('course.words')}</div>

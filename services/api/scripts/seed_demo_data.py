@@ -5,6 +5,7 @@ from app.core.security import hash_password
 from app.db.session import SessionLocal, engine
 from app.db.base import Base
 from app.content.seed_content import CEFR_LEVELS, SAMPLE_LESSONS
+from app.content.curriculum import CURRICULUM
 from app.models.course import CEFRLevel, CourseModule, Lesson
 from app.models.subscription import Plan
 from app.models.user import User, UserProfile
@@ -93,12 +94,30 @@ def _seed_admin(db):
     db.add(UserProfile(user_id=admin.id, first_name='Admin', current_cefr_level='C2'))
 
 
+def _seed_curriculum(db):
+    """Insert the built-in starter curriculum (theory + practice). Idempotent by title."""
+    existing = {l.title for l in db.query(Lesson).filter(Lesson.lesson_type == 'curriculum').all()}
+    added = 0
+    for spec in CURRICULUM:
+        if spec['title'] in existing:
+            continue
+        db.add(Lesson(
+            module_id=None, title=spec['title'], description=spec['theory'][:400],
+            cefr_level=spec['level'], native_language='ru', lesson_type='curriculum',
+            content_json={'theory': spec['theory'], 'exercises': spec['exercises']},
+        ))
+        added += 1
+    if added:
+        print(f'Curriculum seeded: +{added} lessons.')
+
+
 def seed() -> None:
     Base.metadata.create_all(bind=engine)
     db = SessionLocal()
     try:
         code_to_id = _seed_levels(db)
         _seed_lessons(db, code_to_id)
+        _seed_curriculum(db)
         _seed_plans(db)
         _seed_admin(db)
         db.commit()

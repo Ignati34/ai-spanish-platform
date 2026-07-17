@@ -34,6 +34,7 @@ def get_lesson(lesson_id: str, db: Session = Depends(get_db)):
     return {
         'id': str(lesson.id), 'title': lesson.title, 'cefr_level': lesson.cefr_level,
         'description': lesson.description,
+        'theory': content.get('theory', ''),
         'summary': (content.get('analysis') or {}).get('summary', lesson.description or ''),
         'analysis': content.get('analysis') or {},
         'cards': content.get('cards') or [],
