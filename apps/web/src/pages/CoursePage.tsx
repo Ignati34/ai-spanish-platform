@@ -4,6 +4,7 @@ import { api } from '../lib/api';
 import { PageHeader } from '../components/layout/PageHeader';
 import { Card } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
+import { ExerciseCard } from '../components/ExerciseCard';
 
 const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
@@ -46,11 +47,7 @@ export default function CoursePage() {
           <div>
             <div className="mb-2 text-sm font-medium">{t('course.exercises')}</div>
             <div className="space-y-3">
-              {openLesson.exercises.map((ex: any, i: number) => (
-                <Card key={i}><div className="text-sm font-medium">{ex.prompt}</div>
-                  {ex.options && <div className="mt-2 flex flex-wrap gap-2">{ex.options.map((o: string, j: number) => <Badge key={j} tone={o === ex.correct_answer ? 'green' : 'slate'}>{o}</Badge>)}</div>}
-                  {ex.explanation && <div className="mt-2 text-xs text-slate-500">{ex.explanation}</div>}</Card>
-              ))}
+              {openLesson.exercises.map((ex: any, i: number) => <ExerciseCard key={i} ex={ex} />)}
             </div>
           </div>
         )}

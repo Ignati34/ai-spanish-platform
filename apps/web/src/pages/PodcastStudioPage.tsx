@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { ExerciseCard } from '../components/ExerciseCard';
 import { api } from '../lib/api';
 import { PageHeader } from '../components/layout/PageHeader';
 import { Card } from '../components/ui/Card';
@@ -90,13 +91,7 @@ export default function PodcastStudioPage() {
             <div>
               <div className="mb-3 text-sm font-medium text-slate-700">{t('podcast.exercises')}</div>
               <div className="space-y-3">
-                {lesson.exercises.map((ex: any, i: number) => (
-                  <Card key={i}>
-                    <div className="text-sm font-medium">{ex.prompt}</div>
-                    {ex.options && <div className="mt-2 flex flex-wrap gap-2">{ex.options.map((o: string, j: number) => <Badge key={j} tone={o === ex.correct_answer ? 'green' : 'slate'}>{o}</Badge>)}</div>}
-                    {ex.explanation && <div className="mt-2 text-xs text-slate-500">{ex.explanation}</div>}
-                  </Card>
-                ))}
+                {lesson.exercises.map((ex: any, i: number) => <ExerciseCard key={i} ex={ex} />)}
               </div>
             </div>
           )}

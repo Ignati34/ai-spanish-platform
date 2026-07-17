@@ -24,6 +24,22 @@ def mistakes(current_user: User = Depends(get_current_user), db: Session = Depen
     return {'weak_spots': progress_service.weak_spots(db, current_user, limit=20)}
 
 
+@router.post('/record')
+def record(payload: dict, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Record a concrete mistake made in an interactive exercise, so it shows up in
+    'my mistakes' with the specific prompt, correct answer and explanation."""
+    progress_service.record_mistake(
+        db, current_user,
+        original=str(payload.get('original', ''))[:2000],
+        corrected=str(payload.get('corrected', ''))[:2000],
+        explanation=payload.get('explanation'),
+        grammar_topic=payload.get('topic'),
+        mistake_type='exercise', source_type='practice',
+    )
+    db.commit()
+    return {'ok': True}
+
+
 @router.post('/practice')
 async def practice(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Generate remedial exercises targeting the learner's top weak spots."""

@@ -4,6 +4,7 @@ import { api } from '../lib/api';
 import { PageHeader } from '../components/layout/PageHeader';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
+import { ExerciseCard } from '../components/ExerciseCard';
 import { Badge } from '../components/ui/Badge';
 
 export default function ProgressPage() {
@@ -85,11 +86,9 @@ export default function ProgressPage() {
           <div className="mb-3 text-sm font-medium text-slate-700">{t('progress.targeted')}</div>
           <div className="space-y-3">
             {exercises.map((ex: any, i: number) => (
-              <Card key={i}>
-                <div className="text-sm font-medium">{ex.prompt}</div>
-                {ex.options && <div className="mt-2 flex flex-wrap gap-2">{ex.options.map((o: string, j: number) => <Badge key={j} tone={o === ex.correct_answer ? 'green' : 'slate'}>{o}</Badge>)}</div>}
-                {ex.explanation && <div className="mt-2 text-xs text-slate-500">{ex.explanation}</div>}
-              </Card>
+              <ExerciseCard key={i} ex={ex} onAnswer={(correct) => {
+                if (!correct) api.progressRecord({ original: ex.prompt, corrected: ex.correct_answer, explanation: ex.explanation }).then(() => api.progressOverview().then(setData)).catch(() => {});
+              }} />
             ))}
           </div>
         </div>

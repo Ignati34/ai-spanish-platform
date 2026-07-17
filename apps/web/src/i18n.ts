@@ -190,6 +190,18 @@ Object.entries(courseStrings).forEach(([lng, bundle]) => {
   i18n.addResourceBundle(lng, 'translation', bundle, true, true);
 });
 
+const exStrings: Record<string, any> = {
+  ru: { ex: { check: 'Проверить', correct: 'Верно!', wrong: 'Неверно. Правильный ответ:', type: 'Ваш ответ…' } },
+  uk: { ex: { check: 'Перевірити', correct: 'Правильно!', wrong: 'Неправильно. Правильна відповідь:', type: 'Ваша відповідь…' } },
+  ar: { ex: { check: 'تحقّق', correct: 'صحيح!', wrong: 'خطأ. الإجابة الصحيحة:', type: 'إجابتك…' } },
+  fr: { ex: { check: 'Vérifier', correct: 'Correct !', wrong: 'Incorrect. Bonne réponse :', type: 'Votre réponse…' } },
+  es: { ex: { check: 'Comprobar', correct: '¡Correcto!', wrong: 'Incorrecto. Respuesta correcta:', type: 'Tu respuesta…' } },
+  en: { ex: { check: 'Check', correct: 'Correct!', wrong: 'Incorrect. Correct answer:', type: 'Your answer…' } }
+};
+Object.entries(exStrings).forEach(([lng, bundle]) => {
+  i18n.addResourceBundle(lng, 'translation', bundle, true, true);
+});
+
 export function applyDir(locale: string) {
   const dir = RTL_LOCALES.includes(locale) ? 'rtl' : 'ltr';
   document.documentElement.setAttribute('dir', dir);

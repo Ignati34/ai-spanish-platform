@@ -107,3 +107,13 @@ def test_update_native_language(client, auth):
 def test_update_language_rejects_unknown(client, auth):
     r = client.patch('/api/users/me', headers=auth, json={'native_language': 'zz'})
     assert r.status_code == 422
+
+
+def test_progress_record_shows_in_overview(client, auth):
+    r = client.post('/api/progress/record', headers=auth,
+                    json={'original': 'Yo tengo hambre', 'corrected': 'Yo tengo hambre (ok)',
+                          'explanation': 'ser vs estar', 'topic': 'ser/estar'})
+    assert r.status_code == 200, r.text
+    ov = client.get('/api/progress/overview', headers=auth).json()
+    assert ov['total_mistakes'] >= 1
+    assert any(s['topic'] == 'ser/estar' for s in ov['weak_spots'])

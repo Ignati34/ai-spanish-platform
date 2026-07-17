@@ -157,6 +157,9 @@ class ApiClient {
   // --- Progress / My mistakes ---
   progressOverview() { return this.request<any>('/api/progress/overview'); }
   progressPractice() { return this.request<any>('/api/progress/practice', { method: 'POST', body: '{}' }); }
+  progressRecord(payload: { topic?: string; original?: string; corrected?: string; explanation?: string }) {
+    return this.request<any>('/api/progress/record', { method: 'POST', body: JSON.stringify(payload) });
+  }
 
   // --- Spaced repetition ---
   srsDue(limit = 20) { return this.request<any>(`/api/srs/due?limit=${limit}`); }
