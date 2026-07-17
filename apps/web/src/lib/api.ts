@@ -20,8 +20,19 @@ class ApiClient {
         ...(options.headers ?? {})
       }
     });
+    this.handleAuth(response);
     if (!response.ok) throw new Error((await response.text()) || `Request failed: ${response.status}`);
     return response.json() as Promise<T>;
+  }
+
+  private handleAuth(response: Response) {
+    if (response.status === 401) {
+      this.setToken(null);
+      if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+        window.location.href = '/login';
+      }
+      throw new Error('Session expired — please sign in again.');
+    }
   }
 
   // --- Auth ---
@@ -66,6 +77,7 @@ class ApiClient {
       headers: { ...(this.token ? { Authorization: `Bearer ${this.token}` } : {}) },
       body: form
     });
+    this.handleAuth(res);
     if (!res.ok) throw new Error((await res.text()) || `Upload failed: ${res.status}`);
     return res.json();
   }
@@ -76,6 +88,7 @@ class ApiClient {
       headers: { ...(this.token ? { Authorization: `Bearer ${this.token}` } : {}) },
       body: form
     });
+    this.handleAuth(res);
     if (!res.ok) throw new Error((await res.text()) || `Request failed: ${res.status}`);
     return res.json() as Promise<T>;
   }

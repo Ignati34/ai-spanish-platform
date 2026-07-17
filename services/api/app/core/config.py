@@ -16,7 +16,7 @@ class Settings(BaseSettings):
 
     jwt_secret: str = Field(alias='JWT_SECRET')
     jwt_algorithm: str = Field(default='HS256', alias='JWT_ALGORITHM')
-    jwt_expires_minutes: int = Field(default=60, alias='JWT_EXPIRES_MINUTES')
+    jwt_expires_minutes: int = Field(default=1440, alias='JWT_EXPIRES_MINUTES')
     refresh_token_expires_days: int = Field(default=30, alias='REFRESH_TOKEN_EXPIRES_DAYS')
 
     s3_endpoint: str = Field(default='http://minio:9000', alias='S3_ENDPOINT')
