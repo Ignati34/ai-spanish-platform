@@ -10,6 +10,7 @@ export default function ProgressPage() {
   const { t } = useTranslation();
   const [data, setData] = useState<any>(null);
   const [exercises, setExercises] = useState<any[]>([]);
+  const [vocab, setVocab] = useState<any[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -21,7 +22,7 @@ export default function ProgressPage() {
 
   const practice = async () => {
     setBusy(true); setError(null);
-    try { const r = await api.progressPractice(); setExercises(r.exercises || []); }
+    try { const r = await api.progressPractice(); setExercises(r.exercises || []); setVocab(r.vocabulary || []); }
     catch (e: any) { setError(String(e.message || e)); }
     finally { setBusy(false); }
   };
@@ -61,6 +62,23 @@ export default function ProgressPage() {
           </ol>
         </Card>
       </div>
+
+      {vocab.length > 0 && (
+        <div className="mt-6">
+          <div className="mb-3 text-sm font-medium text-slate-700">{t('progress.words')}</div>
+          <div className="grid gap-3 md:grid-cols-2">
+            {vocab.map((v: any, i: number) => (
+              <Card key={i}>
+                <div className="flex items-baseline justify-between">
+                  <span className="text-lg font-medium">{v.word}</span>
+                  <span className="text-sm text-slate-500">{v.translation}</span>
+                </div>
+                {v.example && <div className="mt-1 text-sm text-slate-400">“{v.example}”</div>}
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
 
       {exercises.length > 0 && (
         <div className="mt-6">

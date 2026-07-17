@@ -90,7 +90,10 @@ class OpenAIProvider(BaseAIProvider):
     async def transcribe(self, data: bytes, filename: str, language: str = 'es') -> dict:
         headers = {'Authorization': f'Bearer {settings.ai_api_key}'}
         files = {'file': (filename or 'audio.mp3', data, 'application/octet-stream')}
-        form = {'model': settings.stt_model, 'response_format': 'verbose_json'}
+        # Only whisper-1 supports verbose_json (segments + duration); the newer
+        # gpt-4o-*-transcribe models only accept json/text and 400 on verbose_json.
+        supports_verbose = 'whisper' in (settings.stt_model or '').lower()
+        form = {'model': settings.stt_model, 'response_format': 'verbose_json' if supports_verbose else 'json'}
         if language:
             form['language'] = language[:2]
         async with httpx.AsyncClient(timeout=settings.ai_timeout_seconds) as client:
@@ -139,6 +142,7 @@ class OpenAIProvider(BaseAIProvider):
     async def targeted_exercises(self, topics, cefr_level='A1', native_language='ru') -> dict:
         system, user = prompts.targeted_exercises(list(topics or []), cefr_level, native_language)
         data = await self._chat_json(system, user)
+        data.setdefault('vocabulary', [])
         data.setdefault('exercises', [])
         return data
 

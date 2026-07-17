@@ -34,4 +34,4 @@ async def practice(current_user: User = Depends(get_current_user), db: Session =
     orch = AgentOrchestrator()
     result = await orch.targeted_exercises(topics, level, current_user.native_language or 'ru')
     record_ai_usage(db, current_user, orch.ai.last_usage)
-    return {'topics': topics, 'level': level, 'exercises': result.get('exercises', [])}
+    return {'topics': topics, 'level': level, 'vocabulary': result.get('vocabulary', []), 'exercises': result.get('exercises', [])}

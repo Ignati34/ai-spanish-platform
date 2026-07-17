@@ -178,6 +178,18 @@ Object.entries(settingsStrings).forEach(([lng, bundle]) => {
   i18n.addResourceBundle(lng, 'translation', bundle, true, true);
 });
 
+const courseStrings: Record<string, any> = {
+  ru: { progress: { words: 'Слова с примерами' }, course: { subtitle: 'Ваши уроки по уровням. Новые появляются из «Загрузок».', back: 'Назад', words: 'Слова', exercises: 'Упражнения', lessons: 'уроков', none: 'нет уроков', empty: 'В этом уроке пока нет карточек.', buildHint: 'Пока нет уроков этого уровня — соберите урок в «Загрузках».', subtitleShort: '' } },
+  uk: { progress: { words: 'Слова з прикладами' }, course: { subtitle: 'Ваші уроки за рівнями. Нові зʼявляються із «Завантажень».', back: 'Назад', words: 'Слова', exercises: 'Вправи', lessons: 'уроків', none: 'немає уроків', empty: 'У цьому уроці ще немає карток.', buildHint: 'Поки немає уроків цього рівня — зберіть урок у «Завантаженнях».' } },
+  ar: { progress: { words: 'كلمات مع أمثلة' }, course: { subtitle: 'دروسك حسب المستوى. تظهر الجديدة من «التحميلات».', back: 'رجوع', words: 'كلمات', exercises: 'تمارين', lessons: 'دروس', none: 'لا دروس', empty: 'لا بطاقات في هذا الدرس بعد.', buildHint: 'لا دروس لهذا المستوى بعد — أنشئ درسًا من «التحميلات».' } },
+  fr: { progress: { words: 'Mots avec exemples' }, course: { subtitle: 'Vos leçons par niveau. Les nouvelles viennent des « Imports ».', back: 'Retour', words: 'Mots', exercises: 'Exercices', lessons: 'leçons', none: 'aucune leçon', empty: 'Pas encore de cartes dans cette leçon.', buildHint: 'Aucune leçon à ce niveau — créez-en une dans « Imports ».' } },
+  es: { progress: { words: 'Palabras con ejemplos' }, course: { subtitle: 'Tus lecciones por nivel. Las nuevas vienen de «Subidas».', back: 'Atrás', words: 'Palabras', exercises: 'Ejercicios', lessons: 'lecciones', none: 'sin lecciones', empty: 'Aún no hay tarjetas en esta lección.', buildHint: 'Aún no hay lecciones de este nivel — crea una en «Subidas».' } },
+  en: { progress: { words: 'Words with examples' }, course: { subtitle: 'Your lessons by level. New ones come from Uploads.', back: 'Back', words: 'Words', exercises: 'Exercises', lessons: 'lessons', none: 'no lessons', empty: 'No cards in this lesson yet.', buildHint: 'No lessons at this level yet — build one in Uploads.' } }
+};
+Object.entries(courseStrings).forEach(([lng, bundle]) => {
+  i18n.addResourceBundle(lng, 'translation', bundle, true, true);
+});
+
 export function applyDir(locale: string) {
   const dir = RTL_LOCALES.includes(locale) ? 'rtl' : 'ltr';
   document.documentElement.setAttribute('dir', dir);

@@ -100,7 +100,10 @@ class StubProvider(BaseAIProvider):
 
     async def targeted_exercises(self, topics, cefr_level='A1', native_language='ru') -> dict:
         topic = (topics or ['grammar'])[0]
-        return {'exercises': [
+        return {'vocabulary': [
+            {'word': 'la palabra', 'translation': 'the word', 'example': 'Aprendo una palabra nueva cada dia.'},
+            {'word': 'practicar', 'translation': 'to practice', 'example': 'Necesito practicar mas el espanol.'},
+        ], 'exercises': [
             {'exercise_type': 'fill_blank', 'prompt': f'[{topic}] Yo ___ estudiante.', 'options': ['soy', 'estoy', 'es'],
              'correct_answer': 'soy', 'explanation': f'Practice for {topic}.'},
             {'exercise_type': 'multiple_choice', 'prompt': f'[{topic}] Elige la forma correcta.', 'options': ['fui', 'era', 'voy'],

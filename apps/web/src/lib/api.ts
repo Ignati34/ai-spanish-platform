@@ -51,7 +51,8 @@ class ApiClient {
   me() { return this.request('/api/users/me'); }
 
   // --- Learning ---
-  lessons() { return this.request('/api/course/lessons'); }
+  lessons() { return this.request<any[]>('/api/course/lessons'); }
+  courseLesson(id: string) { return this.request<any>(`/api/course/lessons/${id}`); }
   analyzeText(text: string, native_language = 'ru') {
     return this.request('/api/analyze/text', { method: 'POST', body: JSON.stringify({ text, native_language }) });
   }

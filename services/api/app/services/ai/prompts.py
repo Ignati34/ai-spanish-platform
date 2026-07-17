@@ -124,11 +124,15 @@ def targeted_exercises(topics: list[str], cefr_level: str, native_language: str)
         'Respond with ONE valid minified JSON object and nothing else.'
     )
     user = (
-        f'Create 5 exercises for a {cefr_level} learner focused specifically on: {topic_str}. '
-        'Return JSON {"exercises": [{"exercise_type","prompt","options","correct_answer","explanation"}]}. '
+        f'Create focused remedial practice for a {cefr_level} learner on: {topic_str}. '
+        'Return ONE JSON object with two keys: '
+        '"vocabulary": [6-8 useful Spanish words/phrases for these topics, each '
+        '{"word": "<Spanish>", "translation": "<in %s>", "example": "<a natural Spanish '
+        'sentence using the word>"}], and '
+        '"exercises": [5 items {"exercise_type","prompt","options","correct_answer","explanation"}]. '
         'exercise_type one of "multiple_choice","fill_blank","translation"; options = array or null; '
-        f'explanation in {lang}.'
-    )
+        'explanation in %s and concrete (say WHY, with a short example).'
+    ) % (lang, lang)
     return system, user
 
 
