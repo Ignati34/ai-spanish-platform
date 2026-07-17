@@ -166,6 +166,18 @@ Object.entries(simStrings).forEach(([lng, bundle]) => {
   i18n.addResourceBundle(lng, 'translation', bundle, true, true);
 });
 
+const settingsStrings: Record<string, any> = {
+  ru: { nav: { settings: 'Настройки' }, settings: { title: 'Настройки', subtitle: 'Язык объяснений и интерфейса.', account: 'Аккаунт', nativeLang: 'Родной язык (объяснения ИИ)', nativeHint: 'На этом языке ИИ пишет переводы, объяснения и разборы в уроках.', interfaceLang: 'Язык интерфейса', interfaceHint: 'Язык меню и кнопок приложения.', saved: 'Сохранено' } },
+  uk: { nav: { settings: 'Налаштування' }, settings: { title: 'Налаштування', subtitle: 'Мова пояснень та інтерфейсу.', account: 'Акаунт', nativeLang: 'Рідна мова (пояснення ШІ)', nativeHint: 'Цією мовою ШІ пише переклади, пояснення й розбори в уроках.', interfaceLang: 'Мова інтерфейсу', interfaceHint: 'Мова меню та кнопок застосунку.', saved: 'Збережено' } },
+  ar: { nav: { settings: 'الإعدادات' }, settings: { title: 'الإعدادات', subtitle: 'لغة الشرح والواجهة.', account: 'الحساب', nativeLang: 'اللغة الأم (شرح الذكاء الاصطناعي)', nativeHint: 'بهذه اللغة يكتب الذكاء الاصطناعي الترجمات والشروح في الدروس.', interfaceLang: 'لغة الواجهة', interfaceHint: 'لغة القوائم والأزرار.', saved: 'تم الحفظ' } },
+  fr: { nav: { settings: 'Paramètres' }, settings: { title: 'Paramètres', subtitle: 'Langue des explications et de l’interface.', account: 'Compte', nativeLang: 'Langue maternelle (explications IA)', nativeHint: 'Langue dans laquelle l’IA écrit les traductions et explications des leçons.', interfaceLang: 'Langue de l’interface', interfaceHint: 'Langue des menus et boutons.', saved: 'Enregistré' } },
+  es: { nav: { settings: 'Ajustes' }, settings: { title: 'Ajustes', subtitle: 'Idioma de las explicaciones y de la interfaz.', account: 'Cuenta', nativeLang: 'Idioma nativo (explicaciones de IA)', nativeHint: 'Idioma en el que la IA escribe traducciones y explicaciones en las lecciones.', interfaceLang: 'Idioma de la interfaz', interfaceHint: 'Idioma de los menús y botones.', saved: 'Guardado' } },
+  en: { nav: { settings: 'Settings' }, settings: { title: 'Settings', subtitle: 'Explanation and interface language.', account: 'Account', nativeLang: 'Native language (AI explanations)', nativeHint: 'The language the AI uses for translations and explanations in lessons.', interfaceLang: 'Interface language', interfaceHint: 'The language of menus and buttons.', saved: 'Saved' } }
+};
+Object.entries(settingsStrings).forEach(([lng, bundle]) => {
+  i18n.addResourceBundle(lng, 'translation', bundle, true, true);
+});
+
 export function applyDir(locale: string) {
   const dir = RTL_LOCALES.includes(locale) ? 'rtl' : 'ltr';
   document.documentElement.setAttribute('dir', dir);

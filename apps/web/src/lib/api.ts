@@ -34,6 +34,9 @@ class ApiClient {
   telegramAuth(init_data: string, native_language?: string) {
     return this.request<{ access_token: string; user: any }>('/api/telegram/auth', { method: 'POST', body: JSON.stringify({ init_data, native_language }) });
   }
+  updateMe(payload: { native_language?: string; interface_language?: string }) {
+    return this.request<any>('/api/users/me', { method: 'PATCH', body: JSON.stringify(payload) });
+  }
   me() { return this.request('/api/users/me'); }
 
   // --- Learning ---

@@ -16,6 +16,7 @@ const items = [
   { to: '/app/flashcards', key: 'flashcards' },
   { to: '/app/review', key: 'review' },
   { to: '/app/progress', key: 'progress' },
+  { to: '/app/settings', key: 'settings' },
   { to: '/app/billing', key: 'billing' },
   { to: '/app/admin', key: 'admin' }
 ];

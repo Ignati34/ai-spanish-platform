@@ -92,3 +92,18 @@ def test_billing_providers_country(client, auth):
     # Bizum should be flagged recommended for Spain when Stripe is enabled
     flat = [m for p in providers for m in p['methods']]
     assert any(m.get('recommended') for m in flat) or providers == []
+
+
+def test_update_native_language(client, auth):
+    # default from registration is 'ru' here; switch to Spanish explanations
+    r = client.patch('/api/users/me', headers=auth, json={'native_language': 'es'})
+    assert r.status_code == 200, r.text
+    assert r.json()['native_language'] == 'es'
+    # persisted
+    me = client.get('/api/users/me', headers=auth).json()
+    assert me['native_language'] == 'es'
+
+
+def test_update_language_rejects_unknown(client, auth):
+    r = client.patch('/api/users/me', headers=auth, json={'native_language': 'zz'})
+    assert r.status_code == 422
