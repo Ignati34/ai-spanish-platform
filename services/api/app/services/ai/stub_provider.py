@@ -28,7 +28,7 @@ class StubProvider(BaseAIProvider):
             'summary': 'Demo analysis. Set AI_PROVIDER=openai and AI_API_KEY to use a real model.',
         }
 
-    async def generate_flashcards(self, text: str, native_language: str = 'ru', cefr_level: str = 'A1') -> dict:
+    async def generate_flashcards(self, text: str, native_language: str = 'ru', cefr_level: str = 'A1', source_language: str = 'es') -> dict:
         words: list[str] = []
         for raw in text.split():
             word = raw.strip('.,!?¿¡;:()"').lower()
@@ -121,3 +121,6 @@ class StubProvider(BaseAIProvider):
             'hint': 'Puede decir: "¿Podría confirmarme la cita, por favor?"',
             'stub': True,
         }
+
+    async def extract_image_text(self, data: bytes, mime_type: str = 'image/png') -> str:
+        return 'hola gracias por favor'  # demo OCR without a key

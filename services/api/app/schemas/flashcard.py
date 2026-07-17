@@ -5,6 +5,7 @@ class GenerateFlashcardsRequest(BaseModel):
     text: str
     native_language: str = 'ru'
     cefr_level: str = 'A1'
+    source_language: str = 'es'
 
 
 class FlashcardOut(BaseModel):

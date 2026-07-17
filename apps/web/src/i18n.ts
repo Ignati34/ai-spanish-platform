@@ -202,6 +202,18 @@ Object.entries(exStrings).forEach(([lng, bundle]) => {
   i18n.addResourceBundle(lng, 'translation', bundle, true, true);
 });
 
+const fcStrings: Record<string, any> = {
+  ru: { flashcards: { subtitle: 'Из текста, файла (PDF/DOCX/фото/аудио/видео) или голоса. Карточки сохраняются в «Повторение».', matEs: 'Материал: испанский', matNative: 'Материал: мой язык', phEs: 'Вставьте испанский текст или слова…', phNative: 'Вставьте слова на своём языке — получите испанские карточки…', generate: 'Сгенерировать', speak: 'Голос', stop: 'Стоп', file: 'Файл', fileHint: 'txt, pdf, docx, jpg, png, mp3, mp4…', saved: 'Сохранено в колоду', review: 'Карточки добавлены в «Повторение».' } },
+  uk: { flashcards: { subtitle: 'З тексту, файлу (PDF/DOCX/фото/аудіо/відео) або голосу. Картки зберігаються в «Повторення».', matEs: 'Матеріал: іспанська', matNative: 'Матеріал: моя мова', phEs: 'Вставте іспанський текст або слова…', phNative: 'Вставте слова своєю мовою — отримаєте іспанські картки…', generate: 'Згенерувати', speak: 'Голос', stop: 'Стоп', file: 'Файл', fileHint: 'txt, pdf, docx, jpg, png, mp3, mp4…', saved: 'Збережено в колоду', review: 'Картки додано в «Повторення».' } },
+  ar: { flashcards: { subtitle: 'من نص أو ملف (PDF/DOCX/صورة/صوت/فيديو) أو صوتك. تُحفظ البطاقات في «المراجعة».', matEs: 'المادة: الإسبانية', matNative: 'المادة: لغتي', phEs: 'الصق نصًا أو كلمات بالإسبانية…', phNative: 'الصق كلمات بلغتك — واحصل على بطاقات إسبانية…', generate: 'إنشاء', speak: 'صوت', stop: 'إيقاف', file: 'ملف', fileHint: 'txt, pdf, docx, jpg, png, mp3, mp4…', saved: 'حُفظت في المجموعة', review: 'أُضيفت البطاقات إلى «المراجعة».' } },
+  fr: { flashcards: { subtitle: 'Depuis un texte, un fichier (PDF/DOCX/photo/audio/vidéo) ou la voix. Les cartes vont dans « Révision ».', matEs: 'Matériel : espagnol', matNative: 'Matériel : ma langue', phEs: 'Collez un texte ou des mots en espagnol…', phNative: 'Collez des mots dans votre langue — obtenez des cartes en espagnol…', generate: 'Générer', speak: 'Voix', stop: 'Stop', file: 'Fichier', fileHint: 'txt, pdf, docx, jpg, png, mp3, mp4…', saved: 'Enregistré dans le paquet', review: 'Cartes ajoutées à « Révision ».' } },
+  es: { flashcards: { subtitle: 'Desde texto, archivo (PDF/DOCX/foto/audio/vídeo) o voz. Las tarjetas van a «Repaso».', matEs: 'Material: español', matNative: 'Material: mi idioma', phEs: 'Pega texto o palabras en español…', phNative: 'Pega palabras en tu idioma — obtén tarjetas en español…', generate: 'Generar', speak: 'Voz', stop: 'Parar', file: 'Archivo', fileHint: 'txt, pdf, docx, jpg, png, mp3, mp4…', saved: 'Guardado en el mazo', review: 'Tarjetas añadidas a «Repaso».' } },
+  en: { flashcards: { subtitle: 'From text, a file (PDF/DOCX/photo/audio/video) or your voice. Cards go to Review.', matEs: 'Material: Spanish', matNative: 'Material: my language', phEs: 'Paste Spanish text or words…', phNative: 'Paste words in your language — get Spanish cards…', generate: 'Generate', speak: 'Voice', stop: 'Stop', file: 'File', fileHint: 'txt, pdf, docx, jpg, png, mp3, mp4…', saved: 'Saved to deck', review: 'Cards added to Review.' } }
+};
+Object.entries(fcStrings).forEach(([lng, bundle]) => {
+  i18n.addResourceBundle(lng, 'translation', bundle, true, true);
+});
+
 export function applyDir(locale: string) {
   const dir = RTL_LOCALES.includes(locale) ? 'rtl' : 'ltr';
   document.documentElement.setAttribute('dir', dir);

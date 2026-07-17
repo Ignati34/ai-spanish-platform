@@ -99,11 +99,11 @@ class AIGateway:
             lambda p: p.analyze_text(text=text, native_language=native_language),
         )
 
-    async def generate_flashcards(self, text: str, native_language: str = 'ru', cefr_level: str = 'A1') -> dict:
+    async def generate_flashcards(self, text: str, native_language: str = 'ru', cefr_level: str = 'A1', source_language: str = 'es') -> dict:
         return await self._run(
             'flashcards', {'text': text, 'native': native_language, 'cefr': cefr_level},
-            lambda p: p.generate_flashcards(text=text, native_language=native_language, cefr_level=cefr_level),
-            lambda p: p.generate_flashcards(text=text, native_language=native_language, cefr_level=cefr_level),
+            lambda p: p.generate_flashcards(text=text, native_language=native_language, cefr_level=cefr_level, source_language=source_language),
+            lambda p: p.generate_flashcards(text=text, native_language=native_language, cefr_level=cefr_level, source_language=source_language),
         )
 
     async def generate_exercises(self, text: str, cefr_level: str = 'A1', native_language: str = 'ru') -> dict:
@@ -131,6 +131,14 @@ class AIGateway:
         except Exception as exc:
             logger.warning('AI provider "%s" failed on transcribe: %s; using stub', self.provider.name, exc)
             return await self._stub.transcribe(data=data, filename=filename, language=language)
+
+    async def extract_image_text(self, data: bytes, mime_type: str = 'image/png') -> str:
+        """Vision OCR with graceful fallback."""
+        try:
+            return await self.provider.extract_image_text(data=data, mime_type=mime_type)
+        except Exception as exc:
+            logger.warning('AI provider "%s" failed on image OCR: %s; using stub', self.provider.name, exc)
+            return await self._stub.extract_image_text(data=data, mime_type=mime_type)
 
     async def voice_reply(self, history: list[dict], user_message: str, scenario: str = 'restaurant', cefr_level: str = 'A1', native_language: str = 'ru') -> dict:
         """Conversational tutor reply + correction + score. Not cached."""

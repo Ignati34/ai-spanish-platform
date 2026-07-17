@@ -66,8 +66,8 @@ class OpenAIProvider(BaseAIProvider):
         data.setdefault('summary', '')
         return data
 
-    async def generate_flashcards(self, text: str, native_language: str = 'ru', cefr_level: str = 'A1') -> dict:
-        system, user = prompts.flashcards(text, native_language, cefr_level)
+    async def generate_flashcards(self, text: str, native_language: str = 'ru', cefr_level: str = 'A1', source_language: str = 'es') -> dict:
+        system, user = prompts.flashcards(text, native_language, cefr_level, source_language=source_language)
         data = await self._chat_json(system, user)
         data.setdefault('deck_title', f'{cefr_level} deck')
         data.setdefault('cards', [])
@@ -155,3 +155,21 @@ class OpenAIProvider(BaseAIProvider):
         data.setdefault('goal_met', False)
         data.setdefault('hint', '')
         return data
+
+    async def extract_image_text(self, data: bytes, mime_type: str = 'image/png') -> str:
+        import base64
+        b64 = base64.b64encode(data).decode('ascii')
+        headers = {'Authorization': f'Bearer {settings.ai_api_key}', 'Content-Type': 'application/json'}
+        body = {
+            'model': settings.ai_model,
+            'messages': [{'role': 'user', 'content': [
+                {'type': 'text', 'text': prompts.image_ocr_instruction()},
+                {'type': 'image_url', 'image_url': {'url': f'data:{mime_type};base64,{b64}'}},
+            ]}],
+            'max_tokens': settings.ai_max_tokens,
+        }
+        async with httpx.AsyncClient(timeout=settings.ai_timeout_seconds) as client:
+            resp = await client.post(f'{settings.ai_base_url}/chat/completions', headers=headers, json=body)
+            resp.raise_for_status()
+            data_json = resp.json()
+        return (data_json['choices'][0]['message']['content'] or '').strip()

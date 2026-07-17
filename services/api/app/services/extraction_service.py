@@ -12,6 +12,7 @@ import re
 TEXT_EXT = {'txt', 'md', 'markdown', 'csv', 'text'}
 AUDIO_EXT = {'mp3', 'wav', 'ogg', 'oga', 'm4a', 'webm'}
 VIDEO_EXT = {'mp4', 'mov', 'mkv', 'avi'}
+IMAGE_EXT = {'jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp'}
 
 
 class ExtractionError(Exception):
@@ -32,6 +33,10 @@ def is_audio(filename: str, mime_type: str | None = None) -> bool:
 
 def is_video(filename: str, mime_type: str | None = None) -> bool:
     return ext_of(filename) in VIDEO_EXT or (mime_type or '').startswith('video/')
+
+
+def is_image(filename: str, mime_type: str | None = None) -> bool:
+    return ext_of(filename) in IMAGE_EXT or (mime_type or '').startswith('image/')
 
 
 def extract_text(filename: str, data: bytes, mime_type: str | None = None) -> tuple[str, dict]:

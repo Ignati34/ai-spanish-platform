@@ -15,7 +15,7 @@ class BaseAIProvider:
     async def analyze_text(self, text: str, native_language: str = 'ru') -> dict:
         raise NotImplementedError
 
-    async def generate_flashcards(self, text: str, native_language: str = 'ru', cefr_level: str = 'A1') -> dict:
+    async def generate_flashcards(self, text: str, native_language: str = 'ru', cefr_level: str = 'A1', source_language: str = 'es') -> dict:
         raise NotImplementedError
 
     async def generate_exercises(self, text: str, cefr_level: str = 'A1', native_language: str = 'ru') -> dict:
@@ -42,4 +42,8 @@ class BaseAIProvider:
         raise NotImplementedError
 
     async def simulation_turn(self, history: list, user_message: str, role: str, goal_es: str, cefr_level: str = 'A1', native_language: str = 'ru') -> dict:
+        raise NotImplementedError
+
+    async def extract_image_text(self, data: bytes, mime_type: str = 'image/png') -> str:
+        """Vision OCR: return text visible in an image."""
         raise NotImplementedError

@@ -8,8 +8,8 @@ class AgentOrchestrator:
     async def analyze_text(self, text: str, native_language: str = 'ru') -> dict:
         return await self.ai.analyze_text(text=text, native_language=native_language)
 
-    async def generate_flashcards(self, text: str, native_language: str = 'ru', cefr_level: str = 'A1') -> dict:
-        return await self.ai.generate_flashcards(text=text, native_language=native_language, cefr_level=cefr_level)
+    async def generate_flashcards(self, text: str, native_language: str = 'ru', cefr_level: str = 'A1', source_language: str = 'es') -> dict:
+        return await self.ai.generate_flashcards(text=text, native_language=native_language, cefr_level=cefr_level, source_language=source_language)
 
     async def generate_exercises(self, text: str, cefr_level: str = 'A1', native_language: str = 'ru') -> dict:
         return await self.ai.generate_exercises(text=text, cefr_level=cefr_level, native_language=native_language)
@@ -34,3 +34,6 @@ class AgentOrchestrator:
 
     async def simulation_turn(self, history, user_message, role, goal_es, cefr_level='A1', native_language='ru') -> dict:
         return await self.ai.simulation_turn(history, user_message, role, goal_es, cefr_level, native_language)
+
+    async def extract_image_text(self, data: bytes, mime_type: str = 'image/png') -> str:
+        return await self.ai.extract_image_text(data=data, mime_type=mime_type)

@@ -56,8 +56,16 @@ class ApiClient {
   analyzeText(text: string, native_language = 'ru') {
     return this.request('/api/analyze/text', { method: 'POST', body: JSON.stringify({ text, native_language }) });
   }
-  generateFlashcards(source_text: string) {
-    return this.request('/api/flashcards/generate', { method: 'POST', body: JSON.stringify({ text: source_text }) });
+  generateFlashcards(text: string, opts: { native_language?: string; cefr_level?: string; source_language?: string } = {}) {
+    return this.request<any>('/api/flashcards/generate', { method: 'POST', body: JSON.stringify({ text, ...opts }) });
+  }
+  flashcardsFromFile(file: File, opts: { native_language?: string; cefr_level?: string; source_language?: string } = {}) {
+    const form = new FormData();
+    form.append('file', file);
+    if (opts.native_language) form.append('native_language', opts.native_language);
+    if (opts.cefr_level) form.append('cefr_level', opts.cefr_level);
+    if (opts.source_language) form.append('source_language', opts.source_language);
+    return this.postForm<any>('/api/flashcards/from-file', form);
   }
 
   // --- Upload Studio (file/text -> lesson) ---

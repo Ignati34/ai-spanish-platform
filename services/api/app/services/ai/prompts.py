@@ -38,15 +38,24 @@ def analyze(text: str, native_language: str) -> tuple[str, str]:
     return _system(native_language), user
 
 
-def flashcards(text: str, native_language: str, cefr_level: str, max_cards: int = 12) -> tuple[str, str]:
+def flashcards(text: str, native_language: str, cefr_level: str, max_cards: int = 12,
+               source_language: str = 'es') -> tuple[str, str]:
     lang = lang_name(native_language)
+    if source_language and source_language != 'es':
+        src = lang_name(source_language)
+        origin = (
+            f'The input is in {src} (NOT Spanish). First translate each word/phrase into natural '
+            f'Spanish, then build the card. '
+        )
+    else:
+        origin = 'The input is Spanish. '
     user = (
-        f'Create up to {max_cards} study flashcards from the Spanish text for a {cefr_level} learner. '
+        f'Create up to {max_cards} study flashcards for a {cefr_level} learner. {origin}'
         'Return JSON {"deck_title", "cards": [{"front","back","card_type","example_sentence"}]}. '
         f'front = Spanish; back = translation/explanation in {lang}; '
         'card_type one of "word_translation","phrase","verb_conjugation"; '
-        'example_sentence = a short Spanish sentence. '
-        f'Text:\n"""{text}"""'
+        'example_sentence = a short Spanish sentence using the word. '
+        f'Input:\n"""{text}"""'
     )
     return _system(native_language), user
 
@@ -157,3 +166,8 @@ def simulation_turn(history: list[dict], user_message: str, role: str, goal_es: 
         '"hint": "<a short Spanish phrase the student could try next, empty if none>"}.'
     )
     return system, user
+
+
+def image_ocr_instruction() -> str:
+    return ('Extract ALL text visible in this image exactly as written (any language). '
+            'Return only the extracted text, no commentary.')
