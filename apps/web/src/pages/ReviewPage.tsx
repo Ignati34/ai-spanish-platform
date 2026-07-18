@@ -31,6 +31,11 @@ export default function ReviewPage() {
   };
   useEffect(() => { load(); }, []);
 
+  const clearCards = async () => {
+    if (!window.confirm(t('review.clearConfirm'))) return;
+    try { await api.srsClearCards(); await load(); } catch (e: any) { setError(String(e.message || e)); }
+  };
+
   const card = queue[idx];
 
   const grade = async (g: 'again' | 'hard' | 'good' | 'easy') => {
@@ -66,6 +71,10 @@ export default function ReviewPage() {
           )}
         </div>
       )}
+
+      <div className="mb-4">
+        <button onClick={clearCards} className="text-xs text-slate-400 underline hover:text-rose-500">{t('review.clear')}</button>
+      </div>
 
       {error && <p className="mb-3 text-sm text-rose-600">{error}</p>}
 

@@ -182,6 +182,7 @@ class ApiClient {
   srsReview(card_id: string, grade: 'again' | 'hard' | 'good' | 'easy') {
     return this.request<any>('/api/srs/review', { method: 'POST', body: JSON.stringify({ card_id, grade }) });
   }
+  srsClearCards() { return this.request<any>('/api/srs/cards', { method: 'DELETE' }); }
 
   // --- Motivation ---
   motivationOverview() { return this.request<any>('/api/motivation/overview'); }

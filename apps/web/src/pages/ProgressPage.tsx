@@ -21,6 +21,14 @@ export default function ProgressPage() {
 
   const maxCount = Math.max(1, ...((data?.weak_spots || []).map((s: any) => s.count)));
 
+  const [autoPracticed, setAutoPracticed] = useState(false);
+  useEffect(() => {
+    if (!autoPracticed && (data?.weak_spots || []).length > 0) {
+      setAutoPracticed(true);
+      api.progressPractice().then((r) => { setVocab(r.vocabulary || []); setExercises(r.exercises || []); }).catch(() => {});
+    }
+  }, [data, autoPracticed]);
+
   const practice = async () => {
     setBusy(true); setError(null);
     try { const r = await api.progressPractice(); setExercises(r.exercises || []); setVocab(r.vocabulary || []); }
@@ -98,13 +106,18 @@ export default function ProgressPage() {
         <Card className="mt-6">
           <div className="mb-3 text-sm font-medium">{t('progress.recent')}</div>
           <div className="space-y-2">
-            {data.recent.map((m: any, i: number) => (
-              <div key={i} className="text-sm">
-                <span className="text-slate-400">[{m.type}]</span>{' '}
-                {m.topic && <Badge tone="amber">{m.topic}</Badge>}{' '}
-                {m.explanation && <span className="text-slate-600">— {m.explanation}</span>}
-              </div>
-            ))}
+            {data.recent.map((m: any, i: number) => {
+              const hasCorrection = m.original && m.corrected && m.original !== m.corrected && m.corrected !== '-' && m.original !== '-';
+              return (
+                <div key={i} className="rounded-lg border border-slate-100 px-3 py-2 text-sm">
+                  {m.topic && <Badge tone="amber">{m.topic}</Badge>}
+                  {hasCorrection && (
+                    <div className="mt-1"><span className="text-rose-500 line-through">{m.original}</span>{' → '}<span className="text-emerald-600">{m.corrected}</span></div>
+                  )}
+                  {m.explanation && <div className="mt-1 text-slate-500">{m.explanation}</div>}
+                </div>
+              );
+            })}
           </div>
         </Card>
       )}

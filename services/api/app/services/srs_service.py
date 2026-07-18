@@ -10,7 +10,7 @@ from datetime import datetime, timedelta, timezone
 from sqlalchemy import and_, or_
 from sqlalchemy.orm import Session
 
-from app.models.flashcard import Flashcard, FlashcardReview
+from app.models.flashcard import FlashcardDeck, Flashcard, FlashcardReview
 from app.models.user import User
 
 # UI grade -> SM-2 quality (0..5)
@@ -106,3 +106,17 @@ def stats(db: Session, user: User) -> dict:
     learning = reviewed - mastered
     new = max(0, total_cards - reviewed)
     return {'total': total_cards, 'new': new, 'due': due + new, 'learning': learning, 'mastered': mastered}
+
+
+def clear_user_cards(db, user) -> int:
+    """Delete all of a user's flashcards, their SRS review state and decks.
+    Useful when old cards were generated in a different native language."""
+    n = db.query(Flashcard).filter(Flashcard.user_id == user.id).count()
+    db.query(FlashcardReview).filter(FlashcardReview.user_id == user.id).delete(synchronize_session=False)
+    db.query(Flashcard).filter(Flashcard.user_id == user.id).delete(synchronize_session=False)
+    try:
+        db.query(FlashcardDeck).filter(FlashcardDeck.user_id == user.id).delete(synchronize_session=False)
+    except Exception:
+        pass
+    db.commit()
+    return n

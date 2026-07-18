@@ -33,3 +33,10 @@ def review(payload: dict, current_user: User = Depends(get_current_user), db: Se
     result = srs_service.review(db, current_user, card_id, grade)
     motivation_service.record_activity(db, current_user, 1)
     return result
+
+
+@router.delete('/cards')
+def clear_cards(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Remove all of the current user's flashcards (e.g. old cards in the wrong language)."""
+    deleted = srs_service.clear_user_cards(db, current_user)
+    return {'deleted': deleted}
