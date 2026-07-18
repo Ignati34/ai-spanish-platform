@@ -5,6 +5,7 @@ import { PageHeader } from '../components/layout/PageHeader';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
+import { FlipCard } from '../components/FlipCard';
 
 const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
@@ -19,13 +20,14 @@ export default function FlashcardsPage() {
   const [recording, setRecording] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  const [flipped, setFlipped] = useState<Set<number>>(new Set());
   const fileRef = useRef<HTMLInputElement>(null);
   const recRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
 
   const sourceLanguage = sourceEs ? 'es' : native;
 
-  const show = (r: any) => { setCards(r.cards || []); setSaved(true); setTimeout(() => setSaved(false), 2500); };
+  const show = (r: any) => { setCards(r.cards || []); setFlipped(new Set()); setSaved(true); setTimeout(() => setSaved(false), 2500); };
 
   const generate = async () => {
     if (!text.trim()) return;
@@ -98,11 +100,11 @@ export default function FlashcardsPage() {
 
       <div className="mt-5 grid gap-4 md:grid-cols-3">
         {cards.map((c, i) => (
-          <Card key={i}>
-            <div className="text-lg font-medium">{c.front}</div>
-            <div className="mt-2 text-slate-500">{c.back}</div>
-            {c.example_sentence && <div className="mt-1 text-xs text-slate-400">{c.example_sentence}</div>}
-          </Card>
+          <FlipCard key={i} minHeight={140} flipped={flipped.has(i)}
+            onClick={() => setFlipped((prev) => { const n = new Set(prev); n.has(i) ? n.delete(i) : n.add(i); return n; })}
+            front={<div><div className="text-lg font-medium">{c.front}</div><div className="mt-2 text-xs text-slate-400">{t('flashcards.tapToFlip')}</div></div>}
+            back={<div><div className="text-slate-700">{c.back}</div>{c.example_sentence && <div className="mt-1 text-xs text-slate-400">{c.example_sentence}</div>}</div>}
+          />
         ))}
       </div>
       {cards.length > 0 && <p className="mt-4 text-sm text-slate-400">{t('flashcards.review')}</p>}

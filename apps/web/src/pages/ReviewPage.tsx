@@ -5,6 +5,7 @@ import { PageHeader } from '../components/layout/PageHeader';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
+import { FlipCard } from '../components/FlipCard';
 
 const GRADES: { key: 'again' | 'hard' | 'good' | 'easy'; tone: string }[] = [
   { key: 'again', tone: 'red' }, { key: 'hard', tone: 'amber' },
@@ -44,11 +45,25 @@ export default function ReviewPage() {
       <PageHeader title={t('review.title')} description={t('review.subtitle')} />
 
       {stats && (
-        <div className="mb-4 flex flex-wrap gap-2">
-          <Badge tone="blue">{t('review.due')}: {stats.due}</Badge>
-          <Badge tone="slate">{t('review.new')}: {stats.new}</Badge>
-          <Badge tone="amber">{t('review.learning')}: {stats.learning}</Badge>
-          <Badge tone="green">{t('review.mastered')}: {stats.mastered}</Badge>
+        <div className="mb-4">
+          <div className="flex flex-wrap gap-2">
+            <Badge tone="blue">{t('review.due')}: {stats.due}</Badge>
+            <Badge tone="slate">{t('review.new')}: {stats.new}</Badge>
+            <Badge tone="amber">{t('review.learning')}: {stats.learning}</Badge>
+            <Badge tone="green">{t('review.mastered')}: {stats.mastered}</Badge>
+          </div>
+          {stats.total > 0 && (
+            <div className="mt-2">
+              <div className="mb-1 flex justify-between text-xs text-slate-400">
+                <span>{t('review.progress')}</span>
+                <span>{Math.round((stats.mastered / Math.max(1, stats.total)) * 100)}% · {stats.mastered}/{stats.total}</span>
+              </div>
+              <div className="flex h-2 overflow-hidden rounded-full bg-slate-100">
+                <div className="bg-emerald-500" style={{ width: `${(stats.mastered / Math.max(1, stats.total)) * 100}%` }} />
+                <div className="bg-amber-400" style={{ width: `${(stats.learning / Math.max(1, stats.total)) * 100}%` }} />
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -66,19 +81,16 @@ export default function ReviewPage() {
         </Card>
       ) : (
         <>
-          <Card className="min-h-[180px]">
-            <div className="flex items-center justify-between">
-              <Badge tone={card.status === 'new' ? 'slate' : 'blue'}>{card.status}</Badge>
-              <span className="text-xs text-slate-400">{idx + 1} / {queue.length}</span>
-            </div>
-            <div className="mt-6 text-center text-2xl font-semibold">{card.front}</div>
-            {revealed && (
-              <div className="mt-4 border-t border-slate-100 pt-4 text-center">
-                <div className="text-lg text-slate-700">{card.back}</div>
-                {card.example_sentence && <div className="mt-2 text-sm text-slate-400">{card.example_sentence}</div>}
-              </div>
-            )}
-          </Card>
+          <div className="mb-2 flex items-center justify-between">
+            <Badge tone={card.status === 'new' ? 'slate' : 'blue'}>{card.status}</Badge>
+            <span className="text-xs text-slate-400">{idx + 1} / {queue.length}</span>
+          </div>
+          <FlipCard
+            flipped={revealed}
+            onClick={() => setRevealed((v: boolean) => !v)}
+            front={<div className="text-2xl font-semibold">{card.front}<div className="mt-3 text-xs text-slate-400">{t('review.tapToFlip')}</div></div>}
+            back={<div><div className="text-lg text-slate-700">{card.back}</div>{card.example_sentence && <div className="mt-2 text-sm text-slate-400">{card.example_sentence}</div>}</div>}
+          />
 
           {!revealed ? (
             <Button className="mt-4 w-full" onClick={() => setRevealed(true)}>{t('review.show')}</Button>
