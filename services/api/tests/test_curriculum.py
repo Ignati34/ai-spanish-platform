@@ -22,3 +22,9 @@ def test_exercise_answers_match_options():
             opts = ex.get('options')
             if opts:
                 assert ex['correct_answer'] in opts, (l['title'], ex['correct_answer'])
+
+
+def test_full_syllabus_covered():
+    from app.content.syllabus import SYLLABUS
+    ns = sorted(l['n'] for l in CURRICULUM if l.get('n'))
+    assert ns == list(range(1, len(SYLLABUS) + 1)), 'every syllabus topic must have a hand-written lesson'
