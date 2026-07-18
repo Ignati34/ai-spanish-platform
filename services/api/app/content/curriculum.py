@@ -281,3 +281,6 @@ CURRICULUM = [l for l in CURRICULUM if l.get("level") != "B1"] + B1_LESSONS_1
 
 from app.content.curriculum_b1_2 import B1_LESSONS_2  # noqa: E402
 CURRICULUM = CURRICULUM + B1_LESSONS_2
+
+from app.content.curriculum_b2 import B2_LESSONS  # noqa: E402
+CURRICULUM = [l for l in CURRICULUM if l.get("level") != "B2"] + B2_LESSONS
