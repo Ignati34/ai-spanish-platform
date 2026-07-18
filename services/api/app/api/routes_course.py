@@ -20,7 +20,10 @@ def list_levels(db: Session = Depends(get_db)):
 
 @router.get('/lessons')
 def list_lessons(db: Session = Depends(get_db)):
-    lessons = db.query(Lesson).order_by(Lesson.created_at.desc()).limit(200).all()
+    lessons = (db.query(Lesson)
+               .filter(Lesson.lesson_type == 'curriculum')
+               .order_by(Lesson.cefr_level.asc(), Lesson.title.asc())
+               .limit(300).all())
     return [{'id': str(l.id), 'title': l.title, 'cefr_level': l.cefr_level,
              'description': l.description, 'lesson_type': l.lesson_type} for l in lessons]
 

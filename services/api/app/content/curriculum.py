@@ -237,3 +237,35 @@ CURRICULUM = [
         ],
     },
 ]
+
+
+
+# Ensure the 10 original lessons also have >=4 exercises.
+_FOURTH = {
+    'Ser и estar: два «быть»': {'exercise_type': 'multiple_choice', 'prompt': 'Madrid ___ en España.',
+        'options': ['es', 'está', 'son'], 'correct_answer': 'está', 'explanation': 'Местоположение → estar: está en España.'},
+    'Артикли и род существительных': {'exercise_type': 'multiple_choice', 'prompt': 'Tengo ___ perro.',
+        'options': ['un', 'una', 'unos'], 'correct_answer': 'un', 'explanation': 'perro — м. род, ед. ч.: un.'},
+    'Pretérito indefinido: рассказ о прошлом': {'exercise_type': 'multiple_choice', 'prompt': '¿Qué ___ (hacer) tú ayer?',
+        'options': ['haces', 'hiciste', 'hacías'], 'correct_answer': 'hiciste', 'explanation': 'hacer в indefinido, 2 л.: hiciste.'},
+    'Глагол gustar': {'exercise_type': 'multiple_choice', 'prompt': 'No me ___ las verduras.',
+        'options': ['gusta', 'gustan', 'gusto'], 'correct_answer': 'gustan', 'explanation': 'Подлежащее во мн. ч. → gustan.'},
+    'Por и para': {'exercise_type': 'multiple_choice', 'prompt': 'Caminamos ___ el parque.',
+        'options': ['para', 'por', 'en'], 'correct_answer': 'por', 'explanation': '«По/через» пространство → por.'},
+    'Presente de subjuntivo: желания и эмоции': {'exercise_type': 'multiple_choice', 'prompt': 'Quiero que tú ___ (venir).',
+        'options': ['vienes', 'vengas', 'vendrás'], 'correct_answer': 'vengas', 'explanation': 'Желание → subjuntivo: vengas.'},
+    'Condicional и гипотезы': {'exercise_type': 'multiple_choice', 'prompt': 'Si fuera rico, ___ (viajar) mucho.',
+        'options': ['viajo', 'viajaría', 'viajé'], 'correct_answer': 'viajaría', 'explanation': 'Главная часть гипотезы → condicional: viajaría.'},
+    'Коннекторы речи': {'exercise_type': 'multiple_choice', 'prompt': 'Estudié mucho; ___ aprobé.',
+        'options': ['sin embargo', 'por eso', 'aunque'], 'correct_answer': 'por eso', 'explanation': 'Следствие → por eso.'},
+    'Орфографические замены при спряжении': {'exercise_type': 'fill_blank', 'prompt': 'Ayer yo ___ (empezar) el curso.',
+        'options': ['empecé', 'empezé', 'empezí'], 'correct_answer': 'empecé', 'explanation': '-zar: z→c перед e: empecé.'},
+    'Индивидуальные глаголы и управление предлогами': {'exercise_type': 'fill_blank', 'prompt': 'Yo ___ (oír) música. (presente, 1 л.)',
+        'options': ['oyo', 'oigo', 'oío'], 'correct_answer': 'oigo', 'explanation': 'oír, 1 л.: oigo.'},
+}
+for _l in CURRICULUM:
+    if len(_l['exercises']) < 4 and _l['title'] in _FOURTH:
+        _l['exercises'].append(_FOURTH[_l['title']])
+
+from app.content.curriculum_extra import EXTRA_LESSONS  # noqa: E402
+CURRICULUM = CURRICULUM + EXTRA_LESSONS
