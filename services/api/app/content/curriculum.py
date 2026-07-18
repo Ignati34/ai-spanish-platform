@@ -295,3 +295,7 @@ CURRICULUM = [l for l in CURRICULUM if l.get("level") != "C2"] + C2_LESSONS
 from app.content.curriculum_a1_full import A1_FULL  # noqa: E402
 _upg = {l['n'] for l in A1_FULL}
 CURRICULUM = [l for l in CURRICULUM if l.get('n') not in _upg] + A1_FULL
+
+from app.content.curriculum_a1_full2 import A1_FULL_2  # noqa: E402
+_upg2 = {l['n'] for l in A1_FULL_2}
+CURRICULUM = [l for l in CURRICULUM if l.get('n') not in _upg2] + A1_FULL_2

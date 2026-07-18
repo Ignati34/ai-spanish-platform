@@ -8,6 +8,9 @@ LANG_NAMES = {
 }
 
 
+from app.content.vocab_bank import enrichment_block
+
+
 def lang_name(code: str) -> str:
     return LANG_NAMES.get((code or 'ru')[:2], 'Russian')
 
@@ -92,6 +95,7 @@ def voice_reply(history: list[dict], user_message: str, scenario: str, cefr_leve
         f'Speak natural Spanish appropriate to {cefr_level}; keep your reply short (1-3 sentences). '
         f'Gently correct the student\'s last message only if it has real errors, and write that '
         f'correction in {lang}. Respond with ONE valid minified JSON object and nothing else.'
+            + enrichment_block(n_verbs=5, n_phrases=6, n_examples=2)
     )
     convo = '\n'.join(f'{m.get("role")}: {m.get("text")}' for m in (history or [])[-8:])
     user = (
@@ -131,6 +135,7 @@ def targeted_exercises(topics: list[str], cefr_level: str, native_language: str)
         'You are a Spanish teacher creating focused remedial practice. '
         f'Target the student\'s weak areas. Explanations in {lang}. '
         'Respond with ONE valid minified JSON object and nothing else.'
+            + enrichment_block(n_verbs=6, n_phrases=3, n_examples=2)
     )
     user = (
         f'Create focused remedial practice for a {cefr_level} learner on: {topic_str}. '
@@ -154,6 +159,7 @@ def simulation_turn(history: list[dict], user_message: str, role: str, goal_es: 
         f'The learner\'s native language is {lang}. Goal of the simulation: {goal_es} '
         f'Judge whether that goal has now been achieved in the conversation. '
         f'Correct only real errors, in {lang}. Respond with ONE valid minified JSON object and nothing else.'
+        + enrichment_block(n_verbs=6, n_phrases=6, n_examples=2)
     )
     convo = '\n'.join(f'{m.get("role")}: {m.get("text")}' for m in (history or [])[-10:])
     user = (
@@ -181,6 +187,7 @@ def generate_lesson(topic_es: str, topic_native: str, cefr_level: str, native_la
         f'native language is {lang}. Write clear, original teaching content in {lang} with Spanish '
         f'examples. Do NOT copy any textbook; explain the grammar facts in your own words. '
         f'Respond with ONE valid minified JSON object and nothing else.'
+            + enrichment_block(n_verbs=8, n_phrases=4, n_examples=3)
     )
     user = (
         f'Write a complete lesson on: "{topic_es}" ({topic_native}). {("Focus: " + focus + ". ") if focus else ""}'
