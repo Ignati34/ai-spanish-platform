@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 import uuid
 from app.api.router import api_router
+from app.api import routes_public
 from app.core.config import get_settings
 from app.core.logging import configure_logging
 from app.services.security.rate_limiter import hit as _rl_hit, client_ip as _client_ip
@@ -65,6 +66,7 @@ app.add_middleware(
 )
 
 app.include_router(api_router)
+app.include_router(routes_public.router)
 
 
 @app.get('/')

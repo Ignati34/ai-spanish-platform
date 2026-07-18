@@ -113,6 +113,11 @@ class Settings(BaseSettings):
     rate_limit_api_per_min: int = Field(default=240, alias='RATE_LIMIT_API_PER_MIN')  # per IP, all /api
     rate_limit_login_max: int = Field(default=10, alias='RATE_LIMIT_LOGIN_MAX')       # per IP
     rate_limit_login_window: int = Field(default=300, alias='RATE_LIMIT_LOGIN_WINDOW')
+
+    # --- AI-SEO (public discoverability for AI search engines) ---
+    ai_seo_enabled: bool = Field(default=True, alias='AI_SEO_ENABLED')
+    public_base_url: str = Field(default='http://localhost:8080', alias='PUBLIC_BASE_URL')
+    allow_ai_crawlers: bool = Field(default=True, alias='ALLOW_AI_CRAWLERS')
     max_lesson_input_chars: int = Field(default=12000, alias='MAX_LESSON_INPUT_CHARS')
 
     cors_origins: str = Field(default='http://localhost:3000', alias='CORS_ORIGINS')

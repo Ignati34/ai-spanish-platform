@@ -87,6 +87,19 @@ services:
       retries: 10
       start_period: 120s
 
+  mcp:
+    build:
+      context: ../..
+      dockerfile: infra/docker/Dockerfile.mcp
+    environment:
+      MCP_API_BASE: "http://api:8000"
+      MCP_HOST: "0.0.0.0"
+      MCP_PORT: "8100"
+    ports:
+      - "8100:8100"
+    depends_on: [api]
+    restart: unless-stopped
+
 volumes:
   sh_postgres_data:
   sh_minio_data:
