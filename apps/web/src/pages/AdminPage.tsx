@@ -37,6 +37,14 @@ export default function AdminPage() {
   const loadCurr = () => api.adminCurriculumStatus().then(setCurr).catch(() => setCurr(null));
   const [sec, setSec] = useState<any>(null);
   const loadSec = () => api.adminSecurityStatus().then(setSec).catch(() => setSec(null));
+  const [audit, setAudit] = useState<any>(null);
+  const [auditBusy, setAuditBusy] = useState(false);
+  const runAudit = async () => {
+    setAuditBusy(true); setAudit(null);
+    try { setAudit(await api.adminAuditDependencies()); }
+    catch (e: any) { setAudit({ ok: false, error: String(e.message || e) }); }
+    finally { setAuditBusy(false); }
+  };
   useEffect(() => { if (active === 'Curriculum') loadCurr(); if (active === 'Security') loadSec(); }, [active]);
   const generate = async (n: number) => {
     setGenBusy(true); setGenMsg('');
@@ -113,19 +121,61 @@ export default function AdminPage() {
             до обработки. Заражённые файлы отклоняются.
           </p>
           {sec ? (
-            <div className="mt-3 flex flex-wrap gap-2">
-              <Badge tone={sec.malware_scan?.enabled ? 'green' : 'slate'}>
-                {sec.malware_scan?.enabled ? 'Сканирование включено' : 'Сканирование выключено'}
-              </Badge>
-              <Badge tone={sec.malware_scan?.reachable ? 'green' : 'rose'}>
-                {sec.malware_scan?.reachable ? 'Сканер доступен' : 'Сканер недоступен'}
-              </Badge>
-              {sec.malware_scan?.version && <Badge tone="slate">{String(sec.malware_scan.version).slice(0, 40)}</Badge>}
+            <div className="mt-3 space-y-4">
+              <div>
+                <div className="mb-1 text-sm font-medium">Антивирус загрузок</div>
+                <div className="flex flex-wrap gap-2">
+                  <Badge tone={sec.malware_scan?.enabled ? 'green' : 'slate'}>{sec.malware_scan?.enabled ? 'Включено' : 'Выключено'}</Badge>
+                  <Badge tone={sec.malware_scan?.reachable ? 'green' : 'rose'}>{sec.malware_scan?.reachable ? 'Сканер доступен' : 'Сканер недоступен'}</Badge>
+                  {sec.malware_scan?.version && <Badge tone="slate">{String(sec.malware_scan.version).slice(0, 40)}</Badge>}
+                </div>
+              </div>
+              <div>
+                <div className="mb-1 text-sm font-medium">Заголовки безопасности</div>
+                <div className="flex flex-wrap gap-2">
+                  <Badge tone={sec.headers?.enabled ? 'green' : 'rose'}>{sec.headers?.enabled ? 'Активны' : 'Выключены'}</Badge>
+                  <Badge tone={sec.headers?.hsts ? 'green' : 'slate'}>HSTS: {sec.headers?.hsts ? 'вкл' : 'выкл (HTTP)'}</Badge>
+                  {(sec.headers?.list || []).map((h: string) => <Badge key={h} tone="slate">{h}</Badge>)}
+                </div>
+              </div>
+              <div>
+                <div className="mb-1 text-sm font-medium">Ограничение частоты запросов</div>
+                <div className="flex flex-wrap gap-2">
+                  <Badge tone={sec.rate_limit?.enabled ? 'green' : 'rose'}>{sec.rate_limit?.enabled ? 'Включено' : 'Выключено'}</Badge>
+                  <Badge tone="slate">API: {sec.rate_limit?.api_per_min}/мин на IP</Badge>
+                  <Badge tone="slate">Вход: {sec.rate_limit?.login_max} за {Math.round((sec.rate_limit?.login_window_seconds || 0) / 60)} мин</Badge>
+                </div>
+              </div>
             </div>
           ) : <p className="mt-2 text-sm text-slate-400">Загрузка…</p>}
-          <p className="mt-3 text-xs text-slate-400">
-            При первом старте база сигнатур грузится 1–2 мин — до этого сканер может быть «недоступен»
-            (загрузки при этом разрешены и логируются). Проверка: загрузите тестовую строку EICAR — будет отклонена.
+
+          <div className="mt-5 border-t border-slate-100 pt-4">
+            <div className="text-sm font-medium">Аудит зависимостей (pip-audit)</div>
+            <p className="mt-1 text-xs text-slate-500">Проверка Python-пакетов на известные уязвимости по базе OSV. Может занять до ~2 минут и требует доступа в интернет.</p>
+            <div className="mt-2 flex items-center gap-2">
+              <Button onClick={runAudit} disabled={auditBusy}>{auditBusy ? 'Проверка…' : 'Проверить зависимости'}</Button>
+            </div>
+            {audit && (audit.ok ? (
+              <div className="mt-3">
+                <Badge tone={audit.vulnerability_count ? 'rose' : 'green'}>
+                  {audit.vulnerability_count ? `Найдено уязвимостей: ${audit.vulnerability_count}` : 'Уязвимостей не найдено'}
+                </Badge>
+                <span className="ml-2 text-xs text-slate-400">Проверено пакетов: {audit.packages_checked}</span>
+                {audit.vulnerability_count > 0 && (
+                  <div className="mt-2 space-y-1">
+                    {audit.vulnerabilities.map((v: any, i: number) => (
+                      <div key={i} className="rounded border border-rose-100 bg-rose-50 px-2 py-1 text-xs text-slate-700">
+                        <b>{v.package} {v.version}</b> — {v.id}{v.fix_versions?.length ? ` · фикс: ${v.fix_versions.join(', ')}` : ''}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : <div className="mt-3 text-sm text-rose-600">Ошибка: {audit.error}</div>)}
+          </div>
+
+          <p className="mt-4 text-xs text-slate-400">
+            ClamAV при первом старте грузит базу сигнатур 1–2 мин. Проверка антивируса: загрузите тестовую строку EICAR — будет отклонена.
           </p>
         </Card>
       )}

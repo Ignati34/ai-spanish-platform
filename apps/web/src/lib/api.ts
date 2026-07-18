@@ -165,6 +165,7 @@ class ApiClient {
   // --- Admin: curriculum ---
   adminCurriculumStatus() { return this.request<any>('/api/admin/curriculum/status'); }
   adminSecurityStatus() { return this.request<any>('/api/admin/security/status'); }
+  adminAuditDependencies() { return this.request<any>('/api/admin/security/audit-dependencies', { method: 'POST', body: '{}' }); }
   adminCurriculumGenerate(count = 5, native = 'ru') {
     return this.request<any>(`/api/admin/curriculum/generate?count=${count}&native=${native}`, { method: 'POST', body: '{}' });
   }

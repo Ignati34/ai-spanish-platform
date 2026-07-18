@@ -12,7 +12,8 @@ from app.schemas.admin import ManualAccessRequest
 from app.services.admin_service import AdminService
 from app.content.syllabus import SYLLABUS
 from app.services import lesson_generator
-from app.services.security import clamav_service
+from app.services.security import clamav_service, dependency_audit
+from app.core.config import get_settings as _get_settings
 
 router = APIRouter(prefix='/admin', tags=['admin'])
 
@@ -150,5 +151,26 @@ async def curriculum_generate(count: int = 5, native: str = 'ru', admin: User = 
 
 @router.get('/security/status')
 def security_status(admin: User = Depends(require_admin)):
-    """Upload malware-scanning status for the admin security panel."""
-    return {'malware_scan': clamav_service.ping()}
+    """Security posture for the admin panel."""
+    cfg = _get_settings()
+    return {
+        'malware_scan': clamav_service.ping(),
+        'headers': {
+            'enabled': cfg.security_headers_enabled,
+            'hsts': cfg.hsts_enabled,
+            'list': ['X-Content-Type-Options', 'X-Frame-Options', 'Referrer-Policy',
+                     'Permissions-Policy', 'Content-Security-Policy'],
+        },
+        'rate_limit': {
+            'enabled': cfg.rate_limit_enabled,
+            'api_per_min': cfg.rate_limit_api_per_min,
+            'login_max': cfg.rate_limit_login_max,
+            'login_window_seconds': cfg.rate_limit_login_window,
+        },
+    }
+
+
+@router.post('/security/audit-dependencies')
+def audit_dependencies(admin: User = Depends(require_admin)):
+    """Run pip-audit against installed Python dependencies (may take up to ~2 min)."""
+    return dependency_audit.run_pip_audit()

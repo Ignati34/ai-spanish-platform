@@ -105,6 +105,14 @@ class Settings(BaseSettings):
     clamav_timeout_seconds: int = Field(default=30, alias='CLAMAV_TIMEOUT_SECONDS')
     # If the scanner is unreachable: True = reject uploads (fail closed), False = allow with a warning.
     malware_scan_fail_closed: bool = Field(default=False, alias='MALWARE_SCAN_FAIL_CLOSED')
+
+    # --- Security: headers & rate limiting ---
+    security_headers_enabled: bool = Field(default=True, alias='SECURITY_HEADERS_ENABLED')
+    hsts_enabled: bool = Field(default=False, alias='HSTS_ENABLED')  # enable only behind HTTPS
+    rate_limit_enabled: bool = Field(default=True, alias='RATE_LIMIT_ENABLED')
+    rate_limit_api_per_min: int = Field(default=240, alias='RATE_LIMIT_API_PER_MIN')  # per IP, all /api
+    rate_limit_login_max: int = Field(default=10, alias='RATE_LIMIT_LOGIN_MAX')       # per IP
+    rate_limit_login_window: int = Field(default=300, alias='RATE_LIMIT_LOGIN_WINDOW')
     max_lesson_input_chars: int = Field(default=12000, alias='MAX_LESSON_INPUT_CHARS')
 
     cors_origins: str = Field(default='http://localhost:3000', alias='CORS_ORIGINS')

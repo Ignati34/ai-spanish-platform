@@ -17,6 +17,7 @@ os.environ.setdefault('JWT_SECRET', 'test-secret')
 os.environ.setdefault('AI_PROVIDER', 'stub')
 os.environ.setdefault('AI_CACHE_ENABLED', 'false')
 os.environ.setdefault('UPLOAD_DIR', f'{_TMP}/uploads')
+os.environ.setdefault('RATE_LIMIT_ENABLED', 'false')
 
 from sqlalchemy import CHAR
 from sqlalchemy.types import TypeDecorator
