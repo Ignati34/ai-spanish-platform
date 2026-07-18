@@ -206,9 +206,14 @@ class ApiClient {
   }
 
   // --- Admin ---
-  adminDashboard() { return this.request('/api/admin/dashboard'); }
-  adminUsers() { return this.request('/api/admin/users'); }
-  adminPayments() { return this.request('/api/admin/payments'); }
+  adminDashboard() { return this.request<any>('/api/admin/dashboard'); }
+  adminUsers() { return this.request<any[]>('/api/admin/users'); }
+  adminPayments() { return this.request<any>('/api/admin/payments'); }
+  adminJobs() { return this.request<any[]>('/api/admin/jobs'); }
+  adminRetryJob(id: string) { return this.request<any>(`/api/admin/jobs/${id}/retry`, { method: 'POST', body: '{}' }); }
+  adminLogs() { return this.request<any>('/api/admin/logs'); }
+  adminSystemHealth() { return this.request<any>('/api/admin/system-health'); }
+  adminLicenses() { return this.request<any[]>('/api/admin/licenses'); }
 }
 
 export const api = new ApiClient();

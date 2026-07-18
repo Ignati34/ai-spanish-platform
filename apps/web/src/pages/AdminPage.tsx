@@ -5,36 +5,44 @@ import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 
-const sections = ['Dashboard', 'Curriculum', 'Security', 'Users', 'Payments', 'Usage & Costs', 'Jobs', 'Logs', 'System Health', 'Licenses'];
+const sections = ['Dashboard', 'Curriculum', 'Security', 'Users', 'Payments', 'Jobs', 'Logs', 'System Health', 'Licenses'] as const;
+type Section = (typeof sections)[number];
 
-const metrics = [
-  ['Users', '128', 'blue'],
-  ['MRR', '646 €', 'green'],
-  ['Active subscriptions', '34', 'green'],
-  ['Failed payments', '3', 'rose'],
-  ['AI cost today', '12.48 €', 'orange'],
-  ['Failed jobs', '7', 'rose']
-] as const;
+const toneFor = (raw?: string): any => {
+  const s = (raw || '').toLowerCase();
+  if (['ok', 'green', 'active', 'trialing', 'completed', 'processed', 'paid', 'operational', 'succeeded'].includes(s)) return 'green';
+  if (['failed', 'error', 'rose', 'uncollectible', 'void', 'needs_attention'].includes(s)) return 'rose';
+  if (['running', 'queued', 'pending', 'open', 'orange', 'blue', 'amber'].includes(s)) return 'amber';
+  return 'slate';
+};
 
-const users = [
-  ['demo@example.com', 'Pro', 'active', '4 920 AI req'],
-  ['student.uk@example.com', 'Basic', 'active', '830 AI req'],
-  ['free.user@example.com', 'Free', 'active', '97 AI req']
-];
-
-const jobs = [
-  ['text_analyzer_agent', 'completed', '1 attempt'],
-  ['transcription_agent', 'running', '1 attempt'],
-  ['podcast_builder_agent', 'failed', '3 attempts'],
-  ['image_lesson_agent', 'queued', '0 attempts']
-];
+function Empty({ text }: { text: string }) {
+  return <p className="text-sm text-slate-400">{text}</p>;
+}
 
 export default function AdminPage() {
-  const [active, setActive] = useState('Dashboard');
+  const [active, setActive] = useState<Section>('Dashboard');
+
+  const [dash, setDash] = useState<any>(null);
+  const [users, setUsers] = useState<any[] | null>(null);
+  const [pays, setPays] = useState<any>(null);
+  const [jobs, setJobs] = useState<any[] | null>(null);
+  const [logs, setLogs] = useState<any>(null);
+  const [health, setHealth] = useState<any>(null);
+  const [licenses, setLicenses] = useState<any[] | null>(null);
+  const [err, setErr] = useState('');
+
   const [curr, setCurr] = useState<any>(null);
   const [genBusy, setGenBusy] = useState(false);
   const [genMsg, setGenMsg] = useState('');
   const loadCurr = () => api.adminCurriculumStatus().then(setCurr).catch(() => setCurr(null));
+  const generate = async (n: number) => {
+    setGenBusy(true); setGenMsg('');
+    try { const r = await api.adminCurriculumGenerate(n, 'ru'); setGenMsg(`Создано: ${r.created}. Всего: ${r.generated_total}/${r.total}`); loadCurr(); }
+    catch (e: any) { setGenMsg('Ошибка: ' + String(e.message || e)); }
+    finally { setGenBusy(false); }
+  };
+
   const [sec, setSec] = useState<any>(null);
   const loadSec = () => api.adminSecurityStatus().then(setSec).catch(() => setSec(null));
   const [audit, setAudit] = useState<any>(null);
@@ -45,17 +53,28 @@ export default function AdminPage() {
     catch (e: any) { setAudit({ ok: false, error: String(e.message || e) }); }
     finally { setAuditBusy(false); }
   };
-  useEffect(() => { if (active === 'Curriculum') loadCurr(); if (active === 'Security') loadSec(); }, [active]);
-  const generate = async (n: number) => {
-    setGenBusy(true); setGenMsg('');
-    try { const r = await api.adminCurriculumGenerate(n, 'ru'); setGenMsg(`Создано: ${r.created}. Всего: ${r.generated_total}/${r.total}`); loadCurr(); }
-    catch (e: any) { setGenMsg('Ошибка: ' + String(e.message || e)); }
-    finally { setGenBusy(false); }
+
+  useEffect(() => {
+    setErr('');
+    const fail = (e: any) => setErr(String(e?.message || e));
+    if (active === 'Dashboard') api.adminDashboard().then(setDash).catch(fail);
+    if (active === 'Curriculum') loadCurr();
+    if (active === 'Security') loadSec();
+    if (active === 'Users') api.adminUsers().then(setUsers).catch(fail);
+    if (active === 'Payments') api.adminPayments().then(setPays).catch(fail);
+    if (active === 'Jobs') api.adminJobs().then(setJobs).catch(fail);
+    if (active === 'Logs') api.adminLogs().then(setLogs).catch(fail);
+    if (active === 'System Health') api.adminSystemHealth().then(setHealth).catch(fail);
+    if (active === 'Licenses') api.adminLicenses().then(setLicenses).catch(fail);
+  }, [active]);
+
+  const retry = async (id: string) => {
+    try { await api.adminRetryJob(id); setJobs(await api.adminJobs()); } catch (e: any) { setErr(String(e.message || e)); }
   };
 
   return (
     <div>
-      <PageHeader title="Admin / Developer Console" description="Пользователи, подписки, usage, фоновые задачи, логи, лицензии и состояние облачной инфраструктуры." />
+      <PageHeader title="Admin / Developer Console" description="Реальные данные: пользователи, подписки, платежи, фоновые задачи, логи, лицензии, безопасность и курс." />
 
       <div className="mb-6 flex flex-wrap gap-2">
         {sections.map((section) => (
@@ -63,33 +82,26 @@ export default function AdminPage() {
         ))}
       </div>
 
+      {err && <Card className="mb-4"><p className="text-sm text-rose-600">{err}</p></Card>}
+
       {active === 'Dashboard' && (
-        <>
-          <div className="grid gap-5 md:grid-cols-3">
-            {metrics.map(([title, value, tone]) => (
-              <Card key={title}>
-                <div className="flex items-center justify-between">
-                  <p className="text-sm font-bold text-slate-500">{title}</p>
-                  <Badge tone={tone}>{tone}</Badge>
-                </div>
-                <p className="mt-2 text-4xl font-black">{value}</p>
-              </Card>
-            ))}
-          </div>
-          <Card className="mt-6">
-            <h3 className="text-xl font-black">SaaS control plane</h3>
-            <p className="mt-2 text-sm leading-6 text-slate-600">Эта панель нужна для AWS SaaS: CloudWatch-style health, Stripe webhooks, AI costs, failed jobs, ручная выдача доступа и self-hosted лицензии.</p>
-          </Card>
-        </>
+        <div className="grid gap-5 md:grid-cols-3">
+          {dash ? (dash.metrics || []).map((m: any) => (
+            <Card key={m.label}>
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-bold text-slate-500">{m.label}</p>
+                <Badge tone={toneFor(m.tone)}>{m.tone}</Badge>
+              </div>
+              <p className="mt-2 text-4xl font-black">{m.value}</p>
+            </Card>
+          )) : <Empty text="Загрузка…" />}
+        </div>
       )}
 
       {active === 'Curriculum' && (
         <Card>
           <div className="text-lg font-semibold">Учебный курс (генерация ИИ)</div>
-          <p className="mt-1 text-sm text-slate-500">
-            Полный урок (теория + упражнения) генерируется по силлабусу через ИИ, оригинальными формулировками.
-            Генерация расходует AI-запросы вашего провайдера.
-          </p>
+          <p className="mt-1 text-sm text-slate-500">Полный урок (теория + упражнения) генерируется по силлабусу через ИИ, оригинальными формулировками. Генерация расходует AI-запросы вашего провайдера.</p>
           {curr ? (
             <div className="mt-3">
               <div className="mb-2 flex flex-wrap gap-2">
@@ -107,19 +119,13 @@ export default function AdminPage() {
             <Button variant="secondary" onClick={() => generate(20)} disabled={genBusy}>Сгенерировать 20</Button>
             {genMsg && <span className="text-sm text-slate-600">{genMsg}</span>}
           </div>
-          <p className="mt-3 text-xs text-slate-400">
-            Пакетно из контейнера: <code>python scripts/generate_curriculum.py --limit 20 --native ru</code>
-          </p>
+          <p className="mt-3 text-xs text-slate-400">Пакетно из контейнера: <code>python scripts/generate_curriculum.py --limit 20 --native ru</code></p>
         </Card>
       )}
 
       {active === 'Security' && (
         <Card>
-          <div className="text-lg font-semibold">Безопасность: антивирус загрузок (ClamAV)</div>
-          <p className="mt-1 text-sm text-slate-500">
-            Каждый загружаемый файл (документы, изображения, аудио, видео) проверяется антивирусом
-            до обработки. Заражённые файлы отклоняются.
-          </p>
+          <div className="text-lg font-semibold">Безопасность</div>
           {sec ? (
             <div className="mt-3 space-y-4">
               <div>
@@ -157,90 +163,120 @@ export default function AdminPage() {
             </div>
             {audit && (audit.ok ? (
               <div className="mt-3">
-                <Badge tone={audit.vulnerability_count ? 'rose' : 'green'}>
-                  {audit.vulnerability_count ? `Найдено уязвимостей: ${audit.vulnerability_count}` : 'Уязвимостей не найдено'}
-                </Badge>
+                <Badge tone={audit.vulnerability_count ? 'rose' : 'green'}>{audit.vulnerability_count ? `Найдено уязвимостей: ${audit.vulnerability_count}` : 'Уязвимостей не найдено'}</Badge>
                 <span className="ml-2 text-xs text-slate-400">Проверено пакетов: {audit.packages_checked}</span>
                 {audit.vulnerability_count > 0 && (
                   <div className="mt-2 space-y-1">
                     {audit.vulnerabilities.map((v: any, i: number) => (
-                      <div key={i} className="rounded border border-rose-100 bg-rose-50 px-2 py-1 text-xs text-slate-700">
-                        <b>{v.package} {v.version}</b> — {v.id}{v.fix_versions?.length ? ` · фикс: ${v.fix_versions.join(', ')}` : ''}
-                      </div>
+                      <div key={i} className="rounded border border-rose-100 bg-rose-50 px-2 py-1 text-xs text-slate-700"><b>{v.package} {v.version}</b> — {v.id}{v.fix_versions?.length ? ` · фикс: ${v.fix_versions.join(', ')}` : ''}</div>
                     ))}
                   </div>
                 )}
               </div>
             ) : <div className="mt-3 text-sm text-rose-600">Ошибка: {audit.error}</div>)}
           </div>
-
-          <p className="mt-4 text-xs text-slate-400">
-            ClamAV при первом старте грузит базу сигнатур 1–2 мин. Проверка антивируса: загрузите тестовую строку EICAR — будет отклонена.
-          </p>
+          <p className="mt-4 text-xs text-slate-400">ClamAV при первом старте грузит базу сигнатур 1–2 мин. Проверка антивируса: загрузите тестовую строку EICAR — будет отклонена.</p>
         </Card>
       )}
 
       {active === 'Users' && (
         <Card>
-          <h3 className="text-xl font-black">Users</h3>
-          <div className="mt-4 overflow-hidden rounded-2xl border border-slate-200">
-            {users.map(([email, plan, status, usage]) => (
-              <div key={email} className="grid grid-cols-4 gap-3 border-b border-slate-100 p-4 text-sm last:border-0">
-                <span className="font-bold">{email}</span><Badge tone="blue">{plan}</Badge><Badge tone="green">{status}</Badge><span>{usage}</span>
-              </div>
-            ))}
-          </div>
-          <Button className="mt-4" variant="secondary">Grant manual access</Button>
+          <div className="mb-3 text-lg font-semibold">Пользователи</div>
+          {users ? (users.length ? (
+            <div className="divide-y divide-slate-100">
+              {users.map((u) => (
+                <div key={u.id} className="flex items-center justify-between py-2 text-sm">
+                  <div><div className="font-medium">{u.email}</div><div className="text-xs text-slate-400">{u.native_language} · {u.role}</div></div>
+                  <div className="flex gap-2"><Badge tone="slate">{u.plan_code}</Badge><Badge tone={toneFor(u.status)}>{u.status}</Badge></div>
+                </div>
+              ))}
+            </div>
+          ) : <Empty text="Пока нет пользователей." />) : <Empty text="Загрузка…" />}
         </Card>
       )}
 
       {active === 'Payments' && (
         <Card>
-          <h3 className="text-xl font-black">Stripe payments & webhooks</h3>
-          <div className="mt-4 space-y-3">
-            {['checkout.session.completed', 'invoice.paid', 'customer.subscription.updated', 'invoice.payment_failed'].map((event, index) => (
-              <div key={event} className="flex items-center justify-between rounded-2xl bg-slate-50 p-4"><span className="font-bold">{event}</span><Badge tone={index === 3 ? 'rose' : 'green'}>{index === 3 ? 'needs attention' : 'processed'}</Badge></div>
-            ))}
-          </div>
+          <div className="mb-3 text-lg font-semibold">Платежи и вебхуки Stripe</div>
+          {pays ? (
+            <>
+              <div className="mb-2 text-sm font-medium text-slate-600">Счета</div>
+              {pays.invoices?.length ? pays.invoices.map((i: any) => (
+                <div key={i.id} className="flex items-center justify-between border-b border-slate-100 py-2 text-sm">
+                  <span>{(i.amount_paid ?? 0) / 100} {String(i.currency || '').toUpperCase()}</span>
+                  <Badge tone={toneFor(i.status)}>{i.status}</Badge>
+                </div>
+              )) : <Empty text="Счетов пока нет." />}
+              <div className="mb-2 mt-4 text-sm font-medium text-slate-600">События вебхуков</div>
+              {pays.events?.length ? pays.events.map((e: any, idx: number) => (
+                <div key={idx} className="flex items-center justify-between border-b border-slate-100 py-2 text-sm">
+                  <span className="font-mono text-xs">{e.event_type}</span>
+                  <Badge tone={toneFor(e.processing_status)}>{e.processing_status}</Badge>
+                </div>
+              )) : <Empty text="Событий вебхуков пока нет." />}
+            </>
+          ) : <Empty text="Загрузка…" />}
         </Card>
-      )}
-
-      {active === 'Usage & Costs' && (
-        <div className="grid gap-5 md:grid-cols-2">
-          {['AI tokens: 1.2M', 'STT: 420 min', 'TTS: 88 min', 'Images: 312', 'Storage: 18 GB', 'Top user cost: 4.12 €'].map((item) => <Card key={item}><p className="text-2xl font-black">{item}</p></Card>)}
-        </div>
       )}
 
       {active === 'Jobs' && (
         <Card>
-          <h3 className="text-xl font-black">Worker queue</h3>
-          <div className="mt-4 space-y-3">
-            {jobs.map(([job, status, attempts]) => <div key={job} className="flex items-center justify-between rounded-2xl bg-slate-50 p-4"><div><p className="font-bold">{job}</p><p className="text-xs text-slate-500">{attempts}</p></div><Badge tone={status === 'failed' ? 'rose' : status === 'completed' ? 'green' : 'orange'}>{status}</Badge></div>)}
-          </div>
+          <div className="mb-3 text-lg font-semibold">Очередь фоновых задач</div>
+          {jobs ? (jobs.length ? jobs.map((j) => (
+            <div key={j.id} className="flex items-center justify-between border-b border-slate-100 py-3 text-sm">
+              <div><div className="font-medium">{j.job_type}</div><div className="text-xs text-slate-400">{j.attempts} attempts{j.error_message ? ` · ${j.error_message}` : ''}</div></div>
+              <div className="flex items-center gap-2">
+                <Badge tone={toneFor(j.status)}>{j.status}</Badge>
+                {j.status === 'failed' && <Button variant="secondary" onClick={() => retry(j.id)}>Повторить</Button>}
+              </div>
+            </div>
+          )) : <Empty text="Очередь пуста." />) : <Empty text="Загрузка…" />}
         </Card>
       )}
 
       {active === 'Logs' && (
         <Card>
-          <h3 className="text-xl font-black">Logs</h3>
-          <div className="mt-4 space-y-3 font-mono text-xs">
-            {['INFO api request_id=abc123 path=/api/billing/plans', 'WARN stripe webhook invoice.payment_failed', 'ERROR worker podcast_builder_agent failed file_id=up_91', 'INFO admin manual_access_granted user=demo@example.com'].map((line) => <div key={line} className="rounded-2xl bg-slate-950 p-3 text-slate-100">{line}</div>)}
-          </div>
+          <div className="mb-3 text-lg font-semibold">Логи</div>
+          {logs ? (
+            <>
+              <div className="mb-2 text-sm font-medium text-slate-600">Системные события</div>
+              {logs.system_events?.length ? logs.system_events.map((e: any, i: number) => (
+                <div key={i} className="mb-1 rounded bg-slate-900 px-3 py-2 font-mono text-xs text-slate-100">{String(e.severity || 'INFO').toUpperCase()} {e.source} {e.event_type} — {e.message}</div>
+              )) : <Empty text="Событий пока нет." />}
+              <div className="mb-2 mt-4 text-sm font-medium text-slate-600">Аудит действий админа</div>
+              {logs.admin_audit_logs?.length ? logs.admin_audit_logs.map((a: any, i: number) => (
+                <div key={i} className="mb-1 rounded bg-slate-900 px-3 py-2 font-mono text-xs text-slate-100">{a.action} {a.target_type || ''} {a.target_id || ''}</div>
+              )) : <Empty text="Записей аудита пока нет." />}
+            </>
+          ) : <Empty text="Загрузка…" />}
         </Card>
       )}
 
       {active === 'System Health' && (
-        <div className="grid gap-5 md:grid-cols-3">
-          {['API', 'PostgreSQL/RDS', 'Redis/ElastiCache', 'S3/MinIO', 'Workers', 'Stripe webhook'].map((svc) => <Card key={svc}><p className="font-black">{svc}</p><Badge tone="green">ok</Badge></Card>)}
-        </div>
+        <Card>
+          <div className="mb-3 text-lg font-semibold">Состояние системы</div>
+          {health ? (
+            <div className="grid gap-3 md:grid-cols-2">
+              {Object.entries(health).map(([k, v]) => (
+                <div key={k} className="flex items-center justify-between rounded-lg border border-slate-100 px-3 py-2 text-sm">
+                  <span className="text-slate-600">{k}</span>
+                  <Badge tone={toneFor(String(v))}>{String(v)}</Badge>
+                </div>
+              ))}
+            </div>
+          ) : <Empty text="Загрузка…" />}
+        </Card>
       )}
 
       {active === 'Licenses' && (
         <Card>
-          <h3 className="text-xl font-black">Self-hosted licenses</h3>
-          <div className="mt-4 space-y-3">
-            {['School Basic — 50 users — active', 'Enterprise Hybrid — 500 users — active', 'Demo VPS — 10 users — expires soon'].map((license) => <div key={license} className="rounded-2xl bg-slate-50 p-4 font-bold">{license}</div>)}
-          </div>
+          <div className="mb-3 text-lg font-semibold">Лицензии (self-hosted)</div>
+          {licenses ? (licenses.length ? licenses.map((l) => (
+            <div key={l.id} className="flex items-center justify-between border-b border-slate-100 py-2 text-sm">
+              <div><div className="font-medium">{l.edition}</div><div className="text-xs text-slate-400">до {l.valid_until || '—'} · {l.max_users || '∞'} польз.</div></div>
+              <Badge tone={toneFor(l.status)}>{l.status}</Badge>
+            </div>
+          )) : <Empty text="Лицензий пока нет." />) : <Empty text="Загрузка…" />}
         </Card>
       )}
     </div>
