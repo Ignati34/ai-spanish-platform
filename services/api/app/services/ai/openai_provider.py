@@ -173,3 +173,11 @@ class OpenAIProvider(BaseAIProvider):
             resp.raise_for_status()
             data_json = resp.json()
         return (data_json['choices'][0]['message']['content'] or '').strip()
+
+    async def generate_lesson(self, topic_es, topic_native, cefr_level='A1', native_language='ru', focus='') -> dict:
+        system, user = prompts.generate_lesson(topic_es, topic_native, cefr_level, native_language, focus)
+        data = await self._chat_json(system, user)
+        data.setdefault('title', topic_native or topic_es)
+        data.setdefault('theory', '')
+        data.setdefault('exercises', [])
+        return data

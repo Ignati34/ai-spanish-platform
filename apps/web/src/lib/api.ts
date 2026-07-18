@@ -162,6 +162,12 @@ class ApiClient {
     return this.request<any>('/api/diagnostic/submit', { method: 'POST', body: JSON.stringify(payload) });
   }
 
+  // --- Admin: curriculum ---
+  adminCurriculumStatus() { return this.request<any>('/api/admin/curriculum/status'); }
+  adminCurriculumGenerate(count = 5, native = 'ru') {
+    return this.request<any>(`/api/admin/curriculum/generate?count=${count}&native=${native}`, { method: 'POST', body: '{}' });
+  }
+
   // --- Progress / My mistakes ---
   progressOverview() { return this.request<any>('/api/progress/overview'); }
   progressPractice() { return this.request<any>('/api/progress/practice', { method: 'POST', body: '{}' }); }

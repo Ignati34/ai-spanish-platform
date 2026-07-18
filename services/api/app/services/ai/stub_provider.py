@@ -124,3 +124,20 @@ class StubProvider(BaseAIProvider):
 
     async def extract_image_text(self, data: bytes, mime_type: str = 'image/png') -> str:
         return 'hola gracias por favor'  # demo OCR without a key
+
+    async def generate_lesson(self, topic_es, topic_native, cefr_level='A1', native_language='ru', focus='') -> dict:
+        return {
+            'title': topic_native or topic_es,
+            'theory': f'[demo] Тема: {topic_es}. Задайте AI_PROVIDER=openai для реального урока.',
+            'exercises': [
+                {'exercise_type': 'multiple_choice', 'prompt': f'[{topic_es}] Yo ___ estudiante.',
+                 'options': ['soy', 'estoy', 'es'], 'correct_answer': 'soy', 'explanation': 'demo'},
+                {'exercise_type': 'fill_blank', 'prompt': 'La ___ es grande. (casa)',
+                 'options': ['casa', 'caso', 'cosa'], 'correct_answer': 'casa', 'explanation': 'demo'},
+                {'exercise_type': 'multiple_choice', 'prompt': 'Ayer ___ al cine.',
+                 'options': ['fui', 'voy', 'iba'], 'correct_answer': 'fui', 'explanation': 'demo'},
+                {'exercise_type': 'multiple_choice', 'prompt': 'Me ___ los libros.',
+                 'options': ['gusta', 'gustan', 'gusto'], 'correct_answer': 'gustan', 'explanation': 'demo'},
+            ],
+            'stub': True,
+        }

@@ -140,6 +140,17 @@ class AIGateway:
             logger.warning('AI provider "%s" failed on image OCR: %s; using stub', self.provider.name, exc)
             return await self._stub.extract_image_text(data=data, mime_type=mime_type)
 
+    async def generate_lesson(self, topic_es: str, topic_native: str, cefr_level: str = 'A1', native_language: str = 'ru', focus: str = '') -> dict:
+        """Author a full lesson (theory + exercises). Not cached."""
+        self.last_usage = {'input_tokens': 0, 'output_tokens': 0}
+        try:
+            result = await self.provider.generate_lesson(topic_es, topic_native, cefr_level, native_language, focus)
+            self.last_usage = getattr(self.provider, 'last_usage', self.last_usage)
+            return result
+        except Exception as exc:
+            logger.warning('AI provider failed on generate_lesson: %s; using stub', exc)
+            return await self._stub.generate_lesson(topic_es, topic_native, cefr_level, native_language, focus)
+
     async def voice_reply(self, history: list[dict], user_message: str, scenario: str = 'restaurant', cefr_level: str = 'A1', native_language: str = 'ru') -> dict:
         """Conversational tutor reply + correction + score. Not cached."""
         self.last_usage = {'input_tokens': 0, 'output_tokens': 0}

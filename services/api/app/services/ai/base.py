@@ -47,3 +47,6 @@ class BaseAIProvider:
     async def extract_image_text(self, data: bytes, mime_type: str = 'image/png') -> str:
         """Vision OCR: return text visible in an image."""
         raise NotImplementedError
+
+    async def generate_lesson(self, topic_es: str, topic_native: str, cefr_level: str, native_language: str, focus: str = '') -> dict:
+        raise NotImplementedError

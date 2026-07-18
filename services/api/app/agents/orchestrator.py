@@ -37,3 +37,6 @@ class AgentOrchestrator:
 
     async def extract_image_text(self, data: bytes, mime_type: str = 'image/png') -> str:
         return await self.ai.extract_image_text(data=data, mime_type=mime_type)
+
+    async def generate_lesson(self, topic_es, topic_native, cefr_level='A1', native_language='ru', focus='') -> dict:
+        return await self.ai.generate_lesson(topic_es, topic_native, cefr_level, native_language, focus)

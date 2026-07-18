@@ -10,6 +10,8 @@ from app.models.usage import AdminAuditLog, BackgroundJob, SystemEvent
 from app.models.user import User
 from app.schemas.admin import ManualAccessRequest
 from app.services.admin_service import AdminService
+from app.content.syllabus import SYLLABUS
+from app.services import lesson_generator
 
 router = APIRouter(prefix='/admin', tags=['admin'])
 
@@ -121,3 +123,25 @@ def system_health(admin: User = Depends(require_admin), db: Session = Depends(ge
 def licenses(admin: User = Depends(require_admin), db: Session = Depends(get_db)):
     rows = db.query(License).order_by(License.created_at.desc()).limit(100).all()
     return [{'id': str(l.id), 'edition': l.edition, 'max_users': l.max_users, 'valid_until': l.valid_until, 'status': l.status, 'created_at': l.created_at} for l in rows]
+
+
+@router.get('/curriculum/status')
+def curriculum_status(admin: User = Depends(require_admin), db: Session = Depends(get_db)):
+    done = lesson_generator.existing_numbers(db)
+    return {'total': len(SYLLABUS), 'generated': len(done), 'remaining': len(SYLLABUS) - len(done)}
+
+
+@router.post('/curriculum/generate')
+async def curriculum_generate(count: int = 5, native: str = 'ru', admin: User = Depends(require_admin), db: Session = Depends(get_db)):
+    """Generate the next N missing curriculum lessons via AI (capped at 20 per call)."""
+    count = max(1, min(20, count))
+    done = lesson_generator.existing_numbers(db)
+    todo = [e for e in SYLLABUS if e['n'] not in done][:count]
+    created = 0
+    for e in todo:
+        try:
+            await lesson_generator.generate_and_store(db, e, native)
+            created += 1
+        except Exception:
+            continue
+    return {'created': created, 'generated_total': len(done) + created, 'total': len(SYLLABUS)}

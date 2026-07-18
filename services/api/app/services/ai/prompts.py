@@ -171,3 +171,24 @@ def simulation_turn(history: list[dict], user_message: str, role: str, goal_es: 
 def image_ocr_instruction() -> str:
     return ('Extract ALL text visible in this image exactly as written (any language). '
             'Return only the extracted text, no commentary.')
+
+
+def generate_lesson(topic_es: str, topic_native: str, cefr_level: str, native_language: str,
+                    focus: str = '') -> tuple[str, str]:
+    lang = lang_name(native_language)
+    system = (
+        f'You are an expert Spanish curriculum author writing for {cefr_level} learners whose '
+        f'native language is {lang}. Write clear, original teaching content in {lang} with Spanish '
+        f'examples. Do NOT copy any textbook; explain the grammar facts in your own words. '
+        f'Respond with ONE valid minified JSON object and nothing else.'
+    )
+    user = (
+        f'Write a complete lesson on: "{topic_es}" ({topic_native}). {("Focus: " + focus + ". ") if focus else ""}'
+        f'Return JSON {{"title": "<concise title>", '
+        f'"theory": "<250-500 words of clear explanation in {lang} with Spanish examples; use \\n for line breaks>", '
+        '"exercises": [at least 4 items {"exercise_type","prompt","options","correct_answer","explanation"}]}. '
+        'exercise_type one of "multiple_choice","fill_blank","translation"; options = array of strings '
+        '(or null for translation); correct_answer MUST exactly equal one option when options are given; '
+        f'explanation in {lang}. Make exercises concrete and varied.'
+    )
+    return system, user

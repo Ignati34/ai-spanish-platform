@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { api } from '../lib/api';
 import { PageHeader } from '../components/layout/PageHeader';
 import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 
-const sections = ['Dashboard', 'Users', 'Payments', 'Usage & Costs', 'Jobs', 'Logs', 'System Health', 'Licenses'];
+const sections = ['Dashboard', 'Curriculum', 'Users', 'Payments', 'Usage & Costs', 'Jobs', 'Logs', 'System Health', 'Licenses'];
 
 const metrics = [
   ['Users', '128', 'blue'],
@@ -30,6 +31,17 @@ const jobs = [
 
 export default function AdminPage() {
   const [active, setActive] = useState('Dashboard');
+  const [curr, setCurr] = useState<any>(null);
+  const [genBusy, setGenBusy] = useState(false);
+  const [genMsg, setGenMsg] = useState('');
+  const loadCurr = () => api.adminCurriculumStatus().then(setCurr).catch(() => setCurr(null));
+  useEffect(() => { if (active === 'Curriculum') loadCurr(); }, [active]);
+  const generate = async (n: number) => {
+    setGenBusy(true); setGenMsg('');
+    try { const r = await api.adminCurriculumGenerate(n, 'ru'); setGenMsg(`Создано: ${r.created}. Всего: ${r.generated_total}/${r.total}`); loadCurr(); }
+    catch (e: any) { setGenMsg('Ошибка: ' + String(e.message || e)); }
+    finally { setGenBusy(false); }
+  };
 
   return (
     <div>
@@ -59,6 +71,36 @@ export default function AdminPage() {
             <p className="mt-2 text-sm leading-6 text-slate-600">Эта панель нужна для AWS SaaS: CloudWatch-style health, Stripe webhooks, AI costs, failed jobs, ручная выдача доступа и self-hosted лицензии.</p>
           </Card>
         </>
+      )}
+
+      {active === 'Curriculum' && (
+        <Card>
+          <div className="text-lg font-semibold">Учебный курс (генерация ИИ)</div>
+          <p className="mt-1 text-sm text-slate-500">
+            Полный урок (теория + упражнения) генерируется по силлабусу через ИИ, оригинальными формулировками.
+            Генерация расходует AI-запросы вашего провайдера.
+          </p>
+          {curr ? (
+            <div className="mt-3">
+              <div className="mb-2 flex flex-wrap gap-2">
+                <Badge tone="green">Готово: {curr.generated}</Badge>
+                <Badge tone="slate">Всего: {curr.total}</Badge>
+                <Badge tone="amber">Осталось: {curr.remaining}</Badge>
+              </div>
+              <div className="h-2 rounded-full bg-slate-100">
+                <div className="h-2 rounded-full bg-brand-500" style={{ width: `${Math.round((curr.generated / Math.max(1, curr.total)) * 100)}%` }} />
+              </div>
+            </div>
+          ) : <p className="mt-2 text-sm text-slate-400">Загрузка…</p>}
+          <div className="mt-4 flex flex-wrap items-center gap-2">
+            <Button onClick={() => generate(5)} disabled={genBusy}>{genBusy ? 'Генерация…' : 'Сгенерировать 5'}</Button>
+            <Button variant="secondary" onClick={() => generate(20)} disabled={genBusy}>Сгенерировать 20</Button>
+            {genMsg && <span className="text-sm text-slate-600">{genMsg}</span>}
+          </div>
+          <p className="mt-3 text-xs text-slate-400">
+            Пакетно из контейнера: <code>python scripts/generate_curriculum.py --limit 20 --native ru</code>
+          </p>
+        </Card>
       )}
 
       {active === 'Users' && (
