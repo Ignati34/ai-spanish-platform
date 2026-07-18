@@ -100,7 +100,7 @@ def _seed_curriculum(db):
     generator skips them. Also removes obsolete ad-hoc A1 lessons (no syllabus_n)."""
     # Cleanup: drop old ad-hoc A1 curriculum lessons that predate the syllabus-aligned A1 set.
     removed = 0
-    for l in db.query(Lesson).filter(Lesson.lesson_type == 'curriculum', Lesson.cefr_level.in_(['A1', 'A2', 'B1', 'B2'])).all():
+    for l in db.query(Lesson).filter(Lesson.lesson_type == 'curriculum', Lesson.cefr_level.in_(['A1', 'A2', 'B1', 'B2', 'C1'])).all():
         if not (l.content_json or {}).get('syllabus_n'):
             db.delete(l)
             removed += 1
