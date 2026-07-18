@@ -5,7 +5,7 @@ import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 
-const sections = ['Dashboard', 'Curriculum', 'Users', 'Payments', 'Usage & Costs', 'Jobs', 'Logs', 'System Health', 'Licenses'];
+const sections = ['Dashboard', 'Curriculum', 'Security', 'Users', 'Payments', 'Usage & Costs', 'Jobs', 'Logs', 'System Health', 'Licenses'];
 
 const metrics = [
   ['Users', '128', 'blue'],
@@ -35,7 +35,9 @@ export default function AdminPage() {
   const [genBusy, setGenBusy] = useState(false);
   const [genMsg, setGenMsg] = useState('');
   const loadCurr = () => api.adminCurriculumStatus().then(setCurr).catch(() => setCurr(null));
-  useEffect(() => { if (active === 'Curriculum') loadCurr(); }, [active]);
+  const [sec, setSec] = useState<any>(null);
+  const loadSec = () => api.adminSecurityStatus().then(setSec).catch(() => setSec(null));
+  useEffect(() => { if (active === 'Curriculum') loadCurr(); if (active === 'Security') loadSec(); }, [active]);
   const generate = async (n: number) => {
     setGenBusy(true); setGenMsg('');
     try { const r = await api.adminCurriculumGenerate(n, 'ru'); setGenMsg(`Создано: ${r.created}. Всего: ${r.generated_total}/${r.total}`); loadCurr(); }
@@ -99,6 +101,31 @@ export default function AdminPage() {
           </div>
           <p className="mt-3 text-xs text-slate-400">
             Пакетно из контейнера: <code>python scripts/generate_curriculum.py --limit 20 --native ru</code>
+          </p>
+        </Card>
+      )}
+
+      {active === 'Security' && (
+        <Card>
+          <div className="text-lg font-semibold">Безопасность: антивирус загрузок (ClamAV)</div>
+          <p className="mt-1 text-sm text-slate-500">
+            Каждый загружаемый файл (документы, изображения, аудио, видео) проверяется антивирусом
+            до обработки. Заражённые файлы отклоняются.
+          </p>
+          {sec ? (
+            <div className="mt-3 flex flex-wrap gap-2">
+              <Badge tone={sec.malware_scan?.enabled ? 'green' : 'slate'}>
+                {sec.malware_scan?.enabled ? 'Сканирование включено' : 'Сканирование выключено'}
+              </Badge>
+              <Badge tone={sec.malware_scan?.reachable ? 'green' : 'rose'}>
+                {sec.malware_scan?.reachable ? 'Сканер доступен' : 'Сканер недоступен'}
+              </Badge>
+              {sec.malware_scan?.version && <Badge tone="slate">{String(sec.malware_scan.version).slice(0, 40)}</Badge>}
+            </div>
+          ) : <p className="mt-2 text-sm text-slate-400">Загрузка…</p>}
+          <p className="mt-3 text-xs text-slate-400">
+            При первом старте база сигнатур грузится 1–2 мин — до этого сканер может быть «недоступен»
+            (загрузки при этом разрешены и логируются). Проверка: загрузите тестовую строку EICAR — будет отклонена.
           </p>
         </Card>
       )}

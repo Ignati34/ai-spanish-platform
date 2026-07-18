@@ -12,6 +12,7 @@ from app.agents.orchestrator import AgentOrchestrator
 from app.api.deps import get_current_user
 from app.core.config import get_settings
 from app.db.session import get_db
+from app.services.security.upload_guard import scan_upload_or_raise
 from app.models.flashcard import Flashcard, FlashcardDeck
 from app.models.user import User
 from app.schemas.flashcard import GenerateFlashcardsRequest, GenerateFlashcardsResponse
@@ -67,6 +68,7 @@ async def flashcards_from_file(
     mime = file.content_type
     check_ai_quota(db, current_user)
     data = await file.read()
+    scan_upload_or_raise(data, filename)
     max_bytes = settings.max_upload_mb * 1024 * 1024
     if len(data) > max_bytes:
         raise HTTPException(status_code=413, detail=f'File exceeds {settings.max_upload_mb} MB')

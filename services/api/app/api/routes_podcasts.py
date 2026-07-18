@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from app.api.deps import get_current_user
 from app.core.config import get_settings
 from app.db.session import get_db
+from app.services.security.upload_guard import scan_upload_or_raise
 from app.models.podcast import Podcast, PodcastSegment
 from app.models.user import User
 from app.services.extraction_service import is_audio
@@ -40,6 +41,7 @@ async def create_podcast(
     check_ai_quota(db, current_user)
 
     data = await file.read()
+    scan_upload_or_raise(data, file.filename or 'audio')
     max_bytes = settings.max_upload_mb * 1024 * 1024
     if len(data) > max_bytes:
         raise HTTPException(status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE, detail=f'File exceeds {settings.max_upload_mb} MB')

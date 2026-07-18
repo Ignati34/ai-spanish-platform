@@ -12,6 +12,7 @@ from app.schemas.admin import ManualAccessRequest
 from app.services.admin_service import AdminService
 from app.content.syllabus import SYLLABUS
 from app.services import lesson_generator
+from app.services.security import clamav_service
 
 router = APIRouter(prefix='/admin', tags=['admin'])
 
@@ -145,3 +146,9 @@ async def curriculum_generate(count: int = 5, native: str = 'ru', admin: User = 
         except Exception:
             continue
     return {'created': created, 'generated_total': len(done) + created, 'total': len(SYLLABUS)}
+
+
+@router.get('/security/status')
+def security_status(admin: User = Depends(require_admin)):
+    """Upload malware-scanning status for the admin security panel."""
+    return {'malware_scan': clamav_service.ping()}

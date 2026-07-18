@@ -15,6 +15,7 @@ from app.agents.orchestrator import AgentOrchestrator
 from app.api.deps import get_current_user
 from app.core.config import get_settings
 from app.db.session import get_db
+from app.services.security.upload_guard import scan_upload_or_raise
 from app.models.user import User
 from app.models.voice import VoiceMessage, VoiceSession
 from app.services.extraction_service import is_audio
@@ -97,6 +98,7 @@ async def send_message(
             raise HTTPException(status_code=415, detail='Expected an audio file')
         check_transcription_quota(db, current_user)
         data = await audio.read()
+        scan_upload_or_raise(data, audio.filename or 'clip')
         stt = await AgentOrchestrator().transcribe(data=data, filename=audio.filename or 'clip.webm', language='es')
         user_text = (stt.get('text') or '').strip()
         record_transcription_usage(db, current_user, stt.get('duration_seconds'))
@@ -160,6 +162,7 @@ async def transcribe(
         raise HTTPException(status_code=415, detail='Expected an audio file')
     check_transcription_quota(db, current_user)
     data = await file.read()
+    scan_upload_or_raise(data, file.filename or 'audio')
     max_bytes = settings.max_upload_mb * 1024 * 1024
     if len(data) > max_bytes:
         raise HTTPException(status_code=413, detail=f'File exceeds {settings.max_upload_mb} MB')

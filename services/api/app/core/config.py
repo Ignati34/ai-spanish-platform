@@ -97,6 +97,14 @@ class Settings(BaseSettings):
     # ---- Uploads / extraction ----
     upload_dir: str = Field(default='./var/uploads', alias='UPLOAD_DIR')
     max_upload_mb: int = Field(default=25, alias='MAX_UPLOAD_MB')
+
+    # --- Security: upload malware scanning (ClamAV) ---
+    malware_scan_enabled: bool = Field(default=False, alias='MALWARE_SCAN_ENABLED')
+    clamav_host: str = Field(default='clamav', alias='CLAMAV_HOST')
+    clamav_port: int = Field(default=3310, alias='CLAMAV_PORT')
+    clamav_timeout_seconds: int = Field(default=30, alias='CLAMAV_TIMEOUT_SECONDS')
+    # If the scanner is unreachable: True = reject uploads (fail closed), False = allow with a warning.
+    malware_scan_fail_closed: bool = Field(default=False, alias='MALWARE_SCAN_FAIL_CLOSED')
     max_lesson_input_chars: int = Field(default=12000, alias='MAX_LESSON_INPUT_CHARS')
 
     cors_origins: str = Field(default='http://localhost:3000', alias='CORS_ORIGINS')
