@@ -107,14 +107,25 @@ def _seed_curriculum(db):
     if removed:
         print(f'Curriculum cleanup: -{removed} obsolete ad-hoc lessons.')
 
-    existing_titles = {l.title for l in db.query(Lesson).filter(Lesson.lesson_type == 'curriculum').all()}
-    existing_nums = {(l.content_json or {}).get('syllabus_n')
-                     for l in db.query(Lesson).filter(Lesson.lesson_type == 'curriculum').all()}
+    all_cur = db.query(Lesson).filter(Lesson.lesson_type == 'curriculum').all()
+    existing_titles = {l.title for l in all_cur}
+    by_num = {(l.content_json or {}).get('syllabus_n'): l for l in all_cur if (l.content_json or {}).get('syllabus_n')}
     added = 0
+    updated = 0
     for spec in CURRICULUM:
         n = spec.get('n')
         title = f"{n:03d}. {spec['title']}" if n else spec['title']
-        if (n and n in existing_nums) or title in existing_titles:
+        if n and n in by_num:
+            lesson = by_num[n]
+            content = {'theory': spec['theory'], 'exercises': spec['exercises'], 'syllabus_n': n}
+            if (lesson.content_json or {}).get('theory') != spec['theory'] or \
+                    (lesson.content_json or {}).get('exercises') != spec['exercises'] or lesson.title != title:
+                lesson.title = title
+                lesson.description = spec['theory'][:400]
+                lesson.content_json = content
+                updated += 1
+            continue
+        if title in existing_titles:
             continue
         content = {'theory': spec['theory'], 'exercises': spec['exercises']}
         if n:
@@ -125,8 +136,8 @@ def _seed_curriculum(db):
             content_json=content,
         ))
         added += 1
-    if added:
-        print(f'Curriculum seeded: +{added} lessons.')
+    if added or updated:
+        print(f'Curriculum seeded: +{added} lessons, updated {updated}.')
 
 
 def seed() -> None:

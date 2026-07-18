@@ -9,6 +9,8 @@ export interface Exercise {
   options?: string[] | null;
   correct_answer?: string;
   explanation?: string;
+  translation?: string;
+  section?: string;
 }
 
 // Strip a leading option label like "A. ", "b) ", "3 - " and normalize for comparison.
@@ -54,6 +56,7 @@ export function ExerciseCard({ ex, onAnswer }: { ex: Exercise; onAnswer?: (corre
   return (
     <Card>
       <div className="text-sm font-medium">{ex.prompt}</div>
+      {ex.translation && <div className="mt-0.5 text-xs italic text-slate-400">{ex.translation}</div>}
 
       {hasOptions ? (
         <div className="mt-2 flex flex-wrap gap-2">

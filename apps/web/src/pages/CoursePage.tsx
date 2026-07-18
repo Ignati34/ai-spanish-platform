@@ -53,7 +53,14 @@ export default function CoursePage() {
           <div>
             <div className="mb-2 text-sm font-medium">{t('course.exercises')}</div>
             <div className="space-y-3">
-              {openLesson.exercises.map((ex: any, i: number) => <ExerciseCard key={i} ex={ex} />)}
+              {openLesson.exercises.map((ex: any, i: number) => (
+                <div key={i}>
+                  {ex.section && ex.section !== openLesson.exercises[i - 1]?.section && (
+                    <div className="mb-2 mt-4 text-sm font-semibold text-slate-700">{ex.section}</div>
+                  )}
+                  <ExerciseCard ex={ex} />
+                </div>
+              ))}
             </div>
           </div>
         )}

@@ -290,3 +290,8 @@ CURRICULUM = [l for l in CURRICULUM if l.get("level") != "C1"] + C1_LESSONS
 
 from app.content.curriculum_c2 import C2_LESSONS  # noqa: E402
 CURRICULUM = [l for l in CURRICULUM if l.get("level") != "C2"] + C2_LESSONS
+
+# Upgraded full lessons override the short versions by syllabus number.
+from app.content.curriculum_a1_full import A1_FULL  # noqa: E402
+_upg = {l['n'] for l in A1_FULL}
+CURRICULUM = [l for l in CURRICULUM if l.get('n') not in _upg] + A1_FULL

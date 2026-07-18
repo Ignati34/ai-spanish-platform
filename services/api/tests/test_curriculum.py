@@ -28,3 +28,16 @@ def test_full_syllabus_covered():
     from app.content.syllabus import SYLLABUS
     ns = sorted(l['n'] for l in CURRICULUM if l.get('n'))
     assert ns == list(range(1, len(SYLLABUS) + 1)), 'every syllabus topic must have a hand-written lesson'
+
+
+def test_upgraded_lessons_structure():
+    """Upgraded lessons: >=3 exercise blocks of >=10 items each, ~1 page of theory."""
+    upgraded = [l for l in CURRICULUM if any('section' in e for e in l['exercises'])]
+    assert upgraded, 'expected upgraded lessons'
+    for l in upgraded:
+        secs = {}
+        for e in l['exercises']:
+            secs[e.get('section')] = secs.get(e.get('section'), 0) + 1
+        assert len(secs) >= 3, (l['n'], list(secs))
+        assert all(v >= 10 for v in secs.values()), (l['n'], secs)
+        assert len(l['theory']) >= 1200, (l['n'], len(l['theory']))
