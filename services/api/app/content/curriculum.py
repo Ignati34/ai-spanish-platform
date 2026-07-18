@@ -299,3 +299,7 @@ CURRICULUM = [l for l in CURRICULUM if l.get('n') not in _upg] + A1_FULL
 from app.content.curriculum_a1_full2 import A1_FULL_2  # noqa: E402
 _upg2 = {l['n'] for l in A1_FULL_2}
 CURRICULUM = [l for l in CURRICULUM if l.get('n') not in _upg2] + A1_FULL_2
+
+from app.content.curriculum_a1_full3 import A1_FULL_3  # noqa: E402
+_upg3 = {l['n'] for l in A1_FULL_3}
+CURRICULUM = [l for l in CURRICULUM if l.get('n') not in _upg3] + A1_FULL_3
