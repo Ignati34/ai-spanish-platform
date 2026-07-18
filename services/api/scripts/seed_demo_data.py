@@ -95,16 +95,34 @@ def _seed_admin(db):
 
 
 def _seed_curriculum(db):
-    """Insert the built-in starter curriculum (theory + practice). Idempotent by title."""
-    existing = {l.title for l in db.query(Lesson).filter(Lesson.lesson_type == 'curriculum').all()}
+    """Insert the built-in curriculum (theory + practice). Idempotent.
+    Lessons with a syllabus number `n` get a numbered title and store syllabus_n so the AI
+    generator skips them. Also removes obsolete ad-hoc A1 lessons (no syllabus_n)."""
+    # Cleanup: drop old ad-hoc A1 curriculum lessons that predate the syllabus-aligned A1 set.
+    removed = 0
+    for l in db.query(Lesson).filter(Lesson.lesson_type == 'curriculum', Lesson.cefr_level == 'A1').all():
+        if not (l.content_json or {}).get('syllabus_n'):
+            db.delete(l)
+            removed += 1
+    if removed:
+        print(f'Curriculum cleanup: -{removed} obsolete A1 lessons.')
+
+    existing_titles = {l.title for l in db.query(Lesson).filter(Lesson.lesson_type == 'curriculum').all()}
+    existing_nums = {(l.content_json or {}).get('syllabus_n')
+                     for l in db.query(Lesson).filter(Lesson.lesson_type == 'curriculum').all()}
     added = 0
     for spec in CURRICULUM:
-        if spec['title'] in existing:
+        n = spec.get('n')
+        title = f"{n:03d}. {spec['title']}" if n else spec['title']
+        if (n and n in existing_nums) or title in existing_titles:
             continue
+        content = {'theory': spec['theory'], 'exercises': spec['exercises']}
+        if n:
+            content['syllabus_n'] = n
         db.add(Lesson(
-            module_id=None, title=spec['title'], description=spec['theory'][:400],
+            module_id=None, title=title, description=spec['theory'][:400],
             cefr_level=spec['level'], native_language='ru', lesson_type='curriculum',
-            content_json={'theory': spec['theory'], 'exercises': spec['exercises']},
+            content_json=content,
         ))
         added += 1
     if added:

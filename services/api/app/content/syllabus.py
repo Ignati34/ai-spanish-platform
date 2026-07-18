@@ -74,7 +74,40 @@ _TOPICS = [
     ('B2', 'Orden de palabras y colocación de pronombres', 'Порядок слов и место местоимений-дополнений', 'энклиза и проклиза, два местоимения'),
     ('B2', 'Preposiciones y numerales de 100 a un millón', 'Предлоги и числительные от 100 до миллиона', 'годы и даты, 4 главных предлога'),
     ('B2', 'Reglas de división y puntuación', 'Правила переносов и пунктуация', 'знаки препинания, деление на слоги'),
+    # ---- C1 (сложная грамматика и стилистика) ----
+    ('C1', 'Perífrasis verbales avanzadas', 'Продвинутые глагольные перифразы', 'llevar/andar/venir + gerundio, acabar por'),
+    ('C1', 'Voz pasiva: ser vs pasiva refleja', 'Пассив: ser против пассива-рефлексива', 'выбор конструкции, оттенки'),
+    ('C1', 'Estilo indirecto complejo', 'Сложная косвенная речь', 'полное согласование времён и наклонений'),
+    ('C1', 'Subjuntivo en oraciones de relativo', 'Subjuntivo в определительных придаточных', 'busco a alguien que sepa...'),
+    ('C1', 'Oraciones concesivas complejas', 'Сложные уступительные', 'por más que, aun cuando, a pesar de que'),
+    ('C1', 'Conectores del discurso formales', 'Формальные коннекторы дискурса', 'no obstante, por consiguiente, en cuanto a'),
+    ('C1', 'Verbos de cambio', 'Глаголы становления', 'ponerse, volverse, hacerse, llegar a ser'),
+    ('C1', 'Cambios ortográficos en la conjugación', 'Орфографические замены при спряжении', '-car/-gar/-zar, -cer/-cir/-ger/-gir'),
+    ('C1', 'Régimen preposicional de verbos (I)', 'Управление глаголов предлогами (I)', 'contar con, soñar con, pensar en'),
+    ('C1', 'Régimen preposicional de verbos (II)', 'Управление глаголов предлогами (II)', 'depender de, tardar en, insistir en'),
+    ('C1', 'Ser y estar: matices avanzados', 'Ser и estar: продвинутые нюансы', 'изменение смысла прилагательных'),
+    ('C1', 'Estar para vs estar por', 'Estar para и estar por', 'готовность vs склонность/незавершённость'),
+    # ---- C2 (мастерство) ----
+    ('C2', 'Conjugación individual: ir, hacer, decir, tener', 'Индивидуальное спряжение: ir, hacer, decir, tener', 'уникальные формы во всех временах'),
+    ('C2', 'Conjugación individual: poder, poner, venir, salir', 'Индивидуальное спряжение: poder, poner, venir, salir', 'неправильные основы'),
+    ('C2', 'Conjugación individual: caer, oír, traer, ver', 'Индивидуальное спряжение: caer, oír, traer, ver', 'особые формы 1 л. и причастий'),
+    ('C2', 'Régimen del adjetivo', 'Управление прилагательных', 'lleno de, capaz de, difícil de, responsable de'),
+    ('C2', 'Subjuntivo vs indicativo: matices sutiles', 'Subjuntivo и indicativo: тонкие оттенки', 'смена смысла при выборе наклонения'),
+    ('C2', 'Marcadores del discurso y registro', 'Маркеры дискурса и регистр', 'формальный/неформальный стиль'),
+    ('C2', 'Locuciones y modismos frecuentes', 'Устойчивые выражения и идиомы', 'echar de menos, dar con, tener ganas de'),
+    ('C2', 'Derivación: sufijos y prefijos', 'Словообразование: суффиксы и приставки', '-ción, -dad, des-, in-'),
+    ('C2', 'Acentuación y tilde diacrítica', 'Ударение и различительный акцент', 'tú/tu, sí/si, más/mas, sólo'),
+    ('C2', 'Construcciones enfáticas y orden', 'Эмфатические конструкции и порядок слов', 'выделение и инверсия'),
+    ('C2', 'Voz media e impersonalidad avanzada', 'Средний залог и продвинутая безличность', 'se accidental, «se me cayó»'),
 ]
+
+
+def _build() -> list[dict]:
+    return [{'n': i + 1, 'level': lvl, 'es': es, 'ru': ru, 'focus': focus}
+            for i, (lvl, es, ru, focus) in enumerate(_TOPICS)]
+
+
+SYLLABUS = _build()
 
 
 def _build() -> list[dict]:
