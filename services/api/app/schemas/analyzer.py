@@ -8,13 +8,15 @@ class TextAnalyzeRequest(BaseModel):
 
 
 class TextAnalyzeResponse(BaseModel):
-    cefr_estimate: str
-    verbs: list[dict]
-    tenses: list[str]
-    nouns: list[str]
-    adjectives: list[str]
-    adverbs: list[str]
-    conjunctions: list[str]
-    vocabulary: list[dict]
-    grammar_topics: list[str]
-    summary: str
+    cefr_estimate: str = 'A1'
+    translation: str = ''            # full translation of the text into the native language
+    verbs: list = []                 # [{word, tense, translation}]
+    tenses: list[str] = []           # canonical Spanish tense names
+    tense_info: list = []            # [{name, explanation, examples[]}] localized (added by route)
+    nouns: list = []                 # [{word, translation}]
+    adjectives: list = []            # [{word, translation}]
+    adverbs: list = []               # [{word, translation}]
+    conjunctions: list = []
+    vocabulary: list = []            # [{word, translation, cefr}]
+    grammar_topics: list[str] = []
+    summary: str = ''

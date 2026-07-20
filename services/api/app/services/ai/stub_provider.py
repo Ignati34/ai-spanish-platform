@@ -17,9 +17,10 @@ class StubProvider(BaseAIProvider):
         vocabulary = [{'word': w, 'translation': 'demo translation', 'cefr': 'A1'} for w in sorted(set(words))[:10]]
         return {
             'cefr_estimate': 'A1',
-            'verbs': [{'word': v, 'tense': 'present/infinitive'} for v in verbs[:10]],
+            'translation': 'Demo translation of the text. Set AI_PROVIDER=openai and AI_API_KEY for a real one.',
+            'verbs': [{'word': v, 'tense': 'presente de indicativo', 'translation': 'demo'} for v in verbs[:10]],
             'tenses': ['presente de indicativo'],
-            'nouns': nouns,
+            'nouns': [{'word': n, 'translation': 'demo'} for n in nouns],
             'adjectives': [],
             'adverbs': [],
             'conjunctions': [w for w in words if w in {'y', 'pero', 'porque'}],

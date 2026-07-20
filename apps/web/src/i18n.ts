@@ -8,7 +8,7 @@ const resources = {
     nav: { dashboard: 'Главная', course: 'Курс', analyzer: 'Анализ текста', flashcards: 'Карточки', billing: 'Подписка', admin: 'Админка', logout: 'Выйти' },
     login: { title: 'Вход', email: 'Email', password: 'Пароль', submit: 'Войти', register: 'Регистрация', native: 'Родной язык' },
     dashboard: { welcome: 'С возвращением!', level: 'Ваш уровень', continue: 'Продолжить обучение', streak: 'Дней подряд' },
-    analyzer: { title: 'Анализ текста', placeholder: 'Вставьте испанский текст…', run: 'Разобрать', verbs: 'Глаголы', nouns: 'Существительные', tenses: 'Времена', topics: 'Темы грамматики' },
+    analyzer: { title: 'Анализ текста', placeholder: 'Вставьте испанский текст…', run: 'Разобрать', verbs: 'Глаголы', nouns: 'Существительные', tenses: 'Времена', topics: 'Темы грамматики', running: 'Разбираем…', translation: 'Перевод текста', adjectives: 'Прилагательные', adverbs: 'Наречия', summary: 'Кратко', vocabulary: 'Словарь', tenseHint: 'наведите для объяснения' },
     flashcards: { title: 'Карточки', generate: 'Сгенерировать из текста', front: 'Лицо', back: 'Оборот' },
     billing: { title: 'Подписка и оплата', choose: 'Выбрать', method: 'Способ оплаты', country: 'Страна' }
   }},
@@ -17,7 +17,7 @@ const resources = {
     nav: { dashboard: 'Головна', course: 'Курс', analyzer: 'Аналіз тексту', flashcards: 'Картки', billing: 'Підписка', admin: 'Адмінка', logout: 'Вийти' },
     login: { title: 'Вхід', email: 'Email', password: 'Пароль', submit: 'Увійти', register: 'Реєстрація', native: 'Рідна мова' },
     dashboard: { welcome: 'З поверненням!', level: 'Ваш рівень', continue: 'Продовжити навчання', streak: 'Днів поспіль' },
-    analyzer: { title: 'Аналіз тексту', placeholder: 'Вставте іспанський текст…', run: 'Розібрати', verbs: 'Дієслова', nouns: 'Іменники', tenses: 'Часи', topics: 'Теми граматики' },
+    analyzer: { title: 'Аналіз тексту', placeholder: 'Вставте іспанський текст…', run: 'Розібрати', verbs: 'Дієслова', nouns: 'Іменники', tenses: 'Часи', topics: 'Теми граматики', running: 'Розбираємо…', translation: 'Переклад тексту', adjectives: 'Прикметники', adverbs: 'Прислівники', summary: 'Стисло', vocabulary: 'Словник', tenseHint: 'наведіть для пояснення' },
     flashcards: { title: 'Картки', generate: 'Згенерувати з тексту', front: 'Лице', back: 'Зворот' },
     billing: { title: 'Підписка та оплата', choose: 'Обрати', method: 'Спосіб оплати', country: 'Країна' }
   }},
@@ -26,7 +26,7 @@ const resources = {
     nav: { dashboard: 'الرئيسية', course: 'الدورة', analyzer: 'تحليل النص', flashcards: 'البطاقات', billing: 'الاشتراك', admin: 'الإدارة', logout: 'خروج' },
     login: { title: 'تسجيل الدخول', email: 'البريد', password: 'كلمة المرور', submit: 'دخول', register: 'إنشاء حساب', native: 'اللغة الأم' },
     dashboard: { welcome: 'مرحبًا بعودتك!', level: 'مستواك', continue: 'متابعة التعلّم', streak: 'أيام متتالية' },
-    analyzer: { title: 'تحليل النص', placeholder: 'ألصق نصًا إسبانيًا…', run: 'حلّل', verbs: 'الأفعال', nouns: 'الأسماء', tenses: 'الأزمنة', topics: 'قواعد' },
+    analyzer: { title: 'تحليل النص', placeholder: 'ألصق نصًا إسبانيًا…', run: 'حلّل', verbs: 'الأفعال', nouns: 'الأسماء', tenses: 'الأزمنة', topics: 'قواعد', running: 'جارٍ التحليل…', translation: 'ترجمة النص', adjectives: 'الصفات', adverbs: 'الظروف', summary: 'ملخّص', vocabulary: 'المفردات', tenseHint: 'مرّر للشرح' },
     flashcards: { title: 'البطاقات', generate: 'إنشاء من النص', front: 'الوجه', back: 'الخلف' },
     billing: { title: 'الاشتراك والدفع', choose: 'اختر', method: 'طريقة الدفع', country: 'الدولة' }
   }},
@@ -35,7 +35,7 @@ const resources = {
     nav: { dashboard: 'Accueil', course: 'Cours', analyzer: 'Analyse de texte', flashcards: 'Cartes', billing: 'Abonnement', admin: 'Admin', logout: 'Déconnexion' },
     login: { title: 'Connexion', email: 'Email', password: 'Mot de passe', submit: 'Se connecter', register: "S'inscrire", native: 'Langue maternelle' },
     dashboard: { welcome: 'Bon retour !', level: 'Votre niveau', continue: "Continuer l'apprentissage", streak: 'Jours de suite' },
-    analyzer: { title: 'Analyse de texte', placeholder: 'Collez un texte espagnol…', run: 'Analyser', verbs: 'Verbes', nouns: 'Noms', tenses: 'Temps', topics: 'Points de grammaire' },
+    analyzer: { title: 'Analyse de texte', placeholder: 'Collez un texte espagnol…', run: 'Analyser', verbs: 'Verbes', nouns: 'Noms', tenses: 'Temps', topics: 'Points de grammaire', running: 'Analyse…', translation: 'Traduction du texte', adjectives: 'Adjectifs', adverbs: 'Adverbes', summary: 'Résumé', vocabulary: 'Vocabulaire', tenseHint: 'survolez pour l’explication' },
     flashcards: { title: 'Cartes', generate: 'Générer depuis un texte', front: 'Recto', back: 'Verso' },
     billing: { title: 'Abonnement et paiement', choose: 'Choisir', method: 'Moyen de paiement', country: 'Pays' }
   }},
@@ -44,7 +44,7 @@ const resources = {
     nav: { dashboard: 'Inicio', course: 'Curso', analyzer: 'Análisis de texto', flashcards: 'Tarjetas', billing: 'Suscripción', admin: 'Admin', logout: 'Salir' },
     login: { title: 'Entrar', email: 'Email', password: 'Contraseña', submit: 'Entrar', register: 'Registrarse', native: 'Lengua materna' },
     dashboard: { welcome: '¡Bienvenido de nuevo!', level: 'Tu nivel', continue: 'Continuar aprendiendo', streak: 'Días seguidos' },
-    analyzer: { title: 'Análisis de texto', placeholder: 'Pega un texto en español…', run: 'Analizar', verbs: 'Verbos', nouns: 'Sustantivos', tenses: 'Tiempos', topics: 'Gramática' },
+    analyzer: { title: 'Análisis de texto', placeholder: 'Pega un texto en español…', run: 'Analizar', verbs: 'Verbos', nouns: 'Sustantivos', tenses: 'Tiempos', topics: 'Gramática', running: 'Analizando…', translation: 'Traducción del texto', adjectives: 'Adjetivos', adverbs: 'Adverbios', summary: 'Resumen', vocabulary: 'Vocabulario', tenseHint: 'pasa el ratón para la explicación' },
     flashcards: { title: 'Tarjetas', generate: 'Generar desde texto', front: 'Anverso', back: 'Reverso' },
     billing: { title: 'Suscripción y pago', choose: 'Elegir', method: 'Método de pago', country: 'País' }
   }},
@@ -53,7 +53,7 @@ const resources = {
     nav: { dashboard: 'Home', course: 'Course', analyzer: 'Text analysis', flashcards: 'Flashcards', billing: 'Billing', admin: 'Admin', logout: 'Log out' },
     login: { title: 'Sign in', email: 'Email', password: 'Password', submit: 'Sign in', register: 'Register', native: 'Native language' },
     dashboard: { welcome: 'Welcome back!', level: 'Your level', continue: 'Continue learning', streak: 'Day streak' },
-    analyzer: { title: 'Text analysis', placeholder: 'Paste Spanish text…', run: 'Analyze', verbs: 'Verbs', nouns: 'Nouns', tenses: 'Tenses', topics: 'Grammar topics' },
+    analyzer: { title: 'Text analysis', placeholder: 'Paste Spanish text…', run: 'Analyze', verbs: 'Verbs', nouns: 'Nouns', tenses: 'Tenses', topics: 'Grammar topics', running: 'Analyzing…', translation: 'Text translation', adjectives: 'Adjectives', adverbs: 'Adverbs', summary: 'Summary', vocabulary: 'Vocabulary', tenseHint: 'hover for explanation' },
     flashcards: { title: 'Flashcards', generate: 'Generate from text', front: 'Front', back: 'Back' },
     billing: { title: 'Billing', choose: 'Choose', method: 'Payment method', country: 'Country' }
   }}

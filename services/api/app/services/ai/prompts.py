@@ -30,12 +30,20 @@ def analyze(text: str, native_language: str) -> tuple[str, str]:
     user = (
         'Analyze the Spanish text below. Return JSON with exactly these keys: '
         'cefr_estimate (one of "A1","A2","B1","B2","C1","C2"), '
-        'verbs (array of objects {"word","tense"}), '
-        'tenses (array of strings), nouns (array of strings), adjectives (array of strings), '
-        'adverbs (array of strings), conjunctions (array of strings), '
+        f'translation (a faithful, natural translation of the WHOLE text into {lang}), '
+        'verbs (array of objects {"word","tense","translation"} where tense is the Spanish '
+        f'tense name and translation is the infinitive meaning in {lang}), '
+        'tenses (array of Spanish tense names actually used, e.g. "presente de indicativo", '
+        '"pretérito indefinido"), '
+        f'nouns (array of objects {{"word","translation"}} translated to {lang}), '
+        f'adjectives (array of objects {{"word","translation"}} translated to {lang}), '
+        f'adverbs (array of objects {{"word","translation"}} translated to {lang}), '
+        'conjunctions (array of strings), '
         f'vocabulary (array of objects {{"word","translation","cefr"}} where translation is in {lang}), '
         'grammar_topics (array of strings), '
         f'summary (one short paragraph in {lang}). '
+        'Keep the "word" fields exactly as they appear in Spanish (lemmatize verbs to the '
+        'infinitive). '
         f'Text:\n"""{text}"""'
     )
     return _system(native_language), user

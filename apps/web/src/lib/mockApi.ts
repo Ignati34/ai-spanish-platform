@@ -5,7 +5,23 @@ export const mockApi = {
     const data: Record<string, unknown> = {
       '/api/billing/plans': [{ code: 'pro', name: 'Pro', price_monthly: 14.99, currency: 'eur' }],
       '/api/billing/providers': { country: 'ES', providers: [{ code: 'stripe', configured: false, methods: [{ code: 'bizum', label: 'Bizum (Spain)', recommended: true }, { code: 'card', label: 'Card' }] }] },
-      '/api/analyze/text': { cefr_estimate: 'A1', verbs: [], nouns: [], tenses: ['presente'], grammar_topics: ['ser/estar'] },
+      '/api/analyze/text': {
+        cefr_estimate: 'A2',
+        translation: 'Вчера я пошёл в супермаркет и купил фрукты, потому что хотел приготовить ужин.',
+        verbs: [
+          { word: 'ir', tense: 'pretérito indefinido', translation: 'идти, ехать' },
+          { word: 'comprar', tense: 'pretérito indefinido', translation: 'покупать' },
+          { word: 'querer', tense: 'pretérito imperfecto', translation: 'хотеть' }
+        ],
+        tenses: ['pretérito indefinido', 'pretérito imperfecto'],
+        nouns: [{ word: 'supermercado', translation: 'супермаркет' }, { word: 'frutas', translation: 'фрукты' }, { word: 'cena', translation: 'ужин' }],
+        adjectives: [],
+        adverbs: [{ word: 'ayer', translation: 'вчера' }],
+        conjunctions: ['porque'],
+        vocabulary: [{ word: 'preparar', translation: 'готовить', cefr: 'A2' }],
+        grammar_topics: ['pretérito indefinido', 'pretérito imperfecto'],
+        summary: 'Короткий рассказ о походе в супермаркет.'
+      },
       '/api/uploads': [
         { id: 'u1', filename: 'entrevista.mp3', file_type: 'mp3', status: 'lesson_ready', size: 812000, created_at: new Date(Date.now() - 86400000).toISOString() },
         { id: 'u2', filename: 'articulo.pdf', file_type: 'pdf', status: 'extracted', size: 45000, created_at: new Date(Date.now() - 2 * 86400000).toISOString() }
