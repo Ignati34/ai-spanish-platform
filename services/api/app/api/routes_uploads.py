@@ -6,6 +6,7 @@ Audio path: file -> STT transcript -> the same lesson builder (analyze + flashca
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from app.agents.orchestrator import AgentOrchestrator
@@ -21,6 +22,9 @@ from app.services.extraction_service import (
 )
 from app.services.lesson_builder import build_lesson_from_text
 from app.services.storage_service import storage_service
+from app.services.url_ingest import (
+    UrlError, fetch as url_fetch, filename_for, normalize_target,
+)
 from app.services.usage_guard import (
     check_ai_quota, check_transcription_quota, record_ai_usage, record_transcription_usage,
 )
@@ -117,6 +121,54 @@ async def build_from_file(
     uploaded.processing_status = 'lesson_ready'
     record_ai_usage(db, current_user, result.usage, requests=result.usage.get('ai_calls', 1))
     return _to_out(result, source_type, filename=filename, transcript=transcript_text, duration=duration)
+
+
+class BuildFromUrlRequest(BaseModel):
+    url: str = Field(min_length=3, max_length=2000)
+    native_language: str = 'ru'
+    cefr_level: str = 'A1'
+
+
+@router.post('/url', response_model=GeneratedLessonOut)
+async def build_from_url(payload: BuildFromUrlRequest, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    check_ai_quota(db, current_user)
+    try:
+        fetch_url, kind, label = normalize_target(payload.url)
+    except UrlError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+
+    max_bytes = settings.max_upload_mb * 1024 * 1024
+    try:
+        data, ctype, final_url = await url_fetch(fetch_url, max_bytes)
+    except UrlError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+    except Exception as exc:  # network / HTTP errors
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=f'Could not fetch URL: {exc}') from exc
+
+    fname = filename_for(kind, ctype)
+    try:
+        text, meta = extract_text(fname, data, ctype)
+    except UnsupportedType as exc:
+        raise HTTPException(status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE, detail=str(exc)) from exc
+    except ExtractionError as exc:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail='No readable text found at that URL. For Google Docs, share it as "anyone with the link".') from exc
+
+    display = payload.url.strip()[:200]
+    uploaded = UploadedFile(
+        user_id=current_user.id, original_filename=display, file_type=('gdoc' if kind == 'gdoc' else 'url'),
+        mime_type=ctype or 'text/html', storage_url=final_url, file_size=len(data), processing_status='extracted',
+    )
+    db.add(uploaded)
+    db.flush()
+    db.add(ExtractedText(file_id=uploaded.id, user_id=current_user.id, language='es', text=text, metadata_json={**meta, 'url': final_url, 'kind': kind}))
+
+    result = await build_lesson_from_text(
+        db, current_user, text=text, native_language=payload.native_language, cefr_level=payload.cefr_level,
+        source_type='url', source_id=uploaded.id, title=(label if kind == 'gdoc' else display),
+    )
+    uploaded.processing_status = 'lesson_ready'
+    record_ai_usage(db, current_user, result.usage, requests=result.usage.get('ai_calls', 1))
+    return _to_out(result, 'url', filename=display)
 
 
 @router.get('')

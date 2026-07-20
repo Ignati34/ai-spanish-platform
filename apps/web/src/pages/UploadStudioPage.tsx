@@ -16,8 +16,9 @@ const statusTone: Record<string, string> = {
 
 export default function UploadStudioPage() {
   const { t, i18n } = useTranslation();
-  const [tab, setTab] = useState<'text' | 'file'>('text');
+  const [tab, setTab] = useState<'text' | 'file' | 'url'>('text');
   const [text, setText] = useState('Ayer fui al supermercado y compré frutas porque quería preparar una cena para mis amigos.');
+  const [url, setUrl] = useState('');
   const [cefr, setCefr] = useState('A1');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -44,6 +45,10 @@ export default function UploadStudioPage() {
     if (!f) return;
     return run(() => api.uploadFile(f, i18n.language, cefr));
   };
+  const buildUrl = () => {
+    if (!url.trim()) return;
+    return run(() => api.uploadUrl(url.trim(), i18n.language, cefr));
+  };
 
   const fmtDate = (s?: string) => {
     if (!s) return '';
@@ -59,6 +64,7 @@ export default function UploadStudioPage() {
         <div className="mb-4 flex gap-2">
           <Button variant={tab === 'text' ? 'primary' : 'secondary'} onClick={() => setTab('text')}>{t('upload.paste')}</Button>
           <Button variant={tab === 'file' ? 'primary' : 'secondary'} onClick={() => setTab('file')}>{t('upload.file')}</Button>
+          <Button variant={tab === 'url' ? 'primary' : 'secondary'} onClick={() => setTab('url')}>{t('upload.url')}</Button>
           <div className="ms-auto flex items-center gap-2">
             <span className="text-xs text-slate-500">{t('upload.level')}</span>
             <select className="rounded-lg border border-slate-200 px-2 py-1 text-sm" value={cefr} onChange={(e) => setCefr(e.target.value)}>
@@ -67,17 +73,27 @@ export default function UploadStudioPage() {
           </div>
         </div>
 
-        {tab === 'text' ? (
+        {tab === 'text' && (
           <>
             <textarea className="h-40 w-full rounded-lg border border-slate-200 p-3 text-sm" value={text}
               placeholder={t('upload.placeholder')} onChange={(e) => setText(e.target.value)} />
             <Button className="mt-3" onClick={buildText} disabled={loading}>{loading ? t('upload.building') : t('upload.build')}</Button>
           </>
-        ) : (
+        )}
+        {tab === 'file' && (
           <>
             <input ref={fileRef} type="file" accept=".txt,.md,.pdf,.docx,.html,.mp3,.wav,.m4a,.ogg" className="block w-full text-sm" />
             <p className="mt-1 text-xs text-slate-400">{t('upload.drop')}</p>
             <Button className="mt-3" onClick={buildFile} disabled={loading}>{loading ? t('upload.building') : t('upload.build')}</Button>
+          </>
+        )}
+        {tab === 'url' && (
+          <>
+            <input type="url" value={url} onChange={(e) => setUrl(e.target.value)}
+              placeholder={t('upload.urlPlaceholder')}
+              className="block w-full rounded-lg border border-slate-200 px-3 py-2 text-sm" />
+            <p className="mt-1 text-xs text-slate-400">{t('upload.urlHint')}</p>
+            <Button className="mt-3" onClick={buildUrl} disabled={loading || !url.trim()}>{loading ? t('upload.building') : t('upload.build')}</Button>
           </>
         )}
         {error && <p className="mt-3 text-sm text-rose-600">{error}</p>}

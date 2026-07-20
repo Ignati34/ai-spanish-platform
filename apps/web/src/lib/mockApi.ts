@@ -34,6 +34,14 @@ export const mockApi = {
         exercises: [{ section: 'Práctica', exercise_type: 'multiple_choice', prompt: 'Ayer ___ frutas.', options: ['compré', 'compro', 'compraré'], correct_answer: 'compré', translation: 'Вчера я купил фрукты.' }],
         source: 'raw_text'
       },
+      '/api/uploads/url': {
+        lesson_id: 'mock-lesson-url', deck_id: 'mock-deck-url', title: 'Lección desde un enlace',
+        cefr_estimate: 'B1', summary: 'Texto extraído de una página web.',
+        analysis: { vocabulary: [{ word: 'noticia', translation: 'новость' }] },
+        cards: [{ front: 'según', back: 'согласно', example_sentence: 'Según el artículo…' }],
+        exercises: [{ section: 'Práctica', exercise_type: 'translation', prompt: 'Переведите: «согласно статье»', options: null, correct_answer: 'según el artículo', translation: 'según el artículo' }],
+        source: 'url'
+      },
       '/api/dialogues': { levels: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'], dialogues: [
         { id: 'a1_cafe', level: 'A1', title: 'В кафе', lines: [
           { speaker: 'Camarero', es: 'Buenos días, ¿qué desea?', translation: 'Доброе утро, что желаете?' },

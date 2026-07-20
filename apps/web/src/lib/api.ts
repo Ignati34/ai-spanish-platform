@@ -93,6 +93,12 @@ class ApiClient {
     if (!res.ok) throw new Error((await res.text()) || `Upload failed: ${res.status}`);
     return res.json();
   }
+  uploadUrl(url: string, native_language = 'ru', cefr_level = 'A1') {
+    return this.request<any>('/api/uploads/url', {
+      method: 'POST',
+      body: JSON.stringify({ url, native_language, cefr_level })
+    });
+  }
   listUploads() { return this.request<any[]>('/api/uploads'); }
 
   // --- Dialogues ---
