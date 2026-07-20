@@ -197,6 +197,7 @@ export default function AdminPage() {
             {genMsg && <span className="text-sm text-slate-600">{genMsg}</span>}
           </div>
           <p className="mt-3 text-xs text-slate-400">Пакетно из контейнера: <code>python scripts/generate_curriculum.py --limit 20 --native ru</code></p>
+          <p className="mt-1 text-xs text-slate-400">Прогрев переводов теории (UK/AR/FR/EN): <code>python scripts/prewarm_translations.py --langs uk,ar,fr,en</code></p>
         </Card>
       )}
 
