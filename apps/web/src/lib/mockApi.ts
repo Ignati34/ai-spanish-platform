@@ -6,6 +6,18 @@ export const mockApi = {
       '/api/billing/plans': [{ code: 'pro', name: 'Pro', price_monthly: 14.99, currency: 'eur' }],
       '/api/billing/providers': { country: 'ES', providers: [{ code: 'stripe', configured: false, methods: [{ code: 'bizum', label: 'Bizum (Spain)', recommended: true }, { code: 'card', label: 'Card' }] }] },
       '/api/analyze/text': { cefr_estimate: 'A1', verbs: [], nouns: [], tenses: ['presente'], grammar_topics: ['ser/estar'] },
+      '/api/uploads': [
+        { id: 'u1', filename: 'entrevista.mp3', file_type: 'mp3', status: 'lesson_ready', size: 812000, created_at: new Date(Date.now() - 86400000).toISOString() },
+        { id: 'u2', filename: 'articulo.pdf', file_type: 'pdf', status: 'extracted', size: 45000, created_at: new Date(Date.now() - 2 * 86400000).toISOString() }
+      ],
+      '/api/uploads/text': {
+        lesson_id: 'mock-lesson', deck_id: 'mock-deck', title: 'Lección desde texto',
+        cefr_estimate: 'A2', summary: 'Un texto sobre una cena con amigos.',
+        analysis: { vocabulary: [{ word: 'compré', translation: 'я купил' }, { word: 'cena', translation: 'ужин' }] },
+        cards: [{ front: 'comprar', back: 'покупать', example_sentence: 'Compré frutas.' }],
+        exercises: [{ section: 'Práctica', exercise_type: 'multiple_choice', prompt: 'Ayer ___ frutas.', options: ['compré', 'compro', 'compraré'], correct_answer: 'compré', translation: 'Вчера я купил фрукты.' }],
+        source: 'raw_text'
+      },
       '/api/vocab-bank/stats': { counts: { verbs: 387, collocations: 512, examples: 640, phrases: 2177 } },
       '/api/vocab-bank/search': { items: [
         { es: 'echar de menos', ru: 'скучать по', kind: 'phrases' },

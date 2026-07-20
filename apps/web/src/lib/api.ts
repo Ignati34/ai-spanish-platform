@@ -90,6 +90,7 @@ class ApiClient {
     if (!res.ok) throw new Error((await res.text()) || `Upload failed: ${res.status}`);
     return res.json();
   }
+  listUploads() { return this.request<any[]>('/api/uploads'); }
 
   private async postForm<T>(path: string, form: FormData): Promise<T> {
     const res = await fetch(`${config.apiUrl}${path}`, {

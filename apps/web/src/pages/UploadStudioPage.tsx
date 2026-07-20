@@ -1,5 +1,6 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import { ExerciseCard } from '../components/ExerciseCard';
 import { api } from '../lib/api';
 import { PageHeader } from '../components/layout/PageHeader';
@@ -9,6 +10,10 @@ import { Badge } from '../components/ui/Badge';
 
 const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
+const statusTone: Record<string, string> = {
+  uploaded: 'slate', extracted: 'blue', transcribed: 'amber', lesson_ready: 'green'
+};
+
 export default function UploadStudioPage() {
   const { t, i18n } = useTranslation();
   const [tab, setTab] = useState<'text' | 'file'>('text');
@@ -17,12 +22,19 @@ export default function UploadStudioPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lesson, setLesson] = useState<any>(null);
+  const [history, setHistory] = useState<any[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  const loadHistory = () => api.listUploads().then((r) => setHistory(r || [])).catch(() => setHistory([]));
+  useEffect(() => { loadHistory(); }, []);
 
   const run = async (fn: () => Promise<any>) => {
     setLoading(true); setError(null); setLesson(null);
-    try { setLesson(await fn()); }
-    catch (e: any) { setError(String(e.message || e)); }
+    try {
+      const result = await fn();
+      setLesson(result);
+      loadHistory();
+    } catch (e: any) { setError(String(e.message || e)); }
     finally { setLoading(false); }
   };
 
@@ -33,9 +45,15 @@ export default function UploadStudioPage() {
     return run(() => api.uploadFile(f, i18n.language, cefr));
   };
 
+  const fmtDate = (s?: string) => {
+    if (!s) return '';
+    const d = new Date(s);
+    return isNaN(d.getTime()) ? '' : d.toLocaleDateString();
+  };
+
   return (
     <div>
-      <PageHeader title={t('upload.title')} description="файл/текст → урок: анализ, карточки, упражнения" />
+      <PageHeader title={t('upload.title')} description={t('upload.subtitle')} />
 
       <Card>
         <div className="mb-4 flex gap-2">
@@ -73,6 +91,13 @@ export default function UploadStudioPage() {
               <Badge tone="amber">CEFR {lesson.cefr_estimate}</Badge>
             </div>
             {lesson.summary && <p className="mt-2 text-sm text-slate-600">{lesson.summary}</p>}
+            {(lesson.lesson_id || lesson.deck_id) && (
+              <div className="mt-3 flex flex-wrap items-center gap-3 border-t border-slate-100 pt-3">
+                <span className="text-sm text-emerald-700">✓ {t('upload.saved')}</span>
+                <Link to="/app/course" className="text-sm font-medium text-brand-700 hover:underline">{t('upload.openCourse')}</Link>
+                <Link to="/app/review" className="text-sm font-medium text-brand-700 hover:underline">{t('upload.openReview')}</Link>
+              </div>
+            )}
           </Card>
 
           {lesson.transcript && (
@@ -118,6 +143,25 @@ export default function UploadStudioPage() {
           )}
         </div>
       )}
+
+      <div className="mt-8">
+        <div className="mb-3 text-sm font-medium text-slate-700">{t('upload.history')}</div>
+        {history.length === 0 ? (
+          <Card className="text-center text-sm text-slate-500">{t('upload.empty')}</Card>
+        ) : (
+          <div className="space-y-2">
+            {history.map((h) => (
+              <Card key={h.id} className="flex items-center justify-between gap-3 py-3">
+                <div className="min-w-0">
+                  <div className="truncate text-sm font-medium text-slate-800">{h.filename}</div>
+                  <div className="text-xs text-slate-400">{(h.file_type || '').toUpperCase()} · {fmtDate(h.created_at)}</div>
+                </div>
+                <Badge tone={statusTone[h.status] ?? 'slate'}>{t(`upload.status_${h.status}`, { defaultValue: h.status }) as string}</Badge>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
