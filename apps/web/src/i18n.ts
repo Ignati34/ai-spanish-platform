@@ -214,6 +214,18 @@ Object.entries(fcStrings).forEach(([lng, bundle]) => {
   i18n.addResourceBundle(lng, 'translation', bundle, true, true);
 });
 
+const vocabStrings: Record<string, any> = {
+  ru: { nav: { vocab: 'Мой словарь' }, vocab: { title: 'Мой словарь', subtitle: 'Ваш личный банк слов и фраз из загруженных материалов. Ищите и повторяйте.', search: 'Поиск по-испански или по-русски…', all: 'Все', verbs: 'Глаголы', collocations: 'Сочетания', examples: 'Примеры', phrases: 'Фразы', random: '🎲 Случайные', randomHint: 'Случайная подборка — жмите ещё раз для новой.', count: '{{n}} совпадений', empty: 'Ничего не найдено. Измените запрос или вид.', loading: 'Загружаем…' } },
+  uk: { nav: { vocab: 'Мій словник' }, vocab: { title: 'Мій словник', subtitle: 'Ваш особистий банк слів і фраз із завантажених матеріалів. Шукайте та повторюйте.', search: 'Пошук іспанською або українською…', all: 'Усі', verbs: 'Дієслова', collocations: 'Сполучення', examples: 'Приклади', phrases: 'Фрази', random: '🎲 Випадкові', randomHint: 'Випадкова добірка — натисніть ще раз для нової.', count: '{{n}} збігів', empty: 'Нічого не знайдено. Змініть запит або вид.', loading: 'Завантажуємо…' } },
+  ar: { nav: { vocab: 'مفرداتي' }, vocab: { title: 'مفرداتي', subtitle: 'بنك كلماتك وعباراتك الشخصي من موادّك المرفوعة. ابحث وراجع.', search: 'ابحث بالإسبانية أو بلغتك…', all: 'الكل', verbs: 'الأفعال', collocations: 'المتلازمات', examples: 'أمثلة', phrases: 'عبارات', random: '🎲 عشوائي', randomHint: 'مجموعة عشوائية — اضغط مرة أخرى لغيرها.', count: '{{n}} نتيجة', empty: 'لا نتائج. غيّر البحث أو النوع.', loading: 'جارٍ التحميل…' } },
+  fr: { nav: { vocab: 'Mon lexique' }, vocab: { title: 'Mon lexique', subtitle: 'Votre banque personnelle de mots et expressions issue de vos imports. Cherchez et révisez.', search: 'Rechercher en espagnol ou en français…', all: 'Tout', verbs: 'Verbes', collocations: 'Collocations', examples: 'Exemples', phrases: 'Expressions', random: '🎲 Aléatoire', randomHint: 'Sélection aléatoire — cliquez encore pour en changer.', count: '{{n}} résultats', empty: 'Aucun résultat. Changez la recherche ou le type.', loading: 'Chargement…' } },
+  es: { nav: { vocab: 'Mi vocabulario' }, vocab: { title: 'Mi vocabulario', subtitle: 'Tu banco personal de palabras y frases de tus materiales subidos. Busca y repasa.', search: 'Busca en español o en tu idioma…', all: 'Todo', verbs: 'Verbos', collocations: 'Colocaciones', examples: 'Ejemplos', phrases: 'Frases', random: '🎲 Aleatorio', randomHint: 'Selección aleatoria — pulsa otra vez para cambiar.', count: '{{n}} resultados', empty: 'Sin resultados. Cambia la búsqueda o el tipo.', loading: 'Cargando…' } },
+  en: { nav: { vocab: 'My vocabulary' }, vocab: { title: 'My vocabulary', subtitle: 'Your personal bank of words and phrases from your uploaded materials. Search and review.', search: 'Search in Spanish or your language…', all: 'All', verbs: 'Verbs', collocations: 'Collocations', examples: 'Examples', phrases: 'Phrases', random: '🎲 Random', randomHint: 'A random pick — tap again for a fresh set.', count: '{{n}} matches', empty: 'Nothing found. Change the search or type.', loading: 'Loading…' } }
+};
+Object.entries(vocabStrings).forEach(([lng, bundle]) => {
+  i18n.addResourceBundle(lng, 'translation', bundle, true, true);
+});
+
 export function applyDir(locale: string) {
   const dir = RTL_LOCALES.includes(locale) ? 'rtl' : 'ltr';
   document.documentElement.setAttribute('dir', dir);

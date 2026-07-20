@@ -15,6 +15,7 @@ import DiagnosticPage from './pages/DiagnosticPage';
 import ProgressPage from './pages/ProgressPage';
 import ReviewPage from './pages/ReviewPage';
 import FlashcardsPage from './pages/FlashcardsPage';
+import VocabBankPage from './pages/VocabBankPage';
 import BillingPage from './pages/BillingPage';
 import AdminPage from './pages/AdminPage';
 
@@ -42,6 +43,7 @@ export const router = createBrowserRouter([
       { path: 'settings', element: <SettingsPage /> },
       { path: 'flashcards', element: <FlashcardsPage /> },
       { path: 'review', element: <ReviewPage /> },
+      { path: 'vocab', element: <VocabBankPage /> },
       { path: 'progress', element: <ProgressPage /> },
       { path: 'billing', element: <BillingPage /> },
       { path: 'admin', element: <AdminPage /> }

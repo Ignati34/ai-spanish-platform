@@ -215,6 +215,23 @@ class ApiClient {
   adminLogs() { return this.request<any>('/api/admin/logs'); }
   adminSystemHealth() { return this.request<any>('/api/admin/system-health'); }
   adminLicenses() { return this.request<any[]>('/api/admin/licenses'); }
+
+  // --- My Vocabulary (personal word bank) ---
+  vocabStats() {
+    return this.request<{ counts: Record<string, number> }>('/api/vocab-bank/stats');
+  }
+  vocabSearch(q = '', kind?: string, limit = 60) {
+    const params = new URLSearchParams();
+    if (q) params.set('q', q);
+    if (kind) params.set('kind', kind);
+    params.set('limit', String(limit));
+    return this.request<{ items: VocabItem[] }>(`/api/vocab-bank/search?${params.toString()}`);
+  }
+  vocabSample(kind = 'phrases', n = 12) {
+    return this.request<{ items: VocabItem[] }>(`/api/vocab-bank/sample?kind=${encodeURIComponent(kind)}&n=${n}`);
+  }
 }
+
+export interface VocabItem { es: string; ru: string; kind?: string }
 
 export const api = new ApiClient();
