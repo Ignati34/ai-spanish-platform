@@ -74,3 +74,79 @@ class AdminService:
     def _ai_cost_today(self) -> float:
         start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
         return float(self.db.query(func.coalesce(func.sum(AIUsageLog.estimated_cost), 0)).filter(AIUsageLog.created_at >= start).scalar() or 0)
+
+    def usage_costs(self, days: int = 30) -> dict:
+        """AI usage & cost analytics over the last `days`: totals, a continuous
+        daily series, and breakdowns by agent and model. Aggregated in Python to
+        stay database-dialect agnostic. Costs are estimates (see ai_pricing)."""
+        days = max(1, min(int(days), 90))
+        today = datetime.now(timezone.utc).date()
+        since = datetime.now(timezone.utc) - timedelta(days=days)
+        rows = (
+            self.db.query(AIUsageLog)
+            .filter(AIUsageLog.created_at >= since)
+            .order_by(AIUsageLog.created_at.asc())
+            .limit(100000)
+            .all()
+        )
+
+        total_cost = total_in = total_out = 0.0
+        total_audio = 0.0
+        daily: dict[str, dict] = {}
+        by_agent: dict[str, dict] = {}
+        by_model: dict[str, dict] = {}
+
+        for r in rows:
+            cost = float(r.estimated_cost or 0)
+            itok = int(r.input_tokens or 0)
+            otok = int(r.output_tokens or 0)
+            total_cost += cost
+            total_in += itok
+            total_out += otok
+            total_audio += float(r.audio_seconds or 0)
+
+            d = (r.created_at.date().isoformat() if r.created_at else today.isoformat())
+            de = daily.setdefault(d, {'date': d, 'cost': 0.0, 'requests': 0, 'input_tokens': 0, 'output_tokens': 0})
+            de['cost'] += cost
+            de['requests'] += 1
+            de['input_tokens'] += itok
+            de['output_tokens'] += otok
+
+            aname = r.agent_name or 'chat'
+            ae = by_agent.setdefault(aname, {'agent': aname, 'cost': 0.0, 'requests': 0})
+            ae['cost'] += cost
+            ae['requests'] += 1
+
+            mname = r.model_name or '—'
+            me = by_model.setdefault(mname, {'model': mname, 'cost': 0.0, 'requests': 0})
+            me['cost'] += cost
+            me['requests'] += 1
+
+        # Continuous daily series ending today (fills gaps with zeros).
+        series = []
+        for i in range(days):
+            d = (today - timedelta(days=days - 1 - i)).isoformat()
+            e = daily.get(d, {'date': d, 'cost': 0.0, 'requests': 0, 'input_tokens': 0, 'output_tokens': 0})
+            series.append({**e, 'cost': round(e['cost'], 6)})
+
+        def _sorted(dic):
+            out = sorted(dic.values(), key=lambda x: x['cost'], reverse=True)
+            for x in out:
+                x['cost'] = round(x['cost'], 6)
+            return out
+
+        return {
+            'window_days': days,
+            'totals': {
+                'cost': round(total_cost, 6),
+                'requests': len(rows),
+                'input_tokens': int(total_in),
+                'output_tokens': int(total_out),
+                'audio_seconds': round(total_audio, 1),
+            },
+            'today_cost': round(self._ai_cost_today(), 6),
+            'daily': series,
+            'by_agent': _sorted(by_agent),
+            'by_model': _sorted(by_model),
+            'note': 'Costs are estimates based on configurable per-model rates.',
+        }

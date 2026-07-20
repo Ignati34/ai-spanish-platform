@@ -18,7 +18,26 @@ export const mockApi = {
         { es: 'valer la pena', ru: 'стоить того' },
         { es: 'meter la pata', ru: 'сесть в лужу' },
         { es: 'tomar el pelo', ru: 'разыгрывать' }
-      ] }
+      ] },
+      '/api/admin/usage-costs': (() => {
+        const days = 30;
+        const today = new Date();
+        const daily = Array.from({ length: days }, (_, i) => {
+          const d = new Date(today); d.setDate(today.getDate() - (days - 1 - i));
+          const cost = Math.max(0, 0.02 + 0.03 * Math.sin(i / 3) + (i % 7 === 0 ? 0.05 : 0));
+          return { date: d.toISOString().slice(0, 10), cost: Number(cost.toFixed(4)), requests: Math.round(cost * 400), input_tokens: Math.round(cost * 90000), output_tokens: Math.round(cost * 30000) };
+        });
+        const cost = daily.reduce((a, b) => a + b.cost, 0);
+        return {
+          window_days: days,
+          totals: { cost: Number(cost.toFixed(4)), requests: daily.reduce((a, b) => a + b.requests, 0), input_tokens: daily.reduce((a, b) => a + b.input_tokens, 0), output_tokens: daily.reduce((a, b) => a + b.output_tokens, 0), audio_seconds: 1240.5 },
+          today_cost: daily[daily.length - 1].cost,
+          daily,
+          by_agent: [ { agent: 'chat', cost: Number((cost * 0.6).toFixed(4)), requests: 800 }, { agent: 'transcription', cost: Number((cost * 0.25).toFixed(4)), requests: 210 }, { agent: 'tts', cost: Number((cost * 0.15).toFixed(4)), requests: 190 } ],
+          by_model: [ { model: 'gpt-4o-mini', cost: Number((cost * 0.6).toFixed(4)), requests: 800 }, { model: 'gpt-4o-mini-transcribe', cost: Number((cost * 0.25).toFixed(4)), requests: 210 }, { model: 'gpt-4o-mini-tts', cost: Number((cost * 0.15).toFixed(4)), requests: 190 } ],
+          note: 'Costs are estimates based on configurable per-model rates.'
+        };
+      })()
     };
     // Try exact path first, then fall back to the path without query string.
     return ((data[path] ?? data[bare]) ?? {}) as T;

@@ -73,6 +73,11 @@ def payments(admin: User = Depends(require_admin), db: Session = Depends(get_db)
     }
 
 
+@router.get('/usage-costs')
+def usage_costs(days: int = 30, admin: User = Depends(require_admin), db: Session = Depends(get_db)):
+    return AdminService(db).usage_costs(days)
+
+
 @router.get('/usage')
 def usage(admin: User = Depends(require_admin), db: Session = Depends(get_db)):
     # Compact MVP aggregation. Extend with charts later.

@@ -215,6 +215,7 @@ class ApiClient {
   adminLogs() { return this.request<any>('/api/admin/logs'); }
   adminSystemHealth() { return this.request<any>('/api/admin/system-health'); }
   adminLicenses() { return this.request<any[]>('/api/admin/licenses'); }
+  adminUsageCosts(days = 30) { return this.request<any>(`/api/admin/usage-costs?days=${days}`); }
 
   // --- My Vocabulary (personal word bank) ---
   vocabStats() {

@@ -5,7 +5,7 @@ import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 
-const sections = ['Dashboard', 'Curriculum', 'Security', 'Users', 'Payments', 'Jobs', 'Logs', 'System Health', 'Licenses'] as const;
+const sections = ['Dashboard', 'Usage & Costs', 'Curriculum', 'Security', 'Users', 'Payments', 'Jobs', 'Logs', 'System Health', 'Licenses'] as const;
 type Section = (typeof sections)[number];
 
 const toneFor = (raw?: string): any => {
@@ -30,6 +30,8 @@ export default function AdminPage() {
   const [logs, setLogs] = useState<any>(null);
   const [health, setHealth] = useState<any>(null);
   const [licenses, setLicenses] = useState<any[] | null>(null);
+  const [usage, setUsage] = useState<any>(null);
+  const [usageDays, setUsageDays] = useState(30);
   const [err, setErr] = useState('');
 
   const [curr, setCurr] = useState<any>(null);
@@ -58,6 +60,7 @@ export default function AdminPage() {
     setErr('');
     const fail = (e: any) => setErr(String(e?.message || e));
     if (active === 'Dashboard') api.adminDashboard().then(setDash).catch(fail);
+    if (active === 'Usage & Costs') { setUsage(null); api.adminUsageCosts(usageDays).then(setUsage).catch(fail); }
     if (active === 'Curriculum') loadCurr();
     if (active === 'Security') loadSec();
     if (active === 'Users') api.adminUsers().then(setUsers).catch(fail);
@@ -66,7 +69,7 @@ export default function AdminPage() {
     if (active === 'Logs') api.adminLogs().then(setLogs).catch(fail);
     if (active === 'System Health') api.adminSystemHealth().then(setHealth).catch(fail);
     if (active === 'Licenses') api.adminLicenses().then(setLicenses).catch(fail);
-  }, [active]);
+  }, [active, usageDays]);
 
   const retry = async (id: string) => {
     try { await api.adminRetryJob(id); setJobs(await api.adminJobs()); } catch (e: any) { setErr(String(e.message || e)); }
@@ -96,6 +99,80 @@ export default function AdminPage() {
             </Card>
           )) : <Empty text="Загрузка…" />}
         </div>
+      )}
+
+      {active === 'Usage & Costs' && (
+        usage ? (() => {
+          const daily: any[] = usage.daily || [];
+          const maxCost = Math.max(1e-9, ...daily.map((d) => d.cost || 0));
+          const money = (v: number) => `$${(v || 0).toFixed(v && v < 1 ? 4 : 2)}`;
+          const t = usage.totals || {};
+          const maxAgent = Math.max(1e-9, ...(usage.by_agent || []).map((x: any) => x.cost || 0));
+          const maxModel = Math.max(1e-9, ...(usage.by_model || []).map((x: any) => x.cost || 0));
+          return (
+            <div className="space-y-5">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-sm text-slate-500">Окно:</span>
+                {[7, 30, 90].map((d) => (
+                  <Button key={d} variant={usageDays === d ? 'primary' : 'secondary'} onClick={() => setUsageDays(d)}>{d} дн.</Button>
+                ))}
+              </div>
+
+              <div className="grid gap-5 md:grid-cols-4">
+                <Card><p className="text-sm font-bold text-slate-500">Стоимость ИИ (окно)</p><p className="mt-2 text-3xl font-black">{money(t.cost)}</p></Card>
+                <Card><p className="text-sm font-bold text-slate-500">Сегодня</p><p className="mt-2 text-3xl font-black">{money(usage.today_cost)}</p></Card>
+                <Card><p className="text-sm font-bold text-slate-500">Запросов</p><p className="mt-2 text-3xl font-black">{t.requests ?? 0}</p></Card>
+                <Card><p className="text-sm font-bold text-slate-500">Токены (вход/выход)</p><p className="mt-2 text-xl font-black">{(t.input_tokens ?? 0).toLocaleString()} / {(t.output_tokens ?? 0).toLocaleString()}</p></Card>
+              </div>
+
+              <Card>
+                <div className="mb-3 flex items-center justify-between">
+                  <div className="text-lg font-semibold">Стоимость по дням</div>
+                  <span className="text-xs text-slate-400">макс. {money(maxCost)}/день</span>
+                </div>
+                {t.requests ? (
+                  <div className="flex h-40 items-end gap-1">
+                    {daily.map((d) => (
+                      <div key={d.date} className="group relative flex-1"
+                        title={`${d.date}: ${money(d.cost)} · ${d.requests} запр.`}>
+                        <div className="w-full rounded-t bg-brand-400 transition group-hover:bg-brand-600"
+                          style={{ height: `${Math.max(2, Math.round((d.cost / maxCost) * 152))}px` }} />
+                      </div>
+                    ))}
+                  </div>
+                ) : <Empty text="Пока нет данных об использовании ИИ. Появятся после первых запросов к провайдеру." />}
+                {daily.length > 0 && (
+                  <div className="mt-1 flex justify-between text-[10px] text-slate-400">
+                    <span>{daily[0]?.date?.slice(5)}</span>
+                    <span>{daily[daily.length - 1]?.date?.slice(5)}</span>
+                  </div>
+                )}
+              </Card>
+
+              <div className="grid gap-5 md:grid-cols-2">
+                <Card>
+                  <div className="mb-3 text-lg font-semibold">По типам вызовов</div>
+                  {(usage.by_agent || []).length ? (usage.by_agent).map((a: any) => (
+                    <div key={a.agent} className="mb-2">
+                      <div className="flex justify-between text-sm"><span className="text-slate-700">{a.agent}</span><span className="text-slate-500">{money(a.cost)} · {a.requests}</span></div>
+                      <div className="mt-1 h-2 rounded-full bg-slate-100"><div className="h-2 rounded-full bg-brand-500" style={{ width: `${Math.round((a.cost / maxAgent) * 100)}%` }} /></div>
+                    </div>
+                  )) : <Empty text="Нет данных." />}
+                </Card>
+                <Card>
+                  <div className="mb-3 text-lg font-semibold">По моделям</div>
+                  {(usage.by_model || []).length ? (usage.by_model).map((m: any) => (
+                    <div key={m.model} className="mb-2">
+                      <div className="flex justify-between text-sm"><span className="text-slate-700">{m.model}</span><span className="text-slate-500">{money(m.cost)} · {m.requests}</span></div>
+                      <div className="mt-1 h-2 rounded-full bg-slate-100"><div className="h-2 rounded-full bg-emerald-500" style={{ width: `${Math.round((m.cost / maxModel) * 100)}%` }} /></div>
+                    </div>
+                  )) : <Empty text="Нет данных." />}
+                </Card>
+              </div>
+              <p className="text-xs text-slate-400">{usage.note} Аудио за окно: {t.audio_seconds ?? 0} с.</p>
+            </div>
+          );
+        })() : <Empty text="Загрузка…" />
       )}
 
       {active === 'Curriculum' && (
