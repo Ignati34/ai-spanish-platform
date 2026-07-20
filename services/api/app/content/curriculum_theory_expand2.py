@@ -460,3 +460,33 @@ THEORY_EXPAND_2C = {
     ),
 }
 THEORY_EXPAND_2A.update(THEORY_EXPAND_2C)
+
+# Batch 2d — micro-enrichment of six mildly-short lessons (already have dialogues).
+# Each tuple: (lesson_n, anchor_substring, extra_text_inserted_right_after_anchor).
+# Anchors sit before the closing mini-dialogue, so the dialogue stays last.
+THEORY_PATCH = [
+    (38,
+     'Paso las fiestas con los míos (праздники я провожу со своими).',
+     ' Ещё оборот: cada cual a lo suyo (каждый занимается своим делом); а уступая '
+     'что-то — ¡todo tuyo! (всё в твоём распоряжении!).'),
+    (39,
+     'Al no tener dinero, no fui (не имея денег / так как денег не было, я не пошёл).',
+     ' Ещё пример-причина: Al ser domingo, todo estaba cerrado (поскольку было '
+     'воскресенье, всё было закрыто).'),
+    (59,
+     '• A mí ME gusta el cine (а вот мне нравится кино).',
+     '\nЗапомните симметрию: при выносе прямого дополнения-предмета дубль обязателен '
+     '(El pan LO compro yo), а без выноса он не нужен (Compro el pan).'),
+    (63,
+     'Se ruega no fumar (просьба не курить).',
+     ' Так же: se prohíbe la entrada (вход воспрещён); se agradece la colaboración '
+     '(благодарим за содействие).'),
+    (70,
+     'No me di cuenta del error (я не заметил ошибки).',
+     ' Ещё два глагола с de: acordarse de (помнить о) — No me acuerdo de su nombre — и '
+     'olvidarse de (забыть о).'),
+    (75,
+     'El plan salió redondo (план удался на славу).',
+     ' Ещё оборот: salir a alguien — «пойти в кого-то, быть похожим»: Ha salido a su '
+     'madre (он весь в мать).'),
+]

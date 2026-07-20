@@ -357,3 +357,10 @@ from app.content.curriculum_theory_expand2 import THEORY_EXPAND_2A  # noqa: E402
 for _l in CURRICULUM:
     if _l.get('n') in THEORY_EXPAND_2A:
         _l['theory'] = THEORY_EXPAND_2A[_l['n']]
+
+from app.content.curriculum_theory_expand2 import THEORY_PATCH  # noqa: E402
+_byn = {_l.get('n'): _l for _l in CURRICULUM if _l.get('n')}
+for _n, _anchor, _extra in THEORY_PATCH:
+    _l = _byn.get(_n)
+    if _l and _l['theory'].count(_anchor) == 1:
+        _l['theory'] = _l['theory'].replace(_anchor, _anchor + _extra, 1)
