@@ -202,3 +202,14 @@ class AIGateway:
         except Exception as exc:
             logger.warning('AI provider failed on simulation_turn: %s; using stub', exc)
             return await self._stub.simulation_turn(history, user_message, role, goal_es, cefr_level, native_language)
+
+    async def translate(self, text: str, target_language: str, source_language: str = 'ru') -> str:
+        """Translate explanatory text (cached). On any provider failure, returns the
+        source text unchanged via the stub so callers always get usable content."""
+        result = await self._run(
+            'translate',
+            {'text': text, 'target': target_language, 'source': source_language},
+            lambda p: p.translate(text=text, target_language=target_language, source_language=source_language),
+            lambda p: p.translate(text=text, target_language=target_language, source_language=source_language),
+        )
+        return result if isinstance(result, str) else text

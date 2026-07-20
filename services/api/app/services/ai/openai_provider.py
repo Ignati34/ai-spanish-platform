@@ -57,6 +57,29 @@ class OpenAIProvider(BaseAIProvider):
         content = data['choices'][0]['message']['content']
         return _parse_json(content)
 
+    async def _chat_text(self, system: str, user: str) -> str:
+        """Plain-text chat completion (no JSON mode); returns the message content."""
+        headers = {'Authorization': f'Bearer {settings.ai_api_key}', 'Content-Type': 'application/json'}
+        body = {
+            'model': settings.ai_model,
+            'temperature': settings.ai_temperature,
+            'max_tokens': settings.ai_max_tokens,
+            'messages': [
+                {'role': 'system', 'content': system},
+                {'role': 'user', 'content': user},
+            ],
+        }
+        async with httpx.AsyncClient(timeout=settings.ai_timeout_seconds) as client:
+            resp = await client.post(f'{settings.ai_base_url}/chat/completions', headers=headers, json=body)
+            resp.raise_for_status()
+            data = resp.json()
+        usage = data.get('usage', {}) or {}
+        self.last_usage = {
+            'input_tokens': int(usage.get('prompt_tokens', 0)),
+            'output_tokens': int(usage.get('completion_tokens', 0)),
+        }
+        return (data['choices'][0]['message']['content'] or '').strip()
+
     async def analyze_text(self, text: str, native_language: str = 'ru') -> dict:
         system, user = prompts.analyze(text, native_language)
         data = await self._chat_json(system, user)
@@ -181,3 +204,8 @@ class OpenAIProvider(BaseAIProvider):
         data.setdefault('theory', '')
         data.setdefault('exercises', [])
         return data
+
+    async def translate(self, text: str, target_language: str, source_language: str = 'ru') -> str:
+        system, user = prompts.translate_theory(text, target_language, source_language)
+        out = await self._chat_text(system, user)
+        return out or text

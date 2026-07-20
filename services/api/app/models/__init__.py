@@ -1,6 +1,6 @@
 from app.models.user import User, UserProfile
 from app.models.subscription import Plan, Subscription, BillingCustomer, Invoice, PaymentEvent, UserEntitlement, UsageCounter
-from app.models.course import CEFRLevel, CourseModule, Lesson, LessonProgress
+from app.models.course import CEFRLevel, CourseModule, Lesson, LessonProgress, LessonTranslation
 from app.models.upload import UploadedFile, ExtractedText, Transcript, TextAnalysis
 from app.models.flashcard import FlashcardDeck, Flashcard, FlashcardReview
 from app.models.exercise import Exercise, ExerciseSubmission

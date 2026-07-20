@@ -29,15 +29,20 @@ def list_lessons(db: Session = Depends(get_db)):
 
 
 @router.get('/lessons/{lesson_id}')
-def get_lesson(lesson_id: str, db: Session = Depends(get_db)):
+async def get_lesson(lesson_id: str, lang: str | None = None, db: Session = Depends(get_db)):
     lesson = db.get(Lesson, lesson_id)
     if not lesson:
         raise HTTPException(status_code=404, detail='Lesson not found')
     content = lesson.content_json or {}
+    theory = content.get('theory', '')
+    if lang:
+        from app.services.translation_service import get_theory
+        theory = await get_theory(db, lesson, lang)
     return {
         'id': str(lesson.id), 'title': lesson.title, 'cefr_level': lesson.cefr_level,
         'description': lesson.description,
-        'theory': content.get('theory', ''),
+        'theory': theory,
+        'theory_language': (lang or lesson.native_language or 'ru')[:2].lower(),
         'summary': (content.get('analysis') or {}).get('summary', lesson.description or ''),
         'analysis': content.get('analysis') or {},
         'cards': content.get('cards') or [],

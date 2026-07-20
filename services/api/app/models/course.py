@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from sqlalchemy import String, Text, ForeignKey, Integer, DateTime, JSON, Float
+from sqlalchemy import String, Text, ForeignKey, Integer, DateTime, JSON, Float, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 from app.db.session import Base
@@ -43,5 +43,20 @@ class LessonProgress(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     lesson_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey('lessons.id', ondelete='CASCADE'))
     status: Mapped[str] = mapped_column(String(50), default='not_started')
     score: Mapped[float | None] = mapped_column(Float, nullable=True)
+
+
+class LessonTranslation(Base, UUIDPrimaryKeyMixin, TimestampMixin):
+    """Cached translation of a lesson's theory into a target language.
+
+    Filled lazily on first request and reused thereafter so we don't re-spend
+    tokens. `source_hash` lets us invalidate when the source theory changes.
+    """
+    __tablename__ = 'lesson_translations'
+    lesson_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey('lessons.id', ondelete='CASCADE'), index=True)
+    language: Mapped[str] = mapped_column(String(16), index=True)
+    theory: Mapped[str] = mapped_column(Text)
+    source_hash: Mapped[str] = mapped_column(String(64))
+
+    __table_args__ = (UniqueConstraint('lesson_id', 'language', name='uq_lesson_translation'),)
     started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)

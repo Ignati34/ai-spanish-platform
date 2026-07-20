@@ -141,3 +141,8 @@ class StubProvider(BaseAIProvider):
             ],
             'stub': True,
         }
+
+    async def translate(self, text: str, target_language: str, source_language: str = 'ru') -> str:
+        # Offline/no-key mode: return the source text unchanged so the UI keeps working.
+        self.last_usage = {'input_tokens': 0, 'output_tokens': 0}
+        return text

@@ -50,3 +50,8 @@ class BaseAIProvider:
 
     async def generate_lesson(self, topic_es: str, topic_native: str, cefr_level: str, native_language: str, focus: str = '') -> dict:
         raise NotImplementedError
+
+    async def translate(self, text: str, target_language: str, source_language: str = 'ru') -> str:
+        """Translate explanatory text into target_language, preserving structure and
+        keeping embedded Spanish examples in Spanish. Returns the translated string."""
+        raise NotImplementedError

@@ -199,3 +199,25 @@ def generate_lesson(topic_es: str, topic_native: str, cefr_level: str, native_la
         f'explanation in {lang}. Make exercises concrete and varied.'
     )
     return system, user
+
+
+def translate_theory(text: str, target_language: str, source_language: str = 'ru') -> tuple[str, str]:
+    """Translate a lesson's grammar theory into the target language while keeping
+    the Spanish examples intact and the layout unchanged."""
+    src = lang_name(source_language)
+    tgt = lang_name(target_language)
+    system = (
+        f'You are a professional translator specializing in Spanish-language teaching materials. '
+        f'You translate explanatory text from {src} into {tgt} for adult Spanish learners.'
+    )
+    user = (
+        f'Translate the following Spanish grammar lesson from {src} into {tgt}.\n'
+        f'Strict rules:\n'
+        f'1) Keep every Spanish example EXACTLY as written (words, accents, punctuation) — do NOT translate the Spanish.\n'
+        f'2) Translate the {src} explanations and the parenthetical glosses that explain the Spanish.\n'
+        f'3) Preserve the structure verbatim: numbered points, bullet symbols, line breaks, the "МИНИ-ДИАЛОГ"/dialogue section and its dashes.\n'
+        f'4) Keep grammar terms accurate and natural in {tgt}.\n'
+        f'5) Output ONLY the translated text — no preamble, no notes, no markdown fences.\n\n'
+        f'TEXT:\n{text}'
+    )
+    return system, user

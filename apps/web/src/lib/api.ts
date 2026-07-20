@@ -52,7 +52,10 @@ class ApiClient {
 
   // --- Learning ---
   lessons() { return this.request<any[]>('/api/course/lessons'); }
-  courseLesson(id: string) { return this.request<any>(`/api/course/lessons/${id}`); }
+  courseLesson(id: string, lang?: string) {
+    const q = lang ? `?lang=${encodeURIComponent(lang)}` : '';
+    return this.request<any>(`/api/course/lessons/${id}${q}`);
+  }
   analyzeText(text: string, native_language = 'ru') {
     return this.request('/api/analyze/text', { method: 'POST', body: JSON.stringify({ text, native_language }) });
   }

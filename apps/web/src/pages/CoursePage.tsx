@@ -7,13 +7,23 @@ import { Badge } from '../components/ui/Badge';
 import { ExerciseCard } from '../components/ExerciseCard';
 
 const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+const THEORY_LANGS: { code: string; label: string }[] = [
+  { code: 'ru', label: 'Русский' },
+  { code: 'uk', label: 'Українська' },
+  { code: 'ar', label: 'العربية' },
+  { code: 'fr', label: 'Français' },
+  { code: 'es', label: 'Español' },
+  { code: 'en', label: 'English' }
+];
 
 export default function CoursePage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [lessons, setLessons] = useState<any[]>([]);
   const [openLevel, setOpenLevel] = useState<string | null>('A1');
   const [openLesson, setOpenLesson] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [theoryLang, setTheoryLang] = useState<string>((i18n.language || 'ru').slice(0, 2));
+  const [theoryLoading, setTheoryLoading] = useState(false);
 
   useEffect(() => {
     api.lessons().then((r) => setLessons(Array.isArray(r) ? r : [])).catch(() => setLessons([])).finally(() => setLoading(false));
@@ -21,9 +31,20 @@ export default function CoursePage() {
 
   const byLevel = (lvl: string) => lessons.filter((l) => (l.cefr_level || 'A1') === lvl);
 
-  const openDetail = async (id: string) => {
+  const openDetail = async (id: string, lang = theoryLang) => {
     setOpenLesson({ loading: true });
-    try { setOpenLesson(await api.courseLesson(id)); } catch { setOpenLesson(null); }
+    try { setOpenLesson(await api.courseLesson(id, lang)); } catch { setOpenLesson(null); }
+  };
+
+  const changeTheoryLang = async (lang: string) => {
+    setTheoryLang(lang);
+    if (!openLesson?.id) return;
+    setTheoryLoading(true);
+    try {
+      const fresh = await api.courseLesson(openLesson.id, lang);
+      setOpenLesson(fresh);
+    } catch { /* keep current theory on failure */ }
+    finally { setTheoryLoading(false); }
   };
 
   if (openLesson && !openLesson.loading) {
@@ -33,8 +54,22 @@ export default function CoursePage() {
         <button className="mb-4 text-sm text-brand-600" onClick={() => setOpenLesson(null)}>← {t('course.back')}</button>
         {openLesson.theory && (
           <Card className="mb-4">
-            <div className="mb-2 text-sm font-medium">{t('course.theory')}</div>
-            <p className="whitespace-pre-line text-sm leading-6 text-slate-600">{openLesson.theory}</p>
+            <div className="mb-2 flex items-center justify-between gap-2">
+              <div className="text-sm font-medium">{t('course.theory')}</div>
+              <div className="flex items-center gap-2">
+                {theoryLoading && <span className="text-xs text-slate-400">{t('course.translating')}</span>}
+                <select
+                  className="rounded-lg border border-slate-200 px-2 py-1 text-xs"
+                  value={theoryLang}
+                  onChange={(e) => changeTheoryLang(e.target.value)}
+                  title={t('course.theoryLang')}
+                  disabled={theoryLoading}
+                >
+                  {THEORY_LANGS.map((l) => <option key={l.code} value={l.code}>{l.label}</option>)}
+                </select>
+              </div>
+            </div>
+            <p className={`whitespace-pre-line text-sm leading-6 text-slate-600 ${theoryLoading ? 'opacity-50' : ''}`}>{openLesson.theory}</p>
           </Card>
         )}
         {!openLesson.theory && openLesson.summary && <Card className="mb-4"><p className="text-sm text-slate-600">{openLesson.summary}</p></Card>}
