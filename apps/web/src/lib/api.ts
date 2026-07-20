@@ -101,6 +101,16 @@ class ApiClient {
   }
   listUploads() { return this.request<any[]>('/api/uploads'); }
 
+  // --- Reading library ---
+  listReading(kind?: string, level?: string) {
+    const params = new URLSearchParams();
+    if (kind) params.set('kind', kind);
+    if (level) params.set('level', level);
+    const q = params.toString();
+    return this.request<any>(`/api/reading${q ? '?' + q : ''}`);
+  }
+  getReading(id: string) { return this.request<any>(`/api/reading/${id}`); }
+
   // --- Dialogues ---
   listDialogues(level?: string, native_language = 'ru') {
     const params = new URLSearchParams({ native_language });

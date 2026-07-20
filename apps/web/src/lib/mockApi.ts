@@ -34,6 +34,12 @@ export const mockApi = {
         exercises: [{ section: 'Práctica', exercise_type: 'multiple_choice', prompt: 'Ayer ___ frutas.', options: ['compré', 'compro', 'compraré'], correct_answer: 'compré', translation: 'Вчера я купил фрукты.' }],
         source: 'raw_text'
       },
+      '/api/reading': { levels: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'], resources: [
+        { id: 'r1', kind: 'text', level: 'A1', title: 'Mi familia', excerpt: 'Me llamo Ana. Tengo veinte años y vivo en Madrid…', downloadable: true },
+        { id: 'r2', kind: 'link', level: 'A1', title: 'SpanishDict', url: 'https://www.spanishdict.com', category: 'course', description: 'Diccionario, conjugador y lecciones.' }
+      ] },
+      '/api/reading/r1': { id: 'r1', kind: 'text', level: 'A1', title: 'Mi familia', downloadable: true,
+        body: 'Me llamo Ana. Tengo veinte años y vivo en Madrid. Mi familia es pequeña. Tengo un hermano y una hermana.' },
       '/api/uploads/url': {
         lesson_id: 'mock-lesson-url', deck_id: 'mock-deck-url', title: 'Lección desde un enlace',
         cefr_estimate: 'B1', summary: 'Texto extraído de una página web.',

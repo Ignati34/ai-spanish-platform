@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.api import routes_health, routes_auth, routes_users, routes_course, routes_uploads, routes_analyzer, routes_flashcards, routes_exercises, routes_voice, routes_podcasts, routes_images, routes_billing, routes_license, routes_admin, routes_telegram, routes_diagnostic, routes_progress, routes_srs, routes_motivation, routes_simulations, routes_dialogues
+from app.api import routes_health, routes_auth, routes_users, routes_course, routes_uploads, routes_analyzer, routes_flashcards, routes_exercises, routes_voice, routes_podcasts, routes_images, routes_billing, routes_license, routes_admin, routes_telegram, routes_diagnostic, routes_progress, routes_srs, routes_motivation, routes_simulations, routes_dialogues, routes_reading
 
 api_router = APIRouter(prefix='/api')
 api_router.include_router(routes_health.router)
@@ -23,3 +23,4 @@ api_router.include_router(routes_srs.router)
 api_router.include_router(routes_motivation.router)
 api_router.include_router(routes_simulations.router)
 api_router.include_router(routes_dialogues.router)
+api_router.include_router(routes_reading.router)

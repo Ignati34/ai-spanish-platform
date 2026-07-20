@@ -6,7 +6,8 @@ from app.db.session import SessionLocal, engine
 from app.db.base import Base
 from app.content.seed_content import CEFR_LEVELS, SAMPLE_LESSONS
 from app.content.curriculum import CURRICULUM
-from app.models.course import CEFRLevel, CourseModule, Lesson
+from app.content.reading_library import READING_TEXTS, ONLINE_RESOURCES
+from app.models.course import CEFRLevel, CourseModule, Lesson, ReadingResource
 from app.models.subscription import Plan
 from app.models.user import User, UserProfile
 
@@ -140,6 +141,28 @@ def _seed_curriculum(db):
         print(f'Curriculum seeded: +{added} lessons, updated {updated}.')
 
 
+def _seed_reading(db):
+    """Seed the reading library: graded texts + curated online links. Idempotent by title."""
+    existing = {r.title for r in db.query(ReadingResource).all()}
+    added = 0
+    for t in READING_TEXTS:
+        if t['title'] in existing:
+            continue
+        db.add(ReadingResource(kind='text', level=t['level'], title=t['title'],
+                               body=t['body'], description=None, category='graded_reader',
+                               language='es', downloadable=True))
+        added += 1
+    for r in ONLINE_RESOURCES:
+        if r['title'] in existing:
+            continue
+        db.add(ReadingResource(kind='link', level=r.get('level'), title=r['title'],
+                               url=r['url'], description=r.get('description'),
+                               category=r.get('category'), language='es', downloadable=False))
+        added += 1
+    if added:
+        print(f'Reading library seeded: +{added} resources.')
+
+
 def seed() -> None:
     Base.metadata.create_all(bind=engine)
     db = SessionLocal()
@@ -147,10 +170,11 @@ def seed() -> None:
         code_to_id = _seed_levels(db)
         _seed_lessons(db, code_to_id)
         _seed_curriculum(db)
+        _seed_reading(db)
         _seed_plans(db)
         _seed_admin(db)
         db.commit()
-        print('Demo data seeded (levels A1-C2, plans, lessons, admin).')
+        print('Demo data seeded (levels A1-C2, plans, lessons, reading library, admin).')
     finally:
         db.close()
 

@@ -60,3 +60,18 @@ class LessonTranslation(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     __table_args__ = (UniqueConstraint('lesson_id', 'language', name='uq_lesson_translation'),)
     started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
+class ReadingResource(Base, UUIDPrimaryKeyMixin, TimestampMixin):
+    """A reading-library entry: either a built-in graded text (kind='text', with body)
+    or a curated external link (kind='link', with url)."""
+    __tablename__ = 'reading_resources'
+    kind: Mapped[str] = mapped_column(String(16), index=True, default='text')  # 'text' | 'link'
+    level: Mapped[str | None] = mapped_column(String(8), nullable=True, index=True)
+    title: Mapped[str] = mapped_column(String(300))
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    body: Mapped[str | None] = mapped_column(Text, nullable=True)          # for kind='text'
+    url: Mapped[str | None] = mapped_column(String(500), nullable=True)     # for kind='link'
+    category: Mapped[str | None] = mapped_column(String(40), nullable=True)
+    language: Mapped[str] = mapped_column(String(8), default='es')
+    downloadable: Mapped[bool] = mapped_column(default=True)

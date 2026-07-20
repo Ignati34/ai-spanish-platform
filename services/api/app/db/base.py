@@ -1,7 +1,7 @@
 from app.db.session import Base
 from app.models.user import User, UserProfile
 from app.models.subscription import Plan, Subscription, BillingCustomer, Invoice, PaymentEvent, UserEntitlement, UsageCounter
-from app.models.course import CEFRLevel, CourseModule, Lesson, LessonProgress, LessonTranslation
+from app.models.course import CEFRLevel, CourseModule, Lesson, LessonProgress, LessonTranslation, ReadingResource
 from app.models.upload import UploadedFile, ExtractedText, Transcript, TextAnalysis
 from app.models.flashcard import FlashcardDeck, Flashcard, FlashcardReview
 from app.models.exercise import Exercise, ExerciseSubmission
@@ -17,7 +17,7 @@ from app.models.motivation import MotivationState
 __all__ = [
     'Base',
     'User', 'UserProfile', 'Plan', 'Subscription', 'BillingCustomer', 'Invoice', 'PaymentEvent', 'UserEntitlement', 'UsageCounter',
-    'CEFRLevel', 'CourseModule', 'Lesson', 'LessonProgress', 'LessonTranslation',
+    'CEFRLevel', 'CourseModule', 'Lesson', 'LessonProgress', 'LessonTranslation', 'ReadingResource',
     'UploadedFile', 'ExtractedText', 'Transcript', 'TextAnalysis',
     'FlashcardDeck', 'Flashcard', 'FlashcardReview',
     'Exercise', 'ExerciseSubmission', 'VocabularyItem', 'UserVocabulary', 'UserMistake',

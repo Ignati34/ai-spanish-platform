@@ -11,6 +11,7 @@ import PodcastStudioPage from './pages/PodcastStudioPage';
 import VoiceTutorPage from './pages/VoiceTutorPage';
 import SimulationsPage from './pages/SimulationsPage';
 import DialoguesPage from './pages/DialoguesPage';
+import LibraryPage from './pages/LibraryPage';
 import SettingsPage from './pages/SettingsPage';
 import DiagnosticPage from './pages/DiagnosticPage';
 import ProgressPage from './pages/ProgressPage';
@@ -42,6 +43,7 @@ export const router = createBrowserRouter([
       { path: 'voice', element: <VoiceTutorPage /> },
       { path: 'simulations', element: <SimulationsPage /> },
       { path: 'dialogues', element: <DialoguesPage /> },
+      { path: 'library', element: <LibraryPage /> },
       { path: 'settings', element: <SettingsPage /> },
       { path: 'flashcards', element: <FlashcardsPage /> },
       { path: 'review', element: <ReviewPage /> },
