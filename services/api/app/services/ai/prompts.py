@@ -229,3 +229,23 @@ def translate_theory(text: str, target_language: str, source_language: str = 'ru
         f'TEXT:\n{text}'
     )
     return system, user
+
+
+def dialogue(topic: str, cefr_level: str, native_language: str) -> tuple[str, str]:
+    """Generate a short, level-appropriate two-speaker dialogue on a topic.
+    Total Spanish is capped (~500 characters) so it stays a quick read."""
+    lang = lang_name(native_language)
+    system = (
+        f'You are a Spanish teacher creating a short practice dialogue for a {cefr_level} learner '
+        f'whose native language is {lang}. Use vocabulary and grammar appropriate to {cefr_level} '
+        f'(simple at A1, richer and more idiomatic toward C2). Respond with ONE valid minified JSON '
+        f'object and nothing else.'
+    )
+    user = (
+        f'Write a natural dialogue between two speakers about: "{topic}". '
+        f'Return JSON {{"title": "<short Spanish title>", '
+        f'"lines": [{{"speaker": "<name>", "es": "<Spanish line>", "translation": "<in {lang}>"}}]}}. '
+        f'Rules: 5-8 turns; keep it {cefr_level}-appropriate; the TOTAL Spanish across all lines must '
+        f'not exceed 500 characters; each line one short sentence; alternate the two speakers.'
+    )
+    return system, user

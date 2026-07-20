@@ -147,3 +147,16 @@ class StubProvider(BaseAIProvider):
         # Offline/no-key mode: return the source text unchanged so the UI keeps working.
         self.last_usage = {'input_tokens': 0, 'output_tokens': 0}
         return text
+
+    async def generate_dialogue(self, topic: str, cefr_level: str = 'A1', native_language: str = 'ru') -> dict:
+        self.last_usage = {'input_tokens': 0, 'output_tokens': 0}
+        return {
+            'title': f'Demo: {topic}'[:60],
+            'lines': [
+                {'speaker': 'A', 'es': f'Hola, hablemos de {topic}.', 'translation': f'Привет, поговорим о «{topic}».'},
+                {'speaker': 'B', 'es': 'Claro, me parece muy interesante.', 'translation': 'Конечно, по-моему это очень интересно.'},
+                {'speaker': 'A', 'es': '¿Qué opinas tú?', 'translation': 'А ты что думаешь?'},
+                {'speaker': 'B', 'es': 'Creo que es un buen tema para practicar.', 'translation': 'Думаю, это хорошая тема для практики.'},
+            ],
+            'stub': True,
+        }

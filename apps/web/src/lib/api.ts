@@ -95,6 +95,19 @@ class ApiClient {
   }
   listUploads() { return this.request<any[]>('/api/uploads'); }
 
+  // --- Dialogues ---
+  listDialogues(level?: string, native_language = 'ru') {
+    const params = new URLSearchParams({ native_language });
+    if (level) params.set('level', level);
+    return this.request<any>(`/api/dialogues?${params.toString()}`);
+  }
+  generateDialogue(topic: string, cefr_level = 'A1', native_language = 'ru') {
+    return this.request<any>('/api/dialogues/generate', {
+      method: 'POST',
+      body: JSON.stringify({ topic, cefr_level, native_language })
+    });
+  }
+
   private async postForm<T>(path: string, form: FormData): Promise<T> {
     const res = await fetch(`${config.apiUrl}${path}`, {
       method: 'POST',

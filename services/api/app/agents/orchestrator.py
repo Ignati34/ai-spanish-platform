@@ -8,6 +8,9 @@ class AgentOrchestrator:
     async def analyze_text(self, text: str, native_language: str = 'ru') -> dict:
         return await self.ai.analyze_text(text=text, native_language=native_language)
 
+    async def generate_dialogue(self, topic: str, cefr_level: str = 'A1', native_language: str = 'ru') -> dict:
+        return await self.ai.generate_dialogue(topic=topic, cefr_level=cefr_level, native_language=native_language)
+
     async def generate_flashcards(self, text: str, native_language: str = 'ru', cefr_level: str = 'A1', source_language: str = 'es') -> dict:
         return await self.ai.generate_flashcards(text=text, native_language=native_language, cefr_level=cefr_level, source_language=source_language)
 

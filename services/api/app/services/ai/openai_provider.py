@@ -209,3 +209,7 @@ class OpenAIProvider(BaseAIProvider):
         system, user = prompts.translate_theory(text, target_language, source_language)
         out = await self._chat_text(system, user)
         return out or text
+
+    async def generate_dialogue(self, topic: str, cefr_level: str = 'A1', native_language: str = 'ru') -> dict:
+        system, user = prompts.dialogue(topic, cefr_level, native_language)
+        return await self._chat_json(system, user)

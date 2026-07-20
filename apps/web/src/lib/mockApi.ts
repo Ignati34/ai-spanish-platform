@@ -34,6 +34,16 @@ export const mockApi = {
         exercises: [{ section: 'Práctica', exercise_type: 'multiple_choice', prompt: 'Ayer ___ frutas.', options: ['compré', 'compro', 'compraré'], correct_answer: 'compré', translation: 'Вчера я купил фрукты.' }],
         source: 'raw_text'
       },
+      '/api/dialogues': { levels: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'], dialogues: [
+        { id: 'a1_cafe', level: 'A1', title: 'В кафе', lines: [
+          { speaker: 'Camarero', es: 'Buenos días, ¿qué desea?', translation: 'Доброе утро, что желаете?' },
+          { speaker: 'Cliente', es: 'Un café con leche, por favor.', translation: 'Кофе с молоком, пожалуйста.' }
+        ] }
+      ] },
+      '/api/dialogues/generate': { title: 'En el aeropuerto', level: 'A2', topic: 'aeropuerto', stub: true, lines: [
+        { speaker: 'A', es: '¿Dónde está la puerta de embarque?', translation: 'Где выход на посадку?' },
+        { speaker: 'B', es: 'Al fondo, a la derecha.', translation: 'В глубине, справа.' }
+      ] },
       '/api/vocab-bank/stats': { counts: { verbs: 387, collocations: 512, examples: 640, phrases: 2177 } },
       '/api/vocab-bank/search': { items: [
         { es: 'echar de menos', ru: 'скучать по', kind: 'phrases' },

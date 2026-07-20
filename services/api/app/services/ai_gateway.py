@@ -151,6 +151,17 @@ class AIGateway:
             logger.warning('AI provider failed on generate_lesson: %s; using stub', exc)
             return await self._stub.generate_lesson(topic_es, topic_native, cefr_level, native_language, focus)
 
+    async def generate_dialogue(self, topic: str, cefr_level: str = 'A1', native_language: str = 'ru') -> dict:
+        """Generate a short, level-graded two-speaker dialogue on a topic. Not cached."""
+        self.last_usage = {'input_tokens': 0, 'output_tokens': 0}
+        try:
+            result = await self.provider.generate_dialogue(topic, cefr_level, native_language)
+            self.last_usage = getattr(self.provider, 'last_usage', self.last_usage)
+            return result
+        except Exception as exc:
+            logger.warning('AI provider failed on generate_dialogue: %s; using stub', exc)
+            return await self._stub.generate_dialogue(topic, cefr_level, native_language)
+
     async def voice_reply(self, history: list[dict], user_message: str, scenario: str = 'restaurant', cefr_level: str = 'A1', native_language: str = 'ru') -> dict:
         """Conversational tutor reply + correction + score. Not cached."""
         self.last_usage = {'input_tokens': 0, 'output_tokens': 0}
