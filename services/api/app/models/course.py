@@ -54,8 +54,13 @@ class LessonTranslation(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     __tablename__ = 'lesson_translations'
     lesson_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey('lessons.id', ondelete='CASCADE'), index=True)
     language: Mapped[str] = mapped_column(String(16), index=True)
-    theory: Mapped[str] = mapped_column(Text)
-    source_hash: Mapped[str] = mapped_column(String(64))
+    theory: Mapped[str | None] = mapped_column(Text, nullable=True)
+    source_hash: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    # Localized exercises (prompt/explanation translated; options & correct_answer stay
+    # in Spanish). Cached per (lesson, language) with an independent hash so theory and
+    # exercises invalidate separately.
+    exercises: Mapped[list | None] = mapped_column(JSON, nullable=True)
+    exercises_hash: Mapped[str | None] = mapped_column(String(64), nullable=True)
 
     __table_args__ = (UniqueConstraint('lesson_id', 'language', name='uq_lesson_translation'),)
     started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
@@ -75,3 +80,19 @@ class ReadingResource(Base, UUIDPrimaryKeyMixin, TimestampMixin):
     category: Mapped[str | None] = mapped_column(String(40), nullable=True)
     language: Mapped[str] = mapped_column(String(8), default='es')
     downloadable: Mapped[bool] = mapped_column(default=True)
+
+
+class ReadingTranslation(Base, UUIDPrimaryKeyMixin, TimestampMixin):
+    """Cached translation of a reading text's title/body into a target language.
+
+    Same lazy-fill + source_hash-invalidation pattern as LessonTranslation. Only
+    'text' resources are translated; curated links keep their Spanish description.
+    """
+    __tablename__ = 'reading_translations'
+    resource_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey('reading_resources.id', ondelete='CASCADE'), index=True)
+    language: Mapped[str] = mapped_column(String(16), index=True)
+    title: Mapped[str | None] = mapped_column(String(300), nullable=True)
+    body: Mapped[str | None] = mapped_column(Text, nullable=True)
+    source_hash: Mapped[str] = mapped_column(String(64))
+
+    __table_args__ = (UniqueConstraint('resource_id', 'language', name='uq_reading_translation'),)

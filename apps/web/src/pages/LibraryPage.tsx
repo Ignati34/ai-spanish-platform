@@ -20,12 +20,13 @@ function downloadTxt(title: string, body: string) {
 }
 
 export default function LibraryPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [tab, setTab] = useState<'text' | 'link'>('text');
   const [level, setLevel] = useState<string>('');
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState<any>(null); // full text being read
+  const [showTr, setShowTr] = useState(false);  // native-language translation toggle
 
   useEffect(() => {
     setLoading(true); setOpen(null);
@@ -36,7 +37,9 @@ export default function LibraryPage() {
   }, [tab, level]);
 
   const read = async (id: string) => {
-    try { setOpen(await api.getReading(id)); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+    setShowTr(false);
+    const lang = (i18n.language || 'ru').slice(0, 2);
+    try { setOpen(await api.getReading(id, lang)); window.scrollTo({ top: 0, behavior: 'smooth' }); }
     catch { setOpen(null); }
   };
 
@@ -63,11 +66,21 @@ export default function LibraryPage() {
               <h2 className="text-lg font-semibold">{open.title}</h2>
             </div>
             <div className="flex gap-2">
+              {open.body_translation && (
+                <Button variant="secondary" onClick={() => setShowTr((v) => !v)}>
+                  {showTr ? t('library.hideTranslation') : t('library.showTranslation')}
+                </Button>
+              )}
               <Button variant="secondary" onClick={() => downloadTxt(open.title, open.body || '')}>{t('library.download')}</Button>
               <Button variant="secondary" onClick={() => setOpen(null)}>{t('library.close')}</Button>
             </div>
           </div>
           <p className="whitespace-pre-line text-[15px] leading-7 text-slate-700" dir="ltr" lang="es">{open.body}</p>
+          {showTr && open.body_translation && (
+            <p className="mt-3 whitespace-pre-line border-t border-slate-100 pt-3 text-[15px] leading-7 text-slate-500">
+              {open.body_translation}
+            </p>
+          )}
         </Card>
       )}
 

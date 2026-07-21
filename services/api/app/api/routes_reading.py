@@ -41,8 +41,19 @@ def list_reading(kind: str | None = None, level: str | None = None,
 
 
 @router.get('/{resource_id}')
-def get_reading(resource_id: str, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+async def get_reading(resource_id: str, lang: str | None = None,
+                      current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     r = db.get(ReadingResource, resource_id)
     if not r:
         raise HTTPException(status_code=404, detail='Resource not found')
-    return _row(r, with_body=True)
+    data = _row(r, with_body=True)
+    # The text itself stays in Spanish (that's the reading practice); when a native
+    # language is requested we attach a cached translation the reader can toggle on.
+    if lang and r.kind == 'text':
+        from app.services.translation_service import get_reading_translation, needs_translation
+        if needs_translation(lang, 'es'):
+            tr = await get_reading_translation(db, r, lang)
+            data['title_translation'] = tr.get('title')
+            data['body_translation'] = tr.get('body')
+            data['translation_language'] = (lang or '')[:2].lower()
+    return data

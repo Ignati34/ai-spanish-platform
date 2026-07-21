@@ -35,9 +35,11 @@ async def get_lesson(lesson_id: str, lang: str | None = None, db: Session = Depe
         raise HTTPException(status_code=404, detail='Lesson not found')
     content = lesson.content_json or {}
     theory = content.get('theory', '')
+    exercises = content.get('exercises') or []
     if lang:
-        from app.services.translation_service import get_theory
+        from app.services.translation_service import get_theory, get_exercises
         theory = await get_theory(db, lesson, lang)
+        exercises = await get_exercises(db, lesson, lang)
     return {
         'id': str(lesson.id), 'title': lesson.title, 'cefr_level': lesson.cefr_level,
         'description': lesson.description,
@@ -46,5 +48,5 @@ async def get_lesson(lesson_id: str, lang: str | None = None, db: Session = Depe
         'summary': (content.get('analysis') or {}).get('summary', lesson.description or ''),
         'analysis': content.get('analysis') or {},
         'cards': content.get('cards') or [],
-        'exercises': content.get('exercises') or [],
+        'exercises': exercises,
     }

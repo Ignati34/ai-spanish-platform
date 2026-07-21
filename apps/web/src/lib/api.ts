@@ -125,7 +125,10 @@ class ApiClient {
     const q = params.toString();
     return this.request<any>(`/api/reading${q ? '?' + q : ''}`);
   }
-  getReading(id: string) { return this.request<any>(`/api/reading/${id}`); }
+  getReading(id: string, lang?: string) {
+    const q = lang ? `?lang=${encodeURIComponent(lang)}` : '';
+    return this.request<any>(`/api/reading/${id}${q}`);
+  }
 
   // --- Dialogues ---
   listDialogues(level?: string, native_language = 'ru') {
