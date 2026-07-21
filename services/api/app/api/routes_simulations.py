@@ -49,9 +49,9 @@ async def _voice(orch: AgentOrchestrator, db: Session, user: User, text: str) ->
 
 
 @router.get('/scenarios')
-def scenarios(native_language: str = 'ru', current_user: User = Depends(get_current_user)):
+def scenarios(native_language: str = 'ru', level: str | None = None, current_user: User = Depends(get_current_user)):
     lang = native_language or current_user.native_language or 'ru'
-    return {'scenarios': sim_content.public_list(lang)}
+    return {'levels': ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'], 'scenarios': sim_content.public_list(lang, level)}
 
 
 @router.post('/start')

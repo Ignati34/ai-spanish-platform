@@ -191,8 +191,10 @@ class ApiClient {
   }
 
   // --- Role-play simulations ---
-  simScenarios(native_language = 'ru') {
-    return this.request<any>(`/api/simulations/scenarios?native_language=${encodeURIComponent(native_language)}`);
+  simScenarios(native_language = 'ru', level?: string) {
+    const params = new URLSearchParams({ native_language });
+    if (level) params.set('level', level);
+    return this.request<any>(`/api/simulations/scenarios?${params.toString()}`);
   }
   simStart(scenario_id: string, cefr_level = 'A1', native_language = 'ru') {
     return this.request<any>('/api/simulations/start', { method: 'POST', body: JSON.stringify({ scenario_id, cefr_level, native_language }) });

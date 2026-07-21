@@ -31,7 +31,7 @@ export default function SimulationsPage() {
   const recRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
 
-  useEffect(() => { api.simScenarios(i18n.language).then((r) => setScenarios(r.scenarios || [])).catch((e) => setError(String(e.message || e))); }, [i18n.language]);
+  useEffect(() => { api.simScenarios(i18n.language, cefr).then((r) => setScenarios(r.scenarios || [])).catch((e) => setError(String(e.message || e))); }, [i18n.language, cefr]);
 
   const start = async (scenarioId: string) => {
     setBusy(true); setError(null); setTurns([]); setCompleted(false);

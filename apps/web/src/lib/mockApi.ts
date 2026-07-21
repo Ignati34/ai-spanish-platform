@@ -46,6 +46,10 @@ export const mockApi = {
         exercises: [{ section: 'Práctica', exercise_type: 'multiple_choice', prompt: 'Ayer ___ frutas.', options: ['compré', 'compro', 'compraré'], correct_answer: 'compré', translation: 'Вчера я купил фрукты.' }],
         source: 'raw_text'
       },
+      '/api/simulations/scenarios': { levels: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'], scenarios: [
+        { id: 'a1_cafe', level: 'A1', title: 'Заказ в кафе', role: 'camarero de una cafetería', goal: 'Заказать кофе и что-нибудь поесть', setup: 'Entras en una cafetería.', hints: ['Buenos días, ¿me pone un café?'] },
+        { id: 'a1_tienda', level: 'A1', title: 'В магазине', role: 'dependiente', goal: 'Купить фрукты и хлеб', setup: 'Vas a la tienda.', hints: ['¿Tiene manzanas?'] }
+      ] },
       '/api/voice/scenarios': { levels: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'], scenarios: [
         { id: 'a1_cafe', level: 'A1', label: 'В кафе', prompt: 'Eres camarero en una cafetería.' },
         { id: 'a1_presentarse', level: 'A1', label: 'Знакомство', prompt: 'Preséntate y pregunta su nombre.' },
