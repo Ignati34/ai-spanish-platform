@@ -54,6 +54,14 @@ def status_():
     return {'module': 'voice', 'status': 'tutor_ready'}
 
 
+@router.get('/scenarios')
+def voice_scenarios(level: str | None = None, native_language: str = 'ru',
+                    current_user: User = Depends(get_current_user)):
+    from app.content.voice_scenarios import public_list
+    lang = native_language or current_user.native_language or 'ru'
+    return {'levels': ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'], 'scenarios': public_list(level, lang)}
+
+
 @router.post('/sessions')
 async def create_session(payload: dict, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     check_ai_quota(db, current_user)

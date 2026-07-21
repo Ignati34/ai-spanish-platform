@@ -158,6 +158,11 @@ class ApiClient {
       body: JSON.stringify({ scenario, cefr_level, native_language })
     });
   }
+  voiceScenarios(level?: string, native_language = 'ru') {
+    const params = new URLSearchParams({ native_language });
+    if (level) params.set('level', level);
+    return this.request<any>(`/api/voice/scenarios?${params.toString()}`);
+  }
   voiceSendText(sessionId: string, text: string) {
     const form = new FormData();
     form.append('text', text);

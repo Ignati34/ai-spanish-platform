@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { api } from '../lib/api';
 import { PageHeader } from '../components/layout/PageHeader';
@@ -6,7 +6,6 @@ import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 
-const SCENARIOS = ['cafe', 'aeropuerto', 'médico', 'entrevista', 'banco', 'alquiler'];
 const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
 interface Turn { role: 'user' | 'assistant'; text: string; correction?: string; score?: number; }
@@ -19,8 +18,9 @@ function playB64(b64?: string, mime?: string) {
 
 export default function VoiceTutorPage() {
   const { t, i18n } = useTranslation();
-  const [scenario, setScenario] = useState('cafe');
   const [cefr, setCefr] = useState('A1');
+  const [scenarios, setScenarios] = useState<any[]>([]);
+  const [scenarioId, setScenarioId] = useState('');
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [turns, setTurns] = useState<Turn[]>([]);
   const [text, setText] = useState('');
@@ -30,10 +30,21 @@ export default function VoiceTutorPage() {
   const recRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
 
+  useEffect(() => {
+    api.voiceScenarios(cefr, i18n.language)
+      .then((r) => {
+        const list = r?.scenarios || [];
+        setScenarios(list);
+        setScenarioId((prev) => (list.some((s: any) => s.id === prev) ? prev : (list[0]?.id || '')));
+      })
+      .catch(() => setScenarios([]));
+  }, [cefr, i18n.language]);
+
   const start = async () => {
     setBusy(true); setError(null); setTurns([]);
     try {
-      const r = await api.voiceCreateSession(scenario, cefr, i18n.language);
+      const chosen = scenarios.find((s) => s.id === scenarioId);
+      const r = await api.voiceCreateSession(chosen?.prompt || chosen?.label || scenarioId, cefr, i18n.language);
       setSessionId(r.session_id);
       setTurns([{ role: 'assistant', text: r.reply_es }]);
       playB64(r.audio_b64, r.audio_mime);
@@ -89,8 +100,8 @@ export default function VoiceTutorPage() {
           <div className="flex flex-wrap items-end gap-4">
             <div>
               <label className="block text-xs text-slate-500">{t('voice.scenario')}</label>
-              <select className="mt-1 rounded-lg border border-slate-200 px-3 py-2 text-sm" value={scenario} onChange={(e) => setScenario(e.target.value)}>
-                {SCENARIOS.map((s) => <option key={s} value={s}>{s}</option>)}
+              <select className="mt-1 rounded-lg border border-slate-200 px-3 py-2 text-sm" value={scenarioId} onChange={(e) => setScenarioId(e.target.value)}>
+                {scenarios.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
               </select>
             </div>
             <div>

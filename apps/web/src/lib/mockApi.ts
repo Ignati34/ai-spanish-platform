@@ -46,6 +46,12 @@ export const mockApi = {
         exercises: [{ section: 'Práctica', exercise_type: 'multiple_choice', prompt: 'Ayer ___ frutas.', options: ['compré', 'compro', 'compraré'], correct_answer: 'compré', translation: 'Вчера я купил фрукты.' }],
         source: 'raw_text'
       },
+      '/api/voice/scenarios': { levels: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'], scenarios: [
+        { id: 'a1_cafe', level: 'A1', label: 'В кафе', prompt: 'Eres camarero en una cafetería.' },
+        { id: 'a1_presentarse', level: 'A1', label: 'Знакомство', prompt: 'Preséntate y pregunta su nombre.' },
+        { id: 'a1_tienda', level: 'A1', label: 'В магазине', prompt: 'Eres dependiente de una tienda.' },
+        { id: 'a1_direcciones', level: 'A1', label: 'Спросить дорогу', prompt: 'El estudiante pregunta cómo llegar a la estación.' }
+      ] },
       '/api/reading': { levels: ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'], resources: [
         { id: 'r1', kind: 'text', level: 'A1', title: 'Mi familia', excerpt: 'Me llamo Ana. Tengo veinte años y vivo en Madrid…', downloadable: true },
         { id: 'r2', kind: 'link', level: 'A1', title: 'SpanishDict', url: 'https://www.spanishdict.com', category: 'course', description: 'Diccionario, conjugador y lecciones.' }
