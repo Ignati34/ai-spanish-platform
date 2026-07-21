@@ -59,6 +59,22 @@ class ApiClient {
   analyzeText(text: string, native_language = 'ru') {
     return this.request('/api/analyze/text', { method: 'POST', body: JSON.stringify({ text, native_language }) });
   }
+  analyzeUrl(url: string, native_language = 'ru') {
+    return this.request('/api/analyze/url', { method: 'POST', body: JSON.stringify({ url, native_language }) });
+  }
+  async analyzeFile(file: File, native_language = 'ru') {
+    const form = new FormData();
+    form.append('file', file);
+    form.append('native_language', native_language);
+    const res = await fetch(`${config.apiUrl}/api/analyze/file`, {
+      method: 'POST',
+      headers: { ...(this.token ? { Authorization: `Bearer ${this.token}` } : {}) },
+      body: form
+    });
+    this.handleAuth(res);
+    if (!res.ok) throw new Error((await res.text()) || `Analyze failed: ${res.status}`);
+    return res.json();
+  }
   generateFlashcards(text: string, opts: { native_language?: string; cefr_level?: string; source_language?: string } = {}) {
     return this.request<any>('/api/flashcards/generate', { method: 'POST', body: JSON.stringify({ text, ...opts }) });
   }

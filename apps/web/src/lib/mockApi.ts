@@ -22,6 +22,18 @@ export const mockApi = {
         grammar_topics: ['pretérito indefinido', 'pretérito imperfecto'],
         summary: 'Короткий рассказ о походе в супермаркет.'
       },
+      '/api/analyze/file': {
+        cefr_estimate: 'B1', source_text: '(демо) Расшифрованный/извлечённый текст появится здесь.',
+        translation: '(демо) перевод текста.', verbs: [{ word: 'llegar', tense: 'presente', translation: 'прибывать' }],
+        tenses: ['presente'], nouns: [], adjectives: [], adverbs: [], conjunctions: [], vocabulary: [],
+        grammar_topics: ['presente'], summary: 'Демо-анализ файла.'
+      },
+      '/api/analyze/url': {
+        cefr_estimate: 'B1', source_text: '(демо) Текст, извлечённый со страницы, появится здесь.',
+        translation: '(демо) перевод текста.', verbs: [{ word: 'informar', tense: 'presente', translation: 'сообщать' }],
+        tenses: ['presente'], nouns: [], adjectives: [], adverbs: [], conjunctions: [], vocabulary: [],
+        grammar_topics: ['presente'], summary: 'Демо-анализ страницы.'
+      },
       '/api/uploads': [
         { id: 'u1', filename: 'entrevista.mp3', file_type: 'mp3', status: 'lesson_ready', size: 812000, created_at: new Date(Date.now() - 86400000).toISOString() },
         { id: 'u2', filename: 'articulo.pdf', file_type: 'pdf', status: 'extracted', size: 45000, created_at: new Date(Date.now() - 2 * 86400000).toISOString() }

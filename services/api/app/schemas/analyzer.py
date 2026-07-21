@@ -20,3 +20,4 @@ class TextAnalyzeResponse(BaseModel):
     vocabulary: list = []            # [{word, translation, cefr}]
     grammar_topics: list[str] = []
     summary: str = ''
+    source_text: str = ''            # extracted/transcribed text when analyzing a file or URL

@@ -63,7 +63,7 @@ async def build_from_file(
     db: Session = Depends(get_db),
 ):
     filename = file.filename or 'upload'
-    audio = is_audio(filename, file.content_type)
+    audio = is_audio(filename, file.content_type) or is_video(filename, file.content_type)
     if audio:
         check_transcription_quota(db, current_user)
     check_ai_quota(db, current_user)
@@ -100,8 +100,6 @@ async def build_from_file(
         uploaded.processing_status = 'transcribed'
         db.flush()
         text, source_type = transcript_text, 'transcript'
-    elif is_video(filename, file.content_type):
-        raise HTTPException(status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE, detail='Video not supported yet (extract audio first)')
     else:
         try:
             text, meta = extract_text(filename, data, file.content_type)
